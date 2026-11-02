@@ -1,0 +1,55 @@
+<?php
+get_header();
+?>
+<script src='https://www.google.com/recaptcha/api.js?render=6Lcr1nwUAAAAAHWMp_WAEdhBM8D2Y2jE97t8GEZT'></script>
+		<div class="blog_post">
+			<h2>Kontakt (informace a přihlášky)</h2>
+			<div class="blog_content">
+				<p>
+				<b>Martin Vojtěch</b> (hlavní vedoucí)<br>
+				adresa: Pionýrů 1332, 56401 Žamberk<br>
+				telefon: 605 947 103<br>
+				e-mail: info@taborovajizda.cz<br>
+				číslo účtu: 27-3094190207/0100<br>
+				ič:  08063991<br>
+				</p>
+			</div>
+		</div>
+		<div class="blog_post">
+			<h2>Adresa tábora</h2>
+			<div class="blog_content">
+				<p>
+					Tábor Plátěná osada<br>
+					Splzov<br>
+					Železný Brod<br>
+					468 22
+				</p>
+			</div>
+		</div>
+		<!--div class="blog_post">
+			<h2>Rychlý dotaz</h2>
+			<div class="blog_content">
+				<form id="dotaz" action="/odeslat-dotaz/?dotaz=1" method="post">
+					<label for="jmeno">Vaše jméno:</label><input type="text" name="jmeno">
+					<label for="email">E-mail pro odpověď:</label><input type="text" name="email">
+					<textarea name="dotaz"></textarea>
+					<div class="volny_blok"></div>
+					<input type="submit" value="odeslat">
+				</form>
+			</div>
+		</div-->
+	</main>
+<?php
+	get_sidebar();
+?>
+<?php
+get_footer();
+?>
+<script>
+grecaptcha.ready(function() {
+grecaptcha.execute('6Lcr1nwUAAAAAHWMp_WAEdhBM8D2Y2jE97t8GEZT', {action: 'kontakt'})
+.then(function(token) {
+// Verify the token on the server.
+});
+});
+</script>

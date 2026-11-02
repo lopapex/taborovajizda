@@ -1,0 +1,37 @@
+# WordPress and migration artifacts
+*.sql
+*.sql.gz
+*.zip
+!theme/**/*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.wpress
+*.bm
+/backups/
+/artifacts/
+/releases/
+
+# Environment-specific WordPress files
+wp-config.php
+wp-config-*.php
+.env
+.env.*
+!.env.example
+
+# Logs, caches and temporary files
+*.log
+/logs/
+/cache/
+/tmp/
+/temp/
+*.tmp
+
+# LocalWP and editor metadata
+.local/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+.tags
+
