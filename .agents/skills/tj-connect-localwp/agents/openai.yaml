@@ -1,0 +1,6 @@
+interface:
+  display_name: "TJ Connect LocalWP"
+  short_description: "Connect the repository theme directly to LocalWP"
+  default_prompt: "Use $tj-connect-localwp to connect this repository theme to my LocalWP site."
+policy:
+  allow_implicit_invocation: true

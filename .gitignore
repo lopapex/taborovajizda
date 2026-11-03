@@ -28,6 +28,7 @@ wp-config-*.php
 *.tmp
 
 # LocalWP and editor metadata
+.localwp.json
 .local/
 .idea/
 .vscode/

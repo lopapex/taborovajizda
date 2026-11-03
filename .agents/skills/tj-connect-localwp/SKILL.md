@@ -1,0 +1,16 @@
+---
+name: tj-connect-localwp
+description: Connect the Táborová jízda repository theme directly to its LocalWP site using a Windows directory junction. Use for first-time setup, repair, or verification of the local development environment.
+---
+
+# Connect LocalWP
+
+Make `theme/` the live LocalWP theme without copying files.
+
+1. Read `README.md` and verify `.localwp.json` exists.
+2. Run `scripts/connect-localwp-theme.ps1` without `-Apply` and show the repository path, LocalWP target, and proposed backup path.
+3. Ask for confirmation immediately before applying because the existing LocalWP theme directory will be moved.
+4. Run the script with `-Apply`. It must preserve the original directory as `taborovajizda.pre-junction-<timestamp>` and create a junction only at `wp-content/themes/taborovajizda`.
+5. Verify the junction target and open the local homepage for a basic check when browser access is available.
+
+Never delete the preserved backup, edit another theme, or touch the database, plugins, uploads, or production. If the path is already connected correctly, report success without changing anything.

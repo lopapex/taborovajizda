@@ -1,0 +1,6 @@
+interface:
+  display_name: "TJ Create Release"
+  short_description: "Build a verified theme ZIP and release manifest"
+  default_prompt: "Use $tj-create-release to build a verified production theme ZIP from the current commit."
+policy:
+  allow_implicit_invocation: true

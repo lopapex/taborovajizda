@@ -1,275 +1,197 @@
-# Táborová jízda – vývoj a nasazení WordPress šablony
+# Táborová jízda – vývoj webu
 
-Tento repozitář je zdrojem pravdy pro vlastní WordPress šablonu `taborovajizda`. Git verzionuje pouze šablonu a nástroje pro vývoj. Databáze, pluginy a ostatní obsah se mezi produkcí a LocalWP přenášejí archivem pluginu Backup Migration.
+Tento repozitář obsahuje vlastní WordPress šablonu a nástroje pro lokální vývoj.
 
-Baseline je funkčně shodná s produkční šablonou. Z komentovaných, neaktivních bloků v `functions.php` byly odstraněny staré SMS a Facebook tajné hodnoty a nahrazeny odkazy na konfiguraci mimo šablonu. Generovaný editorový soubor `.tags` byl vynechán. Tajné hodnoty ani lokální metadata do Gitu nepatří.
-
-Repozitář nikdy nesmí obsahovat hesla, `wp-config.php`, databázové exporty, produkční zálohy ani obsah `uploads`.
-
-## Co je kde
-
-- `theme/` – přesná kopie aktivní vlastní šablony `taborovajizda`;
-- `scripts/sync-theme-to-local.ps1` – zrcadlí `theme/` pouze do `wp-content/themes/taborovajizda` zadaného LocalWP webu;
-- `.gitignore` – blokuje zálohy, SQL, konfiguraci, logy a lokální soubory;
-- `README.md` – tento opakovatelný postup.
-
-Produkce: <https://taborovajizda.cz/>
-
-Administrace: <https://taborovajizda.cz/wp-admin/>
-
-GitHub: <https://github.com/lopapex/taborovajizda>
-
-## 1. Instalace LocalWP
-
-1. Stáhni LocalWP pouze z <https://localwp.com/> a dokonči instalaci.
-2. Spusť LocalWP a vytvoř prázdný web s názvem `taborovajizda-local`.
-3. Zvol výchozí prostředí. Lokální přihlašovací údaje mohou být libovolné; nepatří do Gitu.
-4. V přehledu webu si poznamenej hodnotu **Site domain** a cestu **Site path**. WordPress public adresář je standardně:
-
-   ```text
-   C:\Users\<uživatel>\Local Sites\taborovajizda-local\app\public
-   ```
-
-Oficiální záložní způsob importu LocalWP používá ZIP s adresářem `wp-content` a SQL dumpem: <https://localwp.com/help-docs/getting-started/how-to-import-a-wordpress-site-into-local/>.
-
-## 2. Vytvoření a stažení produkční zálohy
-
-Tento krok se dělá v produkční administraci přes **Backup Migration**.
-
-1. Otevři Backup Migration a zkontroluj rozsah zálohy:
-   - databáze: zahrnout;
-   - pluginy: zahrnout;
-   - šablony: zahrnout;
-   - ostatní obsah `wp-content`: zahrnout;
-   - `uploads`: nezahrnovat;
-   - WordPress core: nezahrnovat.
-2. Vytvoř novou ruční zálohu.
-3. Po dokončení stáhni archiv mimo tento repozitář, například do samostatného adresáře Dokumenty/Zálohy.
-4. Poznamenej si datum, čas a přesný název archivu.
-
-Archiv necommituj. Nezahrnuje externí databázi přihlášek a newsletteru a žádný krok tohoto postupu ji nemění.
-
-## 3. Obnova produkční kopie v LocalWP
-
-1. Otevři administraci `taborovajizda-local`.
-2. Nainstaluj a aktivuj plugin **Backup Migration**.
-3. V pluginu nahraj stažený produkční archiv a spusť obnovu.
-4. Po obnově se případně znovu přihlas produkčním WordPress účtem, protože byla obnovena produkční databáze.
-5. Ověř **Nastavení → Obecné** a otevři úvodní stránku.
-
-Pokud plugin nepřepíše produkční URL na lokální doménu, klikni v LocalWP na **Open site shell** a nejprve spusť zkušební náhradu:
-
-```bash
-wp search-replace 'https://taborovajizda.cz' 'http://taborovajizda-local.local' --all-tables --precise --skip-columns=guid --dry-run
+```text
+repozitář/theme ← propojení → LocalWP/wp-content/themes/taborovajizda
+        ↓
+pracovní větev → GitHub → release ZIP → produkční WordPress
 ```
 
-Doménu v příkazu nahraď přesnou hodnotou **Site domain** z LocalWP. Jestli zkušební výpis vypadá správně, spusť stejný příkaz bez `--dry-run`:
+LocalWP a Git používají stejné soubory. Změny se mezi nimi nekopírují. Databáze, pluginy, média, zálohy, hesla a lokální konfigurace se do Gitu neposílají.
 
-```bash
-wp search-replace 'https://taborovajizda.cz' 'http://taborovajizda-local.local' --all-tables --precise --skip-columns=guid
-wp cache flush
-```
+## 1. Instalace programů
 
-Protože záloha neobsahuje `uploads`, některá lokální média mohou chybět. Pro vývoj a test odpočtu to není chyba.
+Na novém počítači nainstaluj:
 
-## 4. První import produkční šablony do Gitu
+- [Git](https://git-scm.com/download/win)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [LocalWP](https://localwp.com/)
 
-Tento krok se provádí pouze při založení repozitáře.
+## 2. Stažení projektu
 
-1. Z obnoveného LocalWP webu zkopíruj celý adresář:
-
-   ```text
-   <LocalPublicPath>\wp-content\themes\taborovajizda
-   ```
-
-   do adresáře `theme/` v kořeni tohoto repozitáře.
-2. Ověř, že `theme/style.css` existuje a že šablona v LocalWP je aktivní.
-3. Zkontroluj, že Git neobsahuje zálohu, SQL, `wp-config.php` ani osobní údaje:
-
-   ```powershell
-   git status --short
-   git check-ignore -v cesta-k-souboru
-   ```
-
-4. Založ baseline:
-
-   ```powershell
-   git branch -M main
-   git remote add origin https://github.com/lopapex/taborovajizda.git
-   git add .gitignore README.md scripts theme
-   git commit -m "Import current production theme"
-   git tag -a baseline-production-2026-11-02 -m "Production theme baseline 2026-11-02"
-   git push -u origin main
-   git push origin baseline-production-2026-11-02
-   ```
-
-Datum v názvu tagu vždy nahraď skutečným datem importu ve formátu `YYYY-MM-DD`.
-
-## 5. Běžný vývojový postup
-
-Každou změnu dělej na samostatné větvi. Pro demo se používá:
+Otevři PowerShell a spusť:
 
 ```powershell
-git switch main
-git pull --ff-only
-git switch -c demo/hide-expired-countdown
+cd "$HOME\Documents"
+git clone https://github.com/lopapex/taborovajizda.git
+cd taborovajizda
+code .
 ```
 
-Upravuj soubory v `theme/`, ne kopii uvnitř LocalWP. Potom šablonu synchronizuj:
+Ve VS Code otevírej celý adresář `taborovajizda`, nikoliv pouze `theme/`:
+
+```text
+taborovajizda/          ← kořen Git projektu
+├── .agents/skills/     ← projektové skilly
+├── scripts/            ← pomocné skripty
+├── theme/              ← soubory WordPress šablony
+└── README.md
+```
+
+Soubory webu upravuj v `theme/`.
+
+## 3. Vytvoření lokálního WordPressu
+
+V LocalWP:
+
+1. Klikni na `+` a vyber **Create a new site**.
+2. Web pojmenuj `taborovajizda-local`.
+3. Vyber prostředí **Preferred**.
+4. Nastav libovolný lokální účet WordPressu.
+5. Dokonči vytvoření a web spusť.
+
+Public adresář bude obvykle zde:
+
+```text
+C:\Users\<uživatel>\Local Sites\taborovajizda-local\app\public
+```
+
+### Volitelně: kopie produkčního obsahu
+
+Pokud potřebuješ stejné stránky, příspěvky, pluginy a nastavení jako na produkci:
+
+1. Na produkci vytvoř zálohu přes plugin **Backup Migration**.
+2. Stejný plugin nainstaluj v lokálním WordPressu.
+3. Zálohu obnov do `taborovajizda-local`.
+
+Zálohu nikdy nevkládej do repozitáře. Pro samotnou práci na šabloně tento krok není povinný.
+
+## 4. Nastavení cesty k LocalWP
+
+V kořeni repozitáře spusť:
 
 ```powershell
-.\scripts\sync-theme-to-local.ps1 -LocalPublicPath "C:\Users\<uživatel>\Local Sites\taborovajizda-local\app\public"
+Copy-Item .localwp.example.json .localwp.json
+notepad .localwp.json
 ```
 
-Skript ověří, že zadaná cesta je WordPress, a zrcadlí pouze adresář `wp-content/themes/taborovajizda`. Přepínač `-WhatIf` ukáže cíl bez kopírování:
+Do souboru vlož skutečnou cestu k public adresáři:
 
-```powershell
-.\scripts\sync-theme-to-local.ps1 -LocalPublicPath "C:\Users\<uživatel>\Local Sites\taborovajizda-local\app\public" -WhatIf
-```
-
-Po synchronizaci vyčisti cache a tvrdě obnov prohlížeč:
-
-```bash
-wp cache flush
-```
-
-Demo změna v `theme/style.css` je:
-
-```css
-/* Temporarily hidden until the 2027 camp date is confirmed. */
-#taborovajizda_body #countdowntimer-2 {
-    display: none !important;
+```json
+{
+  "localPublicPath": "C:\\Users\\TVOJE_JMENO\\Local Sites\\taborovajizda-local\\app\\public"
 }
 ```
 
-Lokálně ověř:
+`.localwp.json` je lokální nastavení a Git ho ignoruje.
 
-- před změnou je `#countdowntimer-2` viditelný;
-- po změně má `display: none`;
-- sociální odkazy, blok Tábor 2026, video a nejnovější příspěvky zůstaly viditelné;
-- úvodní stránka, přihláška, dokumenty, kontakt a jedna rubrika se načtou bez PHP chyby;
-- administrace funguje.
+## 5. Propojení Gitu s LocalWP
 
-Po ověření změnu ulož:
+Nejjednodušší je v Codexu napsat:
 
-```powershell
-git add theme/style.css
-git commit -m "Hide expired countdown"
-git push -u origin demo/hide-expired-countdown
+```text
+Použij $tj-connect-localwp a propoj tento projekt s LocalWP.
 ```
 
-Na GitHubu vytvoř pull request do `main`, zkontroluj jedinou zamýšlenou CSS změnu a pull request sluč. Potom lokálně:
+Skill:
+
+1. ověří `.localwp.json` a instalaci WordPressu;
+2. ukáže zdroj, cíl a plánovanou zálohu;
+3. před změnou si vyžádá potvrzení;
+4. původní lokální šablonu přesune do `taborovajizda.pre-junction-YYYYMMDD-HHMMSS`;
+5. vytvoří Windows junction:
+
+   ```text
+   LocalWP\wp-content\themes\taborovajizda → repozitář\theme
+   ```
+
+6. ověří, že lokální web funguje.
+
+Stejnou operaci lze provést ručně:
+
+```powershell
+.\scripts\connect-localwp-theme.ps1          # pouze náhled
+.\scripts\connect-localwp-theme.ps1 -Apply   # vytvoření propojení
+```
+
+Skript původní šablonu nemaže. Opakované spuštění pouze ověří existující propojení.
+
+## 6. Běžná práce
+
+1. Spusť web v LocalWP.
+2. Ve VS Code otevři celý repozitář pomocí `code .`.
+3. Upravuj soubory v `theme/`.
+4. V prohlížeči použij `Ctrl+F5`.
+5. Změny uvidíš ve VS Code v panelu **Source Control**.
+
+Protože LocalWP používá přímo `theme/`, každá uložená změna je okamžitě vidět lokálně a zároveň ji sleduje Git.
+
+### Lokální kontrola
+
+Před uložením změn ověř:
+
+- úvodní stránku;
+- přihlášku, dokumenty a kontakt;
+- jednu rubriku a jeden příspěvek;
+- všechny prvky dotčené změnou;
+- že administrace funguje a nikde není PHP chyba.
+
+## 7. Uložení změn na GitHub
+
+V Codexu napiš:
+
+```text
+Použij $tj-save-changes a ulož moje změny.
+```
+
+Skill:
+
+1. ukáže změněné soubory a diff;
+2. odmítne nesouvisející změny mimo `theme/`;
+3. vytvoří pracovní větev `change/YYYY-MM-DD-popis`;
+4. před commitem a odesláním si vyžádá potvrzení;
+5. commitne pouze šablonu a pushne pracovní větev;
+6. vrátí odkaz pro vytvoření pull requestu.
+
+Pull request zkontroluj a sluč do `main` ručně.
+
+## 8. Vytvoření release ZIPu
+
+Po sloučení pull requestu aktualizuj `main`:
 
 ```powershell
 git switch main
 git pull --ff-only
-git tag -a release-2026-11-02-hide-countdown -m "Hide expired countdown"
-git push origin release-2026-11-02-hide-countdown
-git rev-parse HEAD
 ```
 
-Datum tagu nahraď skutečným datem vydání.
+Potom v Codexu napiš:
 
-## 6. Příprava release archivu
+```text
+Použij $tj-create-release a vytvoř produkční ZIP.
+```
 
-Produkční archiv vždy vytvářej z čerstvé produkční kopie, aby release nepřepsal novější obsah starou lokální databází.
+Nebo spusť přímo:
 
-1. Domluv krátké okno bez editace WordPressu.
-2. Na začátku okna v produkčním Backup Migration vytvoř a stáhni čerstvý archiv. Toto je nouzová rollback záloha.
-3. V LocalWP vytvoř samostatný prázdný web `taborovajizda-release`.
-4. Do něj přes Backup Migration obnov právě staženou rollback zálohu.
-5. Přepni repozitář přesně na release tag a synchronizuj šablonu:
+```powershell
+.\scripts\create-theme-release.ps1
+```
 
-   ```powershell
-   git switch --detach release-2026-11-02-hide-countdown
-   .\scripts\sync-theme-to-local.ps1 -LocalPublicPath "C:\Users\<uživatel>\Local Sites\taborovajizda-release\app\public"
-   ```
+Skill vyžaduje čistý Git a v ignorované složce `releases/` vytvoří:
 
-6. V release kopii vyčisti cache a projdi kontrolní checklist níže.
-7. V lokálním Backup Migration vytvoř nový archiv se stejným rozsahem: databáze, pluginy, šablony a ostatní `wp-content`; bez `uploads` a WordPress core.
-8. Stáhni release archiv mimo Git a spočítej SHA-256:
+- `taborovajizda-theme-YYYY-MM-DD-<commit>.zip`;
+- manifest s commitem, tagem, velikostí, SHA-256 a návodem k nasazení.
 
-   ```powershell
-   Get-FileHash -Algorithm SHA256 "C:\cesta\k\release-archivu.zip"
-   git rev-parse release-2026-11-02-hide-countdown^{commit}
-   ```
+ZIP vzniká pouze z `theme/` a obsahuje jediný kořenový adresář `taborovajizda/`.
 
-9. Do záznamu vydání ulož:
-   - přesný název rollback archivu;
-   - přesný název release archivu;
-   - Git tag;
-   - commit SHA;
-   - SHA-256 release archivu;
-   - datum a osobu, která nasazení provedla.
-10. Vrať repozitář na větev `main`:
+## 9. Ruční nasazení na produkci
 
-   ```powershell
-   git switch main
-   ```
+1. Uchovej poslední funkční ZIP šablony nebo čerstvou rollback zálohu.
+2. Ve WordPressu otevři **Vzhled → Šablony → Instalovat šablonu → Nahrát šablonu**.
+3. Vyber ZIP ze složky `releases/` a klikni na **Instalovat**.
+4. Zvol nahrazení existující šablony novou nahranou verzí.
+5. Neaktivuj jinou šablonu; `taborovajizda` má zůstat aktivní.
+6. Vyčisti cache a použij `Ctrl+F5`.
+7. Zopakuj lokální kontrolní body na produkci.
 
-## 7. Produkční nasazení
-
-Před kliknutím na **Obnovit** musí jiná osoba nebo samostatná finální kontrola potvrdit správný archiv, tag, commit SHA, SHA-256 a dostupnost rollback zálohy.
-
-1. V produkční administraci otevři Backup Migration.
-2. Nahraj ověřený release archiv.
-3. Ještě nespouštěj obnovu. Zkontroluj název a velikost nahraného souboru.
-4. Zaznamenej počty příspěvků, stránek, médií a uživatelů před obnovou.
-5. Po finálním potvrzení spusť obnovu.
-6. Po dokončení se případně znovu přihlas, vyčisti všechny dostupné WordPress/cache vrstvy a proveď tvrdé obnovení stránky.
-7. Projdi kontrolní checklist. Pokud je vše v pořádku, ukonči provozní okno.
-
-Automatický deploy z Gitu není součástí tohoto postupu. Současný server nemá samostatný omezený SSH účet určený pouze pro tento web.
-
-## 8. Kontrolní checklist
-
-### Před produkční obnovou
-
-- [ ] Krátké okno bez editace bylo oznámeno a zahájeno.
-- [ ] Čerstvá rollback záloha je dokončená, stažená a dohledatelná podle názvu a data.
-- [ ] Release kopie vychází z této čerstvé produkční zálohy.
-- [ ] Nasazuje se správný release tag a commit SHA.
-- [ ] SHA-256 staženého release archivu odpovídá záznamu.
-- [ ] Release archiv neobsahuje `uploads` ani WordPress core.
-- [ ] Lokální checklist prošel.
-- [ ] Proběhlo samostatné finální potvrzení před kliknutím na Obnovit.
-
-### Po obnově
-
-- [ ] Produkční web i administrace používají HTTPS a načtou se bez PHP chyby.
-- [ ] `#countdowntimer-2` zůstane skrytý i po tvrdém obnovení stránky.
-- [ ] Sociální odkazy zůstaly viditelné.
-- [ ] Blok Tábor 2026 zůstal viditelný.
-- [ ] Video zůstalo viditelné.
-- [ ] Nejnovější příspěvky zůstaly viditelné.
-- [ ] Úvodní stránka se načte.
-- [ ] Přihláška se načte.
-- [ ] Dokumenty se načtou.
-- [ ] Kontakt se načte.
-- [ ] Jedna rubrika a jeden příspěvek se načtou.
-- [ ] Počty příspěvků, stránek, médií a uživatelů před a po obnově souhlasí.
-- [ ] Produkční administrace a Backup Migration zůstaly dostupné.
-- [ ] Nebyla změněna externí databáze přihlášek a newsletteru.
-- [ ] Výsledek a čas nasazení jsou zaznamenané.
-
-## 9. Nouzový rollback
-
-Rollback se provádí pouze při neúspěšné kontrole po nasazení.
-
-1. Zastav editaci webu a poznamenej chybu i čas jejího zjištění.
-2. V produkčním Backup Migration nahraj čerstvý přednasazovací rollback archiv.
-3. Ověř jeho přesný název a datum.
-4. Spusť obnovu.
-5. Vyčisti cache a znovu projdi celý checklist.
-6. Uchovej chybný release archiv i jeho záznam pro diagnostiku; necommituj je do Gitu.
-
-Pokud není administrace dostupná, další zásah musí provést správce serveru. Současný SSH přístup není bezpečně oddělen pouze pro tento web.
-
-## 10. Pozdější zapnutí odpočtu pro rok 2027
-
-Zapnutí vyžaduje dvě navazující změny:
-
-1. Ve WordPress widgetu T(-) Countdown nastav potvrzené datum a čas tábora 2027.
-2. Na nové Git větvi odstraň z `theme/style.css` pravidlo, které skrývá `#countdowntimer-2`.
-
-Potom zopakuj lokální kontrolu, pull request, release tag, přípravu release archivu a produkční nasazení z tohoto README. Samotné odstranění CSS bez nastavení data by zobrazilo chybný nebo prošlý odpočet.
+Při chybě nahraj poslední funkční ZIP stejným postupem nebo obnov ověřenou přednasazovací zálohu.

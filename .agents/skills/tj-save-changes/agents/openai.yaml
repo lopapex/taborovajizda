@@ -1,0 +1,6 @@
+interface:
+  display_name: "TJ Save Changes"
+  short_description: "Commit and push LocalWP theme edits safely"
+  default_prompt: "Use $tj-save-changes to review, commit, and push my current theme changes."
+policy:
+  allow_implicit_invocation: true
