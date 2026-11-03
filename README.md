@@ -10,6 +10,19 @@ pracovní větev → GitHub → release ZIP → produkční WordPress
 
 LocalWP a Git používají stejné soubory. Změny se mezi nimi nekopírují. Databáze, pluginy, média, zálohy, hesla a lokální konfigurace se do Gitu neposílají.
 
+## Práce s AI asistentem
+
+Workflow není závislý na konkrétním AI nástroji. Společné instrukce pro Codex, Claude, GitHub Copilot a další agenty jsou v [AI-README.md](AI-README.md).
+
+Pro kompletní setup můžeš libovolnému agentovi zadat:
+
+```text
+Proveď setup projektu podle AI-README.md. Postupuj po jednotlivých krocích.
+Když musím něco nainstalovat nebo dokončit ručně, dej mi instrukci a počkej na moje potvrzení.
+```
+
+Repozitář obsahuje také `AGENTS.md`, `CLAUDE.md` a `.github/copilot-instructions.md`, aby běžní AI klienti společná pravidla našli automaticky.
+
 ## 1. Instalace programů
 
 Na novém počítači nainstaluj:
@@ -88,13 +101,14 @@ Do souboru vlož skutečnou cestu k public adresáři:
 
 ## 5. Propojení Gitu s LocalWP
 
-Nejjednodušší je v Codexu napsat:
+Libovolnému AI asistentovi napiš:
 
 ```text
-Použij $tj-connect-localwp a propoj tento projekt s LocalWP.
+Propoj tento repozitář s LocalWP podle AI-README.md.
+Nejdřív ukaž náhled a před změnou počkej na moje potvrzení.
 ```
 
-Skill:
+Agent:
 
 1. ověří `.localwp.json` a instalaci WordPressu;
 2. ukáže zdroj, cíl a plánovanou zálohu;
@@ -107,6 +121,8 @@ Skill:
    ```
 
 6. ověří, že lokální web funguje.
+
+V prostředí podporujícím projektové skilly můžeš použít zkratku `$tj-connect-localwp`.
 
 Stejnou operaci lze provést ručně:
 
@@ -139,13 +155,14 @@ Před uložením změn ověř:
 
 ## 7. Uložení změn na GitHub
 
-V Codexu napiš:
+Libovolnému AI asistentovi napiš:
 
 ```text
-Použij $tj-save-changes a ulož moje změny.
+Zkontroluj a ulož moje změny podle AI-README.md.
+Před commitem a pushem mi ukaž dopad a počkej na moje potvrzení.
 ```
 
-Skill:
+Agent:
 
 1. ukáže změněné soubory a diff;
 2. odmítne nesouvisející změny mimo `theme/`;
@@ -153,6 +170,8 @@ Skill:
 4. před commitem a odesláním si vyžádá potvrzení;
 5. commitne pouze šablonu a pushne pracovní větev;
 6. vrátí odkaz pro vytvoření pull requestu.
+
+V prostředí podporujícím projektové skilly můžeš použít zkratku `$tj-save-changes`.
 
 Pull request zkontroluj a sluč do `main` ručně.
 
@@ -165,10 +184,10 @@ git switch main
 git pull --ff-only
 ```
 
-Potom v Codexu napiš:
+Potom libovolnému AI asistentovi napiš:
 
 ```text
-Použij $tj-create-release a vytvoř produkční ZIP.
+Vytvoř ověřený produkční ZIP podle AI-README.md, ale nic nenasazuj.
 ```
 
 Nebo spusť přímo:
@@ -177,10 +196,12 @@ Nebo spusť přímo:
 .\scripts\create-theme-release.ps1
 ```
 
-Skill vyžaduje čistý Git a v ignorované složce `releases/` vytvoří:
+Workflow vyžaduje čistý Git a v ignorované složce `releases/` vytvoří:
 
 - `taborovajizda-theme-YYYY-MM-DD-<commit>.zip`;
 - manifest s commitem, tagem, velikostí, SHA-256 a návodem k nasazení.
+
+V prostředí podporujícím projektové skilly můžeš použít zkratku `$tj-create-release`.
 
 ZIP vzniká pouze z `theme/` a obsahuje jediný kořenový adresář `taborovajizda/`.
 

@@ -7,7 +7,7 @@ description: Connect the Táborová jízda repository theme directly to its Loca
 
 Make `theme/` the live LocalWP theme without copying files.
 
-1. Read `README.md` and verify `.localwp.json` exists.
+1. Read `AI-README.md`, follow its setup gates, and verify `.localwp.json` exists. If software installation or a LocalWP GUI step is required, instruct the user, stop, and wait for confirmation before verifying and continuing.
 2. Run `scripts/connect-localwp-theme.ps1` without `-Apply` and show the repository path, LocalWP target, and proposed backup path.
 3. Ask for confirmation immediately before applying because the existing LocalWP theme directory will be moved.
 4. Run the script with `-Apply`. It must preserve the original directory as `taborovajizda.pre-junction-<timestamp>` and create a junction only at `wp-content/themes/taborovajizda`.

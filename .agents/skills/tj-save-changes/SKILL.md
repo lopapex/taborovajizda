@@ -7,7 +7,7 @@ description: Review Táborová jízda theme edits, create a safe working branch,
 
 Version the current live LocalWP theme without copying it.
 
-1. Read `README.md` and run `scripts/connect-localwp-theme.ps1` without `-Apply` to verify that LocalWP is connected.
+1. Read `AI-README.md` and run `scripts/connect-localwp-theme.ps1` without `-Apply` to verify that LocalWP is connected.
 2. Show `git status --short` and the theme diff. Refuse changes outside `theme/`; never stash, discard, or include unrelated work.
 3. Ask for a short change description.
 4. If the current branch is `main`, run `git fetch origin main`, create `change/YYYY-MM-DD-<slug>`, and keep the working changes on that branch. Never commit directly to `main`.
