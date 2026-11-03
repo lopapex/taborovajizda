@@ -10,6 +10,11 @@ Tags: Tabor
 	opacity: 1;
 }
 
+/* Temporarily hidden until the 2027 camp date is confirmed. */
+#taborovajizda_body #countdowntimer-2 {
+	display: none !important;
+}
+
 #taborovajizda_body div.pswp__bg {
 	opacity: .5 !important;
 	backdrop-filter: blur(5px);
