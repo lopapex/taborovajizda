@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schemas.wp.org/wp/6.5/theme.json",
+  "version": 2,
+  "settings": {
+    "appearanceTools": true,
+    "color": {
+      "custom": false,
+      "palette": [
+        { "slug": "background", "name": "Pozadí", "color": "#050a0f" },
+        { "slug": "surface", "name": "Plocha", "color": "#0c1417" },
+        { "slug": "text", "name": "Text", "color": "#d4e9da" },
+        { "slug": "primary", "name": "Hlavní", "color": "#98ff7a" },
+        { "slug": "accent", "name": "Akcent", "color": "#c42036" }
+      ]
+    },
+    "layout": {
+      "contentSize": "768px",
+      "wideSize": "1300px"
+    },
+    "spacing": {
+      "units": ["px", "rem", "%", "vw", "vh"]
+    },
+    "typography": {
+      "fluid": true,
+      "fontFamilies": [
+        {
+          "fontFamily": "Bariol, 'Segoe UI', sans-serif",
+          "name": "Bariol",
+          "slug": "body",
+          "fontFace": [
+            {
+              "fontFamily": "Bariol",
+              "fontStyle": "normal",
+              "fontWeight": "400",
+              "src": ["file:./fonts/bariol_regular-webfont.woff2"]
+            },
+            {
+              "fontFamily": "Bariol",
+              "fontStyle": "italic",
+              "fontWeight": "400",
+              "src": ["file:./fonts/bariol_regular_italic-webfont.woff2"]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "var:preset|color|background",
+      "text": "var:preset|color|text"
+    },
+    "typography": {
+      "fontFamily": "var:preset|font-family|body"
+    }
+  }
+}

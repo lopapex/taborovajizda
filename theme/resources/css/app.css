@@ -1,0 +1,21 @@
+@import "tailwindcss/theme.css" prefix(tj);
+@import "tailwindcss/utilities.css" prefix(tj);
+@import "./normalize.css";
+@import "./components.css";
+@import "./season.css";
+
+@theme inline {
+  --color-season-background: var(--wp--preset--color--background);
+  --color-season-surface: var(--wp--preset--color--surface);
+  --color-season-text: var(--wp--preset--color--text);
+  --color-season-primary: var(--wp--preset--color--primary);
+  --color-season-accent: var(--wp--preset--color--accent);
+  --font-body: var(--wp--preset--font-family--body);
+}
+
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--wp--preset--color--accent);
+    outline-offset: 3px;
+  }
+}

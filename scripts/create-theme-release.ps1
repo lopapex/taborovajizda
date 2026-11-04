@@ -14,13 +14,16 @@ $status = & git -C $repositoryRoot status --porcelain --untracked-files=all
 if ($LASTEXITCODE -ne 0) { throw 'Unable to read Git working tree status.' }
 if ($status) { throw "Release requires a clean Git working tree.`n$($status -join "`n")" }
 
-$forbidden = Get-ChildItem -LiteralPath $themeRoot -File -Recurse -Force | Where-Object {
-    $_.Name -eq '.tags' -or $_.Name -like '.env*' -or $_.Name -like 'wp-config*.php' -or
-    $_.Name -match '\.(sql|sql\.gz|log|wpress|bm|tar|tar\.gz|tgz)$' -or
-    $_.Name -match '(?i)backup.*\.zip$'
+$trackedThemeFiles = @(& git -C $repositoryRoot ls-files -- theme)
+if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect tracked theme files.' }
+$forbidden = $trackedThemeFiles | Where-Object {
+    $name = [System.IO.Path]::GetFileName($_)
+    $name -eq '.tags' -or $name -like '.env*' -or $name -like 'wp-config*.php' -or
+    $name -match '\.(sql|sql\.gz|log|wpress|bm|tar|tar\.gz|tgz)$' -or
+    $name -match '(?i)backup.*\.zip$'
 }
 if ($forbidden) {
-    throw "Release refused because forbidden files exist in theme/:`n$($forbidden.FullName -join "`n")"
+    throw "Release refused because forbidden files are tracked in theme/:`n$($forbidden -join "`n")"
 }
 
 $commit = (& git -C $repositoryRoot rev-parse HEAD).Trim()
@@ -44,11 +47,43 @@ if (Test-Path -LiteralPath $manifestPath) { Remove-Item -LiteralPath $manifestPa
 
 $temporaryRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("tj-release-" + [guid]::NewGuid().ToString('N'))
 $packageTheme = Join-Path $temporaryRoot 'taborovajizda'
+$sourceArchive = Join-Path $temporaryRoot 'source.zip'
+$sourceRoot = Join-Path $temporaryRoot 'source'
+$sourceTheme = Join-Path $sourceRoot 'theme'
 try {
-    New-Item -ItemType Directory -Path $packageTheme -Force | Out-Null
-    Get-ChildItem -LiteralPath $themeRoot -Force | ForEach-Object {
-        Copy-Item -LiteralPath $_.FullName -Destination $packageTheme -Recurse -Force
+    New-Item -ItemType Directory -Path $sourceRoot -Force | Out-Null
+    & git -C $repositoryRoot archive --format=zip --output=$sourceArchive HEAD theme
+    if ($LASTEXITCODE -ne 0) { throw 'Unable to export the committed theme source.' }
+    Expand-Archive -LiteralPath $sourceArchive -DestinationPath $sourceRoot -Force
+
+    Push-Location $sourceTheme
+    try {
+        & npm ci
+        if ($LASTEXITCODE -ne 0) { throw 'npm ci failed while preparing the release.' }
+        & npm run build
+        if ($LASTEXITCODE -ne 0) { throw 'The production theme build failed.' }
     }
+    finally {
+        Pop-Location
+    }
+
+    New-Item -ItemType Directory -Path $packageTheme -Force | Out-Null
+
+    Get-ChildItem -LiteralPath $sourceTheme -File -Filter '*.php' | ForEach-Object {
+        Copy-Item -LiteralPath $_.FullName -Destination $packageTheme -Force
+    }
+    foreach ($file in @('style.css', 'theme.json')) {
+        Copy-Item -LiteralPath (Join-Path $sourceTheme $file) -Destination $packageTheme -Force
+    }
+    foreach ($directory in @('app', 'config', 'fonts', 'languages', 'patterns', 'template-parts', 'web_images', 'public\build')) {
+        $source = Join-Path $sourceTheme $directory
+        if (Test-Path -LiteralPath $source) {
+            $destination = Join-Path $packageTheme $directory
+            New-Item -ItemType Directory -Path (Split-Path $destination -Parent) -Force | Out-Null
+            Copy-Item -LiteralPath $source -Destination $destination -Recurse -Force
+        }
+    }
+
     Compress-Archive -LiteralPath $packageTheme -DestinationPath $zipPath -CompressionLevel Optimal
 }
 finally {
@@ -81,6 +116,7 @@ Size: $($zipInfo.Length) bytes
 SHA-256: $sha256
 Archive entries: $entryCount
 Archive root: taborovajizda/
+Build: npm ci + npm run build from committed source
 
 Deployment
 1. WordPress -> Vzhled -> Sablony -> Instalovat sablonu -> Nahrat sablonu.

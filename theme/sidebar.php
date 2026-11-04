@@ -1,7 +1,3 @@
-	<aside id="page_sidebar">
-    	<div class="container">
-    		<?php if( is_active_sidebar( 'sidebar-widget-area' ) ) : ?>
-	    		<?php dynamic_sidebar( 'sidebar-widget-area' ); ?>
-	    	<?php endif; ?>	
-    	</div>
-    </aside>
+<?php
+/** WordPress sidebar entrypoint. */
+get_template_part('template-parts/layout/sidebar');

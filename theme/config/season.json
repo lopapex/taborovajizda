@@ -1,0 +1,20 @@
+{
+  "$schema": "./season.schema.json",
+  "year": 2026,
+  "slug": "2026-zombie-land",
+  "title": "Zombie Land - Splzov",
+  "startDate": "2026-08-15",
+  "endDate": "2026-08-28",
+  "price": {
+    "amount": null,
+    "currency": "CZK"
+  },
+  "registration": {
+    "status": "open",
+    "externalSeasonKey": null
+  },
+  "assets": {
+    "hero": "resources/assets/season/hero.jpg",
+    "logo": "web_images/logo_color.svg"
+  }
+}

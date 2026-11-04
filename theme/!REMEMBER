@@ -1,9 +1,0 @@
-Envira gallery
-shortcode.php - vyhozeno kvůli blikání, pokud na jedné stránce více galerii. Aby výchozí opacity nebylo 0 přídán hack do style.css
-                       /*
-                        envira_container_<?php echo $data['id']; ?> = $('#envira-gallery-<?php echo $data['id']; ?>').enviraImagesLoaded( function() {
-                            $('.envira-gallery-item img').fadeTo( 'slow', <?php echo $opacity; ?> );
-                        });
-                        */
-                        
-find /var/www/taborovajizda.test/wp-content/uploads -type f -iname '*.jpg' -exec jpeg-recompress --quality medium --min 60 --method smallfry \{} \{} \;

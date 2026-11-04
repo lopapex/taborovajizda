@@ -8,7 +8,7 @@ description: Build a verified WordPress theme release ZIP and manifest from a cl
 Create a production package from Git, never from LocalWP.
 
 1. Read `AI-README.md` and show the current branch, commit, exact tag if present, and `git status --short`.
-2. Run `scripts/create-theme-release.ps1`. Do not bypass its clean-tree or forbidden-file checks.
+2. Run `scripts/create-theme-release.ps1`. Do not bypass its clean-tree or forbidden-file checks. The script runs `npm ci` and the production build from the committed source; never package the local watch output.
 3. Report the generated ZIP and manifest paths, commit SHA, tag, byte size, entry count, and SHA-256.
 4. Confirm the archive has the single root directory `taborovajizda/`.
 5. Present the deployment and rollback instructions from the manifest.

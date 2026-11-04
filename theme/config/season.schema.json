@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://taborovajizda.cz/schemas/season.schema.json",
+  "title": "Táborová jízda season",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["year", "slug", "title", "startDate", "endDate", "price", "registration", "assets"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "year": { "type": "integer", "minimum": 2000, "maximum": 2200 },
+    "slug": { "type": "string", "pattern": "^[0-9]{4}-[a-z0-9-]+$" },
+    "title": { "type": "string", "minLength": 1 },
+    "startDate": { "type": ["string", "null"], "format": "date" },
+    "endDate": { "type": ["string", "null"], "format": "date" },
+    "price": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": { "type": ["integer", "null"], "minimum": 0 },
+        "currency": { "const": "CZK" }
+      }
+    },
+    "registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "externalSeasonKey"],
+      "properties": {
+        "status": { "enum": ["hidden", "coming-soon", "open", "full", "closed"] },
+        "externalSeasonKey": {
+          "anyOf": [
+            { "type": "string", "pattern": "^[0-9]+$" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["hero", "logo"],
+      "properties": {
+        "hero": { "type": ["string", "null"] },
+        "logo": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

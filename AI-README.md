@@ -1,136 +1,125 @@
 # Instrukce pro AI asistenty
 
-Tento soubor je společný zdroj instrukcí pro Codex, Claude, GitHub Copilot a další AI agenty pracující s tímto repozitářem. Produktové vstupní soubory (`AGENTS.md`, `CLAUDE.md` a `.github/copilot-instructions.md`) na něj pouze odkazují.
+Tento soubor je autoritativní společná dokumentace pro Codex, Claude, GitHub Copilot a další agenty. Produktové vstupní soubory na něj pouze odkazují.
 
-## Cíl projektu
+## Neměnné hranice
 
-- `theme/` je jediný verzovaný zdroj vlastní WordPress šablony `taborovajizda`.
-- LocalWP používá `theme/` přímo přes Windows directory junction.
-- WordPress databáze, core, cizí pluginy, média a lokální konfigurace nejsou součástí Gitu.
-- Produkční release je ZIP pouze se šablonou.
+- `theme/` je jediný verzovaný zdroj vlastní WordPress šablony.
+- LocalWP používá `theme/` přímo přes Windows junction.
+- Do Gitu nepatří databáze, WordPress core, pluginy, `uploads`, zálohy, hesla, `.env`, `wp-config.php`, logy ani `.localwp.json`.
+- Produkční release je pouze theme ZIP.
+- Neměň produkci, databázi ani externí služby bez samostatného výslovného požadavku.
+- Zachovej uživatelské změny. Nestashuj je, nezahazuj je a nepoužívej destruktivní Git příkazy.
+- Před přesunem, odstraněním, commitem, pushem nebo nasazením ukaž dopad a vyžádej potvrzení odpovídající riziku.
 
-## Zásady pro všechny agenty
+## Setup po branách
 
-1. Neinstaluj programy, pluginy ani rozšíření bez výslovného souhlasu uživatele.
-2. Když uživatel musí dokončit ruční krok v GUI, popiš jeden konkrétní krok, zastav se a čekej na jeho potvrzení. Nepředstírej, že byl dokončen.
-3. Po potvrzení uživatele výsledek ověř a pokračuj až po úspěšné kontrole.
-4. Před přesunem, přepsáním, odstraněním, commitem, pushem nebo produkčním nasazením ukaž zamýšlený dopad a vyžádej potvrzení odpovídající riziku.
-5. Nikdy nemaž původní LocalWP šablonu. Setup skript ji ukládá jako `taborovajizda.pre-junction-<timestamp>`.
-6. Neměň databázi, pluginy, `uploads`, jinou šablonu ani produkci, pokud o to uživatel výslovně nepožádá.
-7. Nikdy necommituj `.localwp.json`, přihlašovací údaje, `.env`, `wp-config.php`, SQL, zálohy, logy ani obsah `uploads`.
-8. Zachovej existující uživatelské změny. Nepoužívej destruktivní Git příkazy ani automatické zahazování změn.
+Každou bránu nejprve ověř. Pokud uživatel musí instalovat program nebo dokončit GUI krok, dej jedinou přesnou instrukci, zastav se a čekej na potvrzení. Potom stav znovu ověř.
 
-## Setup od prázdného počítače
-
-Postupuj po jednotlivých branách. Každou bránu nejprve ověř; pokud není splněná, dej uživateli instrukci a čekej.
-
-### Brána 1: potřebné programy
-
-Ověř dostupnost:
+### 1. Programy
 
 ```powershell
 git --version
 code --version
+node --version
+npm --version
 Test-Path "$env:LOCALAPPDATA\Programs\Local\Local.exe"
 ```
 
-Pokud něco chybí:
+Požadavky: Git, VS Code, LocalWP, Node.js LTS a npm. Composer není potřeba.
 
-- Git: <https://git-scm.com/download/win>
-- Visual Studio Code: <https://code.visualstudio.com/>
-- LocalWP: <https://localwp.com/>
+### 2. Repozitář
 
-Požádej uživatele, aby chybějící program nainstaloval, a **čekej**. Po jeho potvrzení příkaz zopakuj.
-
-### Brána 2: repozitář
-
-Pokud agent ještě není uvnitř repozitáře, naveď uživatele:
+Ověř `git rev-parse --show-toplevel`, vzdálený repozitář a `theme/style.css`. Klon:
 
 ```powershell
-cd "$HOME\Documents"
 git clone https://github.com/lopapex/taborovajizda.git
 cd taborovajizda
 code .
 ```
 
-Ověř `git rev-parse --show-toplevel` a existenci `theme/style.css`. Pokud klonování nebo otevření provádí uživatel, čekej na potvrzení.
+### 3. LocalWP
 
-### Brána 3: LocalWP web
+Pokud web neexistuje, uživatel v GUI vytvoří `taborovajizda-local` s prostředím Preferred. Po potvrzení ověř `wp-admin`, `wp-content`, `wp-includes` a `wp-config.php`.
 
-Ověř, zda existuje očekávaný public adresář. Pokud ne, požádej uživatele, aby v LocalWP vytvořil web:
+Obnova produkční zálohy je volitelná. Nespouštěj ji automaticky.
 
-- název: `taborovajizda-local`;
-- prostředí: `Preferred`;
-- lokální WordPress účet: libovolný.
+### 4. Lokální konfigurace a junction
 
-Tento krok je v GUI; popiš ho a **čekej**, až uživatel oznámí dokončení. Potom ověř adresáře `wp-admin`, `wp-content`, `wp-includes` a soubor `wp-config.php`.
-
-Obnova produkčního obsahu přes Backup Migration je volitelná. Nabídni ji pouze tehdy, když uživatel potřebuje stejný obsah nebo nastavení; nespouštěj ji automaticky.
-
-### Brána 4: lokální konfigurace
-
-Pokud chybí `.localwp.json`, vytvoř jej z `.localwp.example.json` až se souhlasem uživatele a nastav skutečný `localPublicPath`. Cestu odvoď z existujícího LocalWP webu, nevymýšlej ji.
-
-Ověř, že `.localwp.json` je ignorovaný pomocí:
+Cestu odvoď ze skutečného webu a nastav v ignorovaném `.localwp.json`. Ověř:
 
 ```powershell
 git check-ignore -v .localwp.json
-```
-
-### Brána 5: propojení šablony
-
-Nejdřív spusť pouze náhled:
-
-```powershell
 .\scripts\connect-localwp-theme.ps1
 ```
 
-Ukaž uživateli zdroj, cíl a cestu zálohy. Před aplikací požádej o potvrzení. Potom spusť:
+Před `-Apply` ukaž zdroj, cíl a zálohu a počkej na potvrzení. Původní LocalWP šablonu nikdy nemaž.
+
+### 5. Build
 
 ```powershell
-.\scripts\connect-localwp-theme.ps1 -Apply
+cd theme
+npm install
+npm run build
+cd ..
 ```
 
-Ověř, že `wp-content/themes/taborovajizda` je junction na `<repo>/theme`, a načti lokální homepage. Pokud už junction existuje správně, nic neměň.
+Ověř existenci `theme/public/build/manifest.json`. Build je ignorovaný; `package-lock.json` je verzovaný.
 
-## Práce na šabloně
+## Architektura
 
-- Otevírej celý kořen repozitáře, nikoli pouze `theme/`.
-- Upravuj pouze vlastní zdrojové soubory v `theme/`, pokud zadání nevyžaduje změnu workflow.
-- Po změně ověř lokální web, `Ctrl+F5`, dotčené prvky, základní stránky a absenci PHP chyb.
-- Junction znamená, že není potřeba žádné kopírování mezi Gitem a LocalWP.
+- `app/`: PHP bootstrap, služby a integrace;
+- `config/season.json`: aktivní roční provozní data;
+- `resources/css`: Tailwind vrstvy, komponenty a aktuální season styl;
+- `resources/ts`: TypeScript bez Reactu;
+- `template-parts/layout|pages|components`: skutečný markup;
+- `patterns/`: WordPress block patterns;
+- `theme.json`: společné design tokeny;
+- kořenové WordPress templates: pouze kompatibilní entrypointy.
+
+PHP 8.2 a WordPress 6.5 jsou minimum. Používej namespace `TaborovaJizda\Theme`. Novou logiku nepřidávej do `app/Legacy/functions.php`.
+
+## Vývoj a kontrola
+
+Spusť LocalWP a `npm run dev` v `theme/`. Po změně spusť `npm run check` a PHP syntax přes PHP dodané LocalWP. Ověř homepage, přihlášku, dokumenty, kontakt, jednu rubriku, jeden příspěvek a administraci.
+
+`npm run dev` je watch build: změny v `resources/css`, `resources/ts` a jejich assetech automaticky přegeneruje do `public/build/`; uživatel potom pouze obnoví stránku. PHP a `template-parts` se projeví po refreshi bez buildu. Nepožaduj po uživateli ruční `npm run build` po každé změně.
+
+Zachovej URL, slugy, navigaci, názvy a pořadí formulářových polí, logo a obsahový hlas, pokud uživatel výslovně neschválí změnu.
+
+Lokální formulářové testy nesmí zapisovat do externí produkční databáze ani posílat skutečné e-maily.
+
+## Roční změna
+
+Git je zdroj pravdy pro aktivní rok, název, datum, cenu, stav registrace a explicitní externí season key. Nepotvrzené hodnoty nech `null`; nevymýšlej je.
+
+Použij `$tj-new-season` nebo nejdřív spusť `scripts/new-season.ps1` bez `-Apply`. Nevytvářej kopii celého ročního stylesheetu. Aktualizuj `season.json`, `theme.json`, `resources/css/season.css` a potvrzené assety.
+
+Při redesignu nejprve načti repozitářový `$design-taste-frontend`, proveď audit a zachovej SEO a informační architekturu.
 
 ## Uložení změn
 
 1. Ukaž `git status --short` a relevantní diff.
-2. Pokud jsou změny mimo zamýšlený rozsah, zastav se a upozorni uživatele.
-3. Nikdy necommituj změny šablony přímo do `main`.
-4. Na `main` vytvoř větev `change/YYYY-MM-DD-<slug>`; pracovní změny na ní zachovej.
-5. Commituj pouze zamýšlené soubory z `theme/`.
-6. Před pushem ukaž větev, commit a vzdálený repozitář a vyžádej potvrzení.
-7. Pushni pracovní větev a vrať odkaz na pull request. Pull request automaticky neslučuj.
+2. Změny na `main` ulož na větev `change/YYYY-MM-DD-<slug>`; roční změny na `season/<rok>-<slug>`.
+3. Před commitem a pushem vyžádej potvrzení.
+4. Commituj pouze zamýšlené soubory.
+5. Pushni pracovní větev a vrať URL pro pull request.
+6. Pull request automaticky nevytvářej ani neslučuj bez dalšího požadavku.
 
-Agenti podporující projektové skilly mohou použít `$tj-save-changes`. Ostatní agenti mají provést stejné kroky standardními Git příkazy.
+Použij `$tj-save-changes`, když odpovídá rozsahu.
 
 ## Release
 
-Release vytvářej pouze z čistého, otestovaného commitu:
+Release vzniká pouze z čistého otestovaného commitu:
 
 ```powershell
 .\scripts\create-theme-release.ps1
 ```
 
-Skript musí vytvořit ZIP a manifest v ignorovaném `releases/`. Ověř:
+Skript musí exportovat commit, spustit `npm ci` a `npm run build`, zabalit pouze runtime whitelist a ověřit jediný kořen `taborovajizda/`. Reportuj ZIP, manifest, commit, tag, velikost, počet položek a SHA-256.
 
-- jediný kořen ZIPu `taborovajizda/`;
-- commit a případný tag;
-- velikost, počet položek a SHA-256;
-- že Git zůstává čistý.
-
-Agenti podporující projektové skilly mohou použít `$tj-create-release`.
+Release artefakty necommituj, nenahrávej a nenasazuj bez samostatného požadavku. Použij `$tj-create-release`.
 
 ## Produkční nasazení
 
-Produkci neměň jen proto, že release vznikl. Nejdřív připrav ZIP, manifest, rollback a kontrolní kroky. Před skutečným nahráním nebo nahrazením šablony vyžádej samostatné potvrzení uživatele.
-
-Nasazení probíhá přes **Vzhled → Šablony → Instalovat šablonu → Nahrát šablonu**, následované nahrazením existující šablony, vyčištěním cache a produkční kontrolou. Při chybě použij poslední funkční ZIP nebo ověřenou přednasazovací zálohu.
+Před nahráním ukaž ZIP, manifest, rollback a kontrolní kroky a vyžádej samostatné potvrzení. Nasazení probíhá ručně přes Vzhled → Šablony → Instalovat → Nahrát. Po nahrazení vyčisti cache a proveď produkční smoke test.

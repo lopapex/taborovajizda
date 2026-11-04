@@ -1,0 +1,22 @@
+{
+  "name": "taborovajizda-theme",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch --mode development",
+    "build": "npm run validate:season && tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "validate:season": "node scripts/validate-season.mjs",
+    "check": "npm run validate:season && npm run typecheck && npm run build"
+  },
+  "devDependencies": {
+    "@kucrut/vite-for-wp": "^0.11.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.0",
+    "vite": "^6.3.5"
+  }
+}

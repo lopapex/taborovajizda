@@ -1,0 +1,815 @@
+/*  hack pro Envira gallery, aby to neblikalo na stránkce když se načítá větší množství galerií */
+#taborovajizda_body img.envira-gallery-image {
+	opacity: 1;
+}
+
+
+#taborovajizda_body div.pswp__bg {
+	opacity: .5 !important;
+	backdrop-filter: blur(5px);
+}
+
+/* MODIFIKÁTORY */
+.serif {
+	font-family: serif;
+}
+
+.clearfix {
+	clear: both;
+}
+
+/* Všeobecná pravidla - většinou normalizace speciálních prvků */
+ul.zoom-social-icons-list {
+	padding-left: 1em;
+}
+
+figure.wp-block-image {
+	margin: 0;
+}
+
+.wp-block-image .alignleft,
+.wp-block-image .alignright {
+	margin-top: .3em;
+	margin-bottom: .3em;
+}
+
+#taborovajizda_body .ab-accordion-text p {
+	margin-top: 0;
+	font-size: inherit;
+	/* overide stupid AB size setting */
+}
+
+.category-posts-internal {
+	margin-right: 1em;
+}
+
+img.attachment-post-thumbnail,
+img.attachment-thumbnail,
+.cat-post-format-standard img {
+	float: left;
+	margin: 0 .9em .5em 0;
+}
+
+#taborovajizda_body span.cat-post-format-standard {
+	width: 100px !important;
+	height: 100px !important;
+	overflow: visible;
+	display: block;
+	margin: 0 .9em .5em 0;
+}
+
+#taborovajizda_body .cat-post-format-standard img {
+	width: 100px !important;
+	height: 100px !important;
+	clip: initial !important;
+}
+
+a.anchor {
+	display: none;
+}
+
+input,
+select,
+button,
+textarea,
+#taborovajizda_body input.photonic-show-gallery-button {
+	border: 1px solid #AAA;
+	border-radius: 3px;
+	font-family: inherit;
+	font-size: inherit;
+	padding: .3em .5em .3em .5em;
+	background: #FCFCFC;
+	color: inherit;
+}
+
+input:hover,
+select:hover,
+button:hover,
+textarea:hover {
+	box-shadow: 0px 0px 1px 1px rgba(70, 180, 255, .5);
+}
+
+input:focus,
+select:focus,
+button:focus,
+textarea:focus {
+	border: 1px solid #555;
+	background: #FFF;
+}
+
+input.chybny_vstup,
+select.chybny_vstup {
+	box-shadow: 0px 0px 2px 0px #F00;
+	border-color: #D00;
+}
+
+.oou {
+	font-style: italic;
+	font-size: .8em;
+}
+
+html {}
+
+body {}
+
+/* pozadí celé stránky */
+div.page-background {
+	background-position: center;
+	background-size: cover;
+	height: 100vh;
+	left: 0;
+	position: fixed;
+	top: 0;
+	width: 100vw;
+	z-index: -1;
+}
+
+/* Varovný pruh - nekompatibilní prohlížeč */
+#varovani_prohlizec {
+	padding: 1em;
+	background: #FBB;
+	border-bottom: 2px solid red;
+	border-top: 2px solid red;
+	margin: .5em 0 .5em 0;
+}
+
+/* Formát příspěvku a widgetů */
+.blog_post h2,
+.widget h2 {
+	margin-top: 0;
+}
+
+.blog_post p {
+	padding-left: 0em;
+	padding-right: 0em;
+	text-indent: 0em;
+}
+
+.blog_post p.do_bloku {
+	text-align: justify;
+}
+
+div.blog_content,
+.widget div.textwidget {
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-bottom: .5em;
+}
+
+.blog_post div.zakonceni,
+.widget div.zakonceni,
+div.wp-block-atomic-blocks-ab-accordion.ab-block-accordion {
+	clear: both;
+}
+
+#taborovajizda_body a.wp-block-social-link-anchor,
+#taborovajizda_body a.wp-block-social-link-anchor:visited {
+	color: inherit;
+}
+
+/* Srolovatelné příspěvky - akordeon */
+.blog_post summary.ab-accordion-title {
+	font-weight: bold;
+	padding: .4em 1em;
+	cursor: pointer;
+}
+
+.blog_post div.ab-accordion-text {
+	margin-left: 1em;
+	padding: .3em 1em;
+}
+
+/* Obrázky v příspěvku */
+.blog_post div.wp-block-image img {
+	/*max-width: 90vw;*/
+	max-width: 95%;
+	height: auto;
+}
+
+p.blog_post_meta {
+	text-align: right;
+	font-style: italic;
+	padding: .3em .5em;
+	clear: both;
+}
+
+.widget .youtube,
+.youtube img,
+.youtube iframe {
+	width: 100%;
+	min-height: 20vw;
+	cursor: pointer;
+}
+
+.widget div.trailer {
+	margin-top: 1em;
+}
+
+.wp-block-image img {
+	height: auto;
+}
+
+.wp-block-image figcaption {
+	font-size: .8em;
+	font-style: italic;
+	margin-top: 0;
+}
+
+.wp-block-image .aligncenter {
+	text-align: center;
+}
+
+.wp-block-image.stin_uvnitr>figure {
+	position: relative;
+}
+
+.wp-block-image.stin_uvnitr>figure>a::before {
+	content: "";
+	position: absolute;
+	box-shadow: inset 0px 0px 20px 50px #FFEDAF;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+/* Formát widgetu */
+div.widget,
+div.blog_post {
+	text-align: left;
+	font-size: 1em;
+	padding-bottom: 1em;
+	margin-bottom: 1em;
+}
+
+.widget p:last-child {
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+
+div.widget_block {
+	padding: 0;
+}
+
+/* widget social icons */
+.wp-block-social-links {
+	padding: .5em;
+}
+
+/* widget register news*/
+#register_news label,
+#register_news input {
+	display: inline-block;
+}
+
+#register_news input {
+	width: 100%;
+	box-sizing: border-box;
+	margin-bottom: 1em;
+}
+
+#register_news button {
+	float: right;
+}
+
+/* dialogy a upozornění */
+div.notification_container {
+	position: fixed;
+	margin: 0 auto;
+	width: 100vw;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+	z-index: 200;
+	/* hodnotu 100 má plovoucí menu */
+}
+
+div.notification {
+	position: relative;
+	top: 50%;
+	Left: 50%;
+	transform: translate(-50%, -50%);
+	width: 50%;
+	padding-bottom: 1em;
+}
+
+.notification p {
+	padding: .5em 1em 2em 1em;
+}
+
+.notification div.btn_close {
+	float: right;
+	position: absolute;
+	padding: 2px 10px 2px 10px;
+	bottom: 10px;
+	right: 10px;
+	cursor: pointer;
+}
+
+.notification a {
+	color: auto;
+	text-decoration: underline;
+}
+
+.main-page {
+	display: flex;
+	flex-direction: column;
+	width: 90vw;
+	margin: 0 auto;
+	margin-top: 2em;
+}
+
+.main-content {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	padding-top: 5vw;
+}
+
+header {
+	display: flex;
+	position: relative;
+	height: 20rem;
+}
+
+#logo img {
+	height: 8vw;
+	position: absolute;
+	top: .3em;
+	left: .3em;
+}
+
+#taborovajizda_body #call-to-action {
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 1.5rem;
+	font-weight: bold;
+	left: 50%;
+	padding: .4em 0;
+	position: absolute;
+	text-align: center;
+	text-decoration: none;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 12em;
+}
+
+header .camp-name {
+	color: #fff;
+	font-family: 'themed-font';
+	font-size: 3rem;
+	font-weight: bold;
+	padding: 1rem 2rem;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	text-shadow: 0 0 5px black, 0 0 20px rgba(0, 0, 0, 1);
+}
+
+header .camp-date {
+	color: #fff;
+	font-family: 'themed-font';
+	font-size: 2.5rem;
+	padding: 1rem 2rem;
+	position: absolute;
+	right: 0;
+	top: 0;
+	text-shadow: 0 0 2px black, 0 0 15px rgba(0, 0, 0, 1);
+}
+
+/* klasické menu na velké obrazovce */
+#menu {
+	position: sticky;
+	margin-top: 2em;
+	top: 0;
+	/* sticky offset */
+	width: 90%;
+	height: 1em;
+	overflow: visible;
+	align-content: center;
+	z-index: 100;
+}
+
+#menu ul {
+	display: flex;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	justify-content: space-evenly;
+}
+
+#menu li {
+	display: inline-block;
+	/* pravidlo pro starší prohlížeče */
+}
+
+#menu li>a {
+	text-decoration: none;
+	white-space: nowrap;
+	font-size: 1.85vw;
+	display: block;
+	padding: .5em .5em .5em .5em;
+}
+
+#menu ul.sub-menu {
+	display: none;
+	position: absolute;
+	list-style-type: none;
+	padding: .3em;
+	left: 92%;
+	/* center  */
+	transform: translateX(-50%);
+	/* submenu */
+}
+
+#menu .sub-menu li {
+	width: 100%;
+}
+
+#menu .sub-menu a {
+	display: block;
+	font-size: 1.5vw;
+	width: 100%;
+	margin-top: .2em;
+	padding-left: 1em;
+	box-sizing: border-box;
+}
+
+#menu li:hover>ul {
+	display: block;
+}
+
+/* menu na mobilních telefonech menších zařízeních */
+#menu_mobile {
+	display: none;
+	position: relative;
+	z-index: 100;
+	margin-top: 2em;
+}
+
+#mobile_menu_container {
+	position: absolute;
+	top: -1em;
+}
+
+#menu_mobile button {
+	float: left;
+	font-size: 2em;
+	padding: .2em .65em .4em .65em;
+	cursor: pointer;
+}
+
+#menu_mobile button.stlacen {
+	border: none;
+	background: none;
+	transform: rotate(90deg);
+}
+
+#menu_mobile .stlacen span {
+	display: none;
+}
+
+#menu_mobile ul {
+	display: none;
+	flex-wrap: wrap;
+	list-style-type: none;
+	white-space: nowrap;
+	padding: 0;
+	margin: 0;
+	text-align: center;
+	padding: .5vw;
+}
+
+#menu_mobile ul.viditelne {
+	display: flex;
+}
+
+#menu_mobile li {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: auto;
+}
+
+#menu_mobile li>a {
+	display: block;
+	margin: .3vw;
+	padding: .5em;
+	font-size: 1.3em;
+}
+
+#menu_mobile ul.sub-menu {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	box-sizing: border-box;
+	background: rgba(50, 50, 50, .5);
+	height: 100%;
+	text-align: left;
+}
+
+#menu_mobile li.viditelne>ul.sub-menu {
+	display: block;
+}
+
+main {
+	display: block;
+	flex-grow: 1;
+	/*min-width: 40rem;*/
+	padding: 0em 1em 1em 1em;
+	width: 60vw;
+}
+
+aside {
+	padding: 0em 1em 1em 0em;
+	/*min-width: 20rem;*/
+	width: 25vw;
+	flex-grow: 1;
+}
+
+aside .container {
+	font-size: .8em;
+	/***********/
+}
+
+footer {}
+
+footer>div {
+	padding-top: .3em;
+	padding-bottom: .3em;
+	padding-top: .3em;
+	padding-bottom: .3em;
+	margin: 0 auto;
+	margin-bottom: 1em;
+	text-align: center;
+}
+
+/* Formulář přihlášky na tábor */
+#eprihlaska {
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+#eprihlaska div.sekce {
+	display: flex;
+	flex-wrap: wrap;
+	padding-bottom: 2em;
+}
+
+#eprihlaska h4 {
+	flex-basis: 100%;
+	margin-top: 0;
+	margin-bottom: .5em;
+}
+
+#eprihlaska .sekce div {
+	flex-basis: 30%;
+	align-self: center;
+	text-align: right;
+	font-style: italic;
+}
+
+#eprihlaska input,
+#eprihlaska select {
+	flex-basis: 66%;
+	margin: .2em auto;
+	box-sizing: border-box;
+	/* need to fit correctly in flex */
+}
+
+#eprihlaska textarea {
+	flex-basis: 100%;
+	box-sizing: border-box;
+	padding: .3em .5em .3em .5em;
+	height: 10em;
+}
+
+#eprihlaska textarea,
+#eprihlaska input,
+#eprihlaska select {
+	max-width: 60vw;
+	/* na malých displejích to jinak utíká z obrazovky*/
+	min-width: 0;
+	/* aby to šlo také zmenšit */
+}
+
+#eprihlaska p {
+	text-indent: 0;
+	padding: 0;
+	margin: 0;
+}
+
+#eprihlaska input[type=submit] {}
+
+/* formulář na dotaz z webu */
+#dotaz {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#dotaz label {
+	flex-basis: 20%;
+	flex-grow: 1;
+	text-align: right;
+	align-self: center;
+	margin-right: 1em;
+}
+
+#dotaz input {
+	flex-basis: 60%;
+	flex-grow: 1;
+}
+
+#dotaz input[type=submit] {
+	flex-basis: auto;
+	flex-grow: 0;
+}
+
+#dotaz textarea {
+	flex-basis: 90%;
+	flex-grow: 1;
+	padding: .5em;
+	height: 10em;
+}
+
+#dotaz div.volny_blok {
+	flex-basis: 70%;
+	flex-grow: 1;
+}
+
+#dotaz label,
+#dotaz input,
+#dotaz textarea {
+	margin-bottom: .3em;
+}
+
+#dotaz textarea,
+#dotaz input {
+	max-width: 80vw;
+	/* na malých displejích to jinak utíká z obrazovky*/
+	min-width: 0;
+	/* aby to šlo také zmenšit */
+}
+
+@supports (box-shadow: inherit) {
+
+	/* Poporujeme CSS3? */
+	#varovani_prohlizec {
+		display: none;
+	}
+}
+
+@media (-ms-high-contrast:none),
+(-ms-high-contrast:active) {
+
+	/* Hack pro IE10 a IE11, které podporují grid jen částečně */
+	header {
+		height: auto;
+	}
+
+	/*#logo {
+		align-self: flex-end;
+	}*/
+	aside {
+		/*float: none;*/
+		width: auto;
+	}
+
+	footer {
+		/*clear: none;*/
+	}
+
+	main {
+		/*float: none;*/
+		width: auto;
+	}
+
+	.ie_maxwidth img {
+		/* hack pro IE11 a nefunkční max-width v bloku main*/
+		width: 100%
+	}
+}
+
+/*
+@supports (position:-ms-page) {
+	/* Hack pro Edge - dost toho tady už funguje, ale přeci jen... *
+	div#logo {
+		align-self: flex-end;
+	}
+}
+*/
+/*  small devices (phablets, tablets, 768px and down) */
+@media only screen and (max-width: 768px) {
+
+	/*.main-content {
+		flex-direction: column
+	}*/
+	header {
+		/*height: 500px;*/
+	}
+
+	#logo img {
+		height: 3rem;
+	}
+
+	header .camp-name {
+		font-size: 2.5rem;
+	}
+
+	header .camp-date {
+		font-size: 2rem;
+	}
+
+	#taborovajizda_body #call-to-action {
+		font-size: 1.2rem;
+		width: 80%;
+		/*left: 25%;*/
+		top: 40%;
+	}
+
+	#menu {
+		display: none;
+	}
+
+	#menu_mobile {
+		display: block;
+	}
+
+	#menu_mobile li {
+		flex-basis: 35%;
+		/* více než třetina - vytvoří 2 sloupce (flex-grow:1; roztáhne na plnou šířku) */
+	}
+
+	aside {}
+
+	main {}
+
+	main,
+	aside {
+		padding-left: 3vw;
+		padding-right: 3vw;
+		margin: 0;
+		/* force wrap */
+		width: 70vw
+	}
+
+	footer {
+		clear: none;
+	}
+}
+
+/*  small devices (phones, tablets, 560px and down) */
+@media only screen and (max-width: 560px) {
+	.main-page {
+		width: 100vw;
+	}
+
+	.main-content {}
+
+	header {}
+
+	main,
+	aside {
+		padding: .5em;
+		padding-top: 1em;
+		margin: 0;
+	}
+
+	#menu_mobile button {
+		font-size: 1.5em;
+		padding-left: .5em;
+		padding-right: .5em;
+	}
+
+	#menu_mobile li {
+		flex-basis: 55%;
+	}
+
+	#eprihlaska div.sekce {
+		display: block;
+	}
+
+	#eprihlaska .sekce div {
+		text-align: left;
+	}
+
+	#eprihlaska input {
+		max-width: 80vw;
+	}
+
+	#dotaz label {
+		flex-basis: 40%;
+		text-align: left;
+	}
+
+	.blog_post div.wp-block-image {
+		display: flex;
+		justify-content: center;
+	}
+
+	.blog_post div.wp-block-image figure {
+		float: none;
+		margin: 0;
+	}
+}
