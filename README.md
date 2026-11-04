@@ -67,23 +67,22 @@ cd ..
 
 ```text
 theme/
-├── app/                         PHP služby, integrace a bootstrap
+├── app/                         malé PHP moduly pro theme, formuláře a integrace
 ├── config/season.json           aktivní ročník
 ├── resources/
-│   ├── css/                     Tailwind, komponenty a aktuální vzhled
+│   ├── css/app.css              Tailwind vstup a design tokeny
+│   ├── css/compat.css           jen dynamický WordPress/plugin markup
+│   ├── css/season.css           pouze aktuální roční vzhled
 │   ├── ts/                      TypeScript
 │   └── assets/season/           grafika aktivního ročníku
-├── template-parts/
-│   ├── layout/                  hlavička, patička, sidebar
-│   ├── pages/                   stránky a rubriky
-│   └── components/              opakované části obsahu
+├── template-parts/              pouze skutečně sdílený příspěvek a notifikace
 ├── patterns/                    WordPress block patterns
 ├── public/build/                generovaný a ignorovaný build
 ├── theme.json                   WordPress design tokeny
 └── style.css                    pouze povinná hlavička šablony
 ```
 
-Kořenové WordPress soubory jako `header.php`, `page-kontakt.php` a `category.php` jsou záměrně krátké entrypointy. Skutečný markup je v `template-parts/`.
+Povinné WordPress soubory jako `header.php`, `page-kontakt-2.php` a `category.php` obsahují svůj skutečný markup. Nevytvářej pro jednorázový markup další přeposílací template-part. Název kontaktní šablony odpovídá veřejnému slugu `/kontakt-2/`.
 
 ## Běžný vývoj
 
@@ -123,7 +122,7 @@ Repozitářový adresář `theme/` je s LocalWP propojený přímo pomocí junct
 
 Po zavření terminálu se vývojový build zastaví. Při příští práci stačí v `theme/` znovu spustit `npm run dev`; `npm install` se neopakuje, pokud se nezměnily závislosti nebo nebyl odstraněn `node_modules`.
 
-Build používá Tailwind CSS 4 bez Preflightu, aby během postupné migrace neměnil stávající WordPress markup. Nové utility mají prefix `tj:`. React se nepoužívá.
+Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup styluj přímo prefixovanými `tj:` utilitami; `@apply` nepoužívej. Do `compat.css` patří jen selektory dynamického WordPress/plugin markup, který nelze opatřit třídami, a do `season.css` pouze roční fonty, grafika a efekty. React se nepoužívá.
 
 `npm run dev` zůstává spuštěný a při každém uložení CSS nebo TypeScriptu automaticky obnoví `public/build/`. Potom stačí refresh prohlížeče. Změny PHP a `template-parts` build nepotřebují a projeví se hned po refreshi. Samostatné `npm run build` je potřeba až pro finální kontrolu, CI a release.
 
@@ -139,11 +138,13 @@ Pro nový ročník použij skill `$tj-new-season` nebo náhled skriptu:
 
 Skript bez `-Apply` nic nemění. Nevymýšlej nepotvrzené datum, cenu, databázový klíč ani vizuální brief. Staré ročníky jsou archivované v Git historii; nevytvářej další kopii celého ročního CSS.
 
+Odpočet není součástí šablony: vytváří jej plugin `jquery-t-countdown-widget` z konfigurace uložené ve WordPress databázi. Dokud není potvrzený nový termín, `season.css` skrývá widget `#countdowntimer-2`. Pro nový ročník nejdřív nastav datum widgetu ve WordPressu a potom odstraň toto CSS pravidlo.
+
 ## Formuláře a lokální prostředí
 
-Přihláška a kontakt používají WordPress `admin-post.php` handlery. Staré newsletter odkazy pod `/odeslat-dotaz/` zůstávají kompatibilní.
+Přihláška a kontakt používají stejné namespaced WordPress handlery a nonce jako `admin-post.php`, ale formuláře odesílají na `/odeslat-dotaz/`. Produkční bezpečnostní plugin blokuje anonymní přístup do `/wp-admin/`; kompatibilní veřejný endpoint proto požadavek předá stejnému handleru. Staré newsletter odkazy pod touto URL zůstávají funkční.
 
-Mimo prostředí `production` šablona neposílá skutečné formulářové e-maily ani nezapisuje formuláře do externí databáze. Lokální výsledek zapíše do PHP logu a vrátí simulovaný úspěch.
+Mimo prostředí `production` šablona neposílá skutečné formulářové e-maily ani nezapisuje formuláře do externí databáze. Po úspěšné validaci lokální výsledek zapíše do PHP logu a vrátí simulovaný úspěch; chybné vstupy vrací stejné chybové kódy jako produkce.
 
 ## Git workflow
 

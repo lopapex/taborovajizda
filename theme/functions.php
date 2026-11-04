@@ -28,12 +28,12 @@ spl_autoload_register(
     }
 );
 
-TaborovaJizda\Theme\Bootstrap::boot(__DIR__);
+TaborovaJizda\Theme\Theme::boot(__DIR__);
 
 /**
  * Return the active season configuration to templates.
  */
 function taborovajizda_season(): TaborovaJizda\Theme\Season\Season
 {
-    return TaborovaJizda\Theme\Season\SeasonRepository::instance()->current();
+    return TaborovaJizda\Theme\Season\Season::current();
 }

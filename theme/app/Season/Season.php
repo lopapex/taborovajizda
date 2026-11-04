@@ -10,9 +10,40 @@ use JsonSerializable;
 final class Season implements JsonSerializable
 {
     private const REGISTRATION_STATUSES = ['hidden', 'coming-soon', 'open', 'full', 'closed'];
+    private static ?self $current = null;
+    private static ?string $configurationPath = null;
 
     private function __construct(private array $data)
     {
+    }
+
+    public static function configure(string $configurationPath): void
+    {
+        self::$configurationPath = $configurationPath;
+        self::$current = null;
+    }
+
+    public static function current(): self
+    {
+        if (self::$current instanceof self) {
+            return self::$current;
+        }
+
+        try {
+            if (! self::$configurationPath || ! is_readable(self::$configurationPath)) {
+                throw new \RuntimeException('Season configuration is not readable.');
+            }
+            $data = json_decode((string) file_get_contents(self::$configurationPath), true, 512, JSON_THROW_ON_ERROR);
+            if (! is_array($data)) {
+                throw new \UnexpectedValueException('Season configuration must contain an object.');
+            }
+            self::$current = self::fromArray($data);
+        } catch (\Throwable $error) {
+            error_log('[taborovajizda] Invalid season configuration: ' . $error->getMessage());
+            self::$current = self::fallback();
+        }
+
+        return self::$current;
     }
 
     public static function fromArray(array $data): self
@@ -69,7 +100,7 @@ final class Season implements JsonSerializable
             'endDate' => null,
             'price' => ['amount' => null, 'currency' => 'CZK'],
             'registration' => ['status' => 'hidden', 'externalSeasonKey' => null],
-            'assets' => ['hero' => null, 'logo' => 'web_images/logo_color.svg'],
+            'assets' => ['hero' => null, 'logo' => 'web_images/logo_color.png'],
         ]);
     }
 

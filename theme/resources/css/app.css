@@ -1,7 +1,8 @@
 @import "tailwindcss/theme.css" prefix(tj);
 @import "tailwindcss/utilities.css" prefix(tj);
-@import "./normalize.css";
-@import "./components.css";
+@source "../../**/*.php";
+@source "../ts/*.ts";
+@import "./compat.css";
 @import "./season.css";
 
 @theme inline {
@@ -14,6 +15,10 @@
 }
 
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
   :focus-visible {
     outline: 3px solid var(--wp--preset--color--accent);
     outline-offset: 3px;

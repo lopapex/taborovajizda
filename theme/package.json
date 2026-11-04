@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite build --watch --mode development",
-    "build": "npm run validate:season && tsc --noEmit && vite build",
+    "build": "npm run validate:season && npm run typecheck && vite build",
     "typecheck": "tsc --noEmit",
     "validate:season": "node scripts/validate-season.mjs",
-    "check": "npm run validate:season && npm run typecheck && npm run build"
+    "check": "npm run build"
   },
   "devDependencies": {
     "@kucrut/vite-for-wp": "^0.11.0",

@@ -68,16 +68,18 @@ Ověř existenci `theme/public/build/manifest.json`. Build je ignorovaný; `pack
 
 ## Architektura
 
-- `app/`: PHP bootstrap, služby a integrace;
+- `app/`: několik malých namespaced modulů pro theme, formuláře a integrace;
 - `config/season.json`: aktivní roční provozní data;
-- `resources/css`: Tailwind vrstvy, komponenty a aktuální season styl;
+- `resources/css/app.css`: Tailwind vstup; vlastní markup používá přímo `tj:` utility bez `@apply`;
+- `resources/css/compat.css`: pouze dynamický WordPress/plugin markup;
+- `resources/css/season.css`: pouze aktivní roční vzhled a efekty;
 - `resources/ts`: TypeScript bez Reactu;
-- `template-parts/layout|pages|components`: skutečný markup;
+- `template-parts/`: pouze skutečně sdílené části; jednorázový markup zůstává ve WordPress entrypointu;
 - `patterns/`: WordPress block patterns;
 - `theme.json`: společné design tokeny;
 - kořenové WordPress templates: pouze kompatibilní entrypointy.
 
-PHP 8.2 a WordPress 6.5 jsou minimum. Používej namespace `TaborovaJizda\Theme`. Novou logiku nepřidávej do `app/Legacy/functions.php`.
+PHP 8.2 a WordPress 6.5 jsou minimum. Používej namespace `TaborovaJizda\Theme`. Nevytvářej globální legacy soubor, vlastní image pipeline ani kopie jednorázových templates.
 
 ## Vývoj a kontrola
 

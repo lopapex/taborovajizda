@@ -15,6 +15,6 @@
   },
   "assets": {
     "hero": "resources/assets/season/hero.jpg",
-    "logo": "web_images/logo_color.svg"
+    "logo": "web_images/logo_color.png"
   }
 }
