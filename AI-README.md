@@ -116,10 +116,11 @@ Použij `$tj-save-changes`, když odpovídá rozsahu.
 Release vzniká pouze z čistého otestovaného commitu:
 
 ```powershell
-.\scripts\create-theme-release.ps1
+.\scripts\create-theme-release.ps1 -SourceBranch stage
+.\scripts\create-theme-release.ps1 -SourceBranch main
 ```
 
-Skript musí exportovat commit, spustit `npm ci` a `npm run build`, zabalit pouze runtime whitelist a ověřit jediný kořen `taborovajizda/`. Reportuj ZIP, manifest, commit, tag, velikost, počet položek a SHA-256.
+Zdrojová větev je povinná a může být pouze `stage` nebo `main`. Skript musí exportovat commit explicitně zvolené lokální větve, spustit `npm ci` a `npm run build`, zabalit pouze runtime whitelist a ověřit jediný kořen `taborovajizda/`. Reportuj větev, ZIP, manifest, commit, tag, velikost, počet položek a SHA-256.
 
 Release artefakty necommituj, nenahrávej a nenasazuj bez samostatného požadavku. Použij `$tj-create-release`.
 

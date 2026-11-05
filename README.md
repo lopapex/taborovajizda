@@ -19,6 +19,13 @@ Na novém počítači nainstaluj:
 
 Composer není potřeba.
 
+## WordPress administrace
+
+- PROD WP admin: [https://taborovajizda.cz/65e43gerg534e/](https://taborovajizda.cz/65e43gerg534e/)
+- Stage WP admin: [https://taborovajizda.cz/test/wp-admin/](https://taborovajizda.cz/test/wp-admin/)
+
+Přístupové údaje, hesla ani obnovovací kódy se nikdy necommitují. Přehled WordPress stránek, příspěvků, rubrik a jejich vazby na PHP šablony je v [mapě WordPress obsahu](WORDPRESS-CONTENT.md).
+
 ## První zprovoznění
 
 ```powershell
@@ -171,10 +178,16 @@ Společná pravidla pro Codex, Claude, Copilot a další agenty jsou v [AI-READM
 Po merge aktualizuj čistý `main` a spusť:
 
 ```powershell
-.\scripts\create-theme-release.ps1
+.\scripts\create-theme-release.ps1 -SourceBranch main
 ```
 
-Release skript exportuje přesný Git commit do dočasného adresáře, spustí `npm ci` a `npm run build` a vytvoří ZIP pouze z runtime souborů. `node_modules`, zdrojové CSS/TS a vývojová konfigurace v ZIPu nejsou.
+Pro ověřovací ZIP z větve `stage` použij:
+
+```powershell
+.\scripts\create-theme-release.ps1 -SourceBranch stage
+```
+
+Release skript exportuje přesný commit explicitně zvolené lokální větve do dočasného adresáře, spustí `npm ci` a `npm run build` a vytvoří ZIP pouze z runtime souborů. `node_modules`, zdrojové CSS/TS a vývojová konfigurace v ZIPu nejsou.
 
 Výstup v ignorovaném `releases/` obsahuje ZIP a manifest s commitem, tagem, velikostí, počtem položek a SHA-256.
 
