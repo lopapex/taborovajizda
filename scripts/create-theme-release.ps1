@@ -14,7 +14,7 @@ $status = & git -C $repositoryRoot status --porcelain --untracked-files=all
 if ($LASTEXITCODE -ne 0) { throw 'Unable to read Git working tree status.' }
 if ($status) { throw "Release requires a clean Git working tree.`n$($status -join "`n")" }
 
-$trackedThemeFiles = @(& git -C $repositoryRoot ls-files -- theme)
+$trackedThemeFiles = @(& git -C $repositoryRoot -c core.quotepath=false ls-files -- theme)
 if ($LASTEXITCODE -ne 0) { throw 'Unable to inspect tracked theme files.' }
 $forbidden = $trackedThemeFiles | Where-Object {
     $name = [System.IO.Path]::GetFileName($_)
