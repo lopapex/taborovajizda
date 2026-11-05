@@ -10,7 +10,7 @@
         { "slug": "surface", "name": "Plocha", "color": "#0c1417" },
         { "slug": "text", "name": "Text", "color": "#d4e9da" },
         { "slug": "primary", "name": "Hlavní", "color": "#98ff7a" },
-        { "slug": "accent", "name": "Akcent", "color": "#c2410c" }
+        { "slug": "accent", "name": "Akcent", "color": "#16a34a" }
       ]
     },
     "layout": {
