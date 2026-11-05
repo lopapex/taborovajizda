@@ -95,7 +95,7 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $archive = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
 try {
     $entries = @($archive.Entries)
-    if (@($entries | Where-Object { $_.FullName -notlike 'taborovajizda/*' }).Count) {
+    if (@($entries | Where-Object { $_.FullName.Replace('\', '/') -notlike 'taborovajizda/*' }).Count) {
         throw 'Release ZIP contains entries outside the taborovajizda/ root directory.'
     }
     $entryCount = $entries.Count
