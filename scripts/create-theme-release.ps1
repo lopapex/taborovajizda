@@ -93,7 +93,25 @@ try {
         }
     }
 
-    Compress-Archive -LiteralPath $packageTheme -DestinationPath $zipPath -CompressionLevel Optimal
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $zipArchive = [System.IO.Compression.ZipFile]::Open(
+        $zipPath,
+        [System.IO.Compression.ZipArchiveMode]::Create
+    )
+    try {
+        Get-ChildItem -LiteralPath $packageTheme -File -Recurse | Sort-Object FullName | ForEach-Object {
+            $entryName = $_.FullName.Substring($temporaryRoot.Length).TrimStart([char[]]@('\', '/')).Replace('\', '/')
+            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+                $zipArchive,
+                $_.FullName,
+                $entryName,
+                [System.IO.Compression.CompressionLevel]::Optimal
+            ) | Out-Null
+        }
+    }
+    finally {
+        $zipArchive.Dispose()
+    }
 }
 finally {
     if (Test-Path -LiteralPath $temporaryRoot) { Remove-Item -LiteralPath $temporaryRoot -Recurse -Force }
@@ -105,6 +123,12 @@ try {
     $entries = @($archive.Entries)
     if (@($entries | Where-Object { $_.FullName.Replace('\', '/') -notlike 'taborovajizda/*' }).Count) {
         throw 'Release ZIP contains entries outside the taborovajizda/ root directory.'
+    }
+    if (@($entries | Where-Object { $_.FullName.Contains('\') }).Count) {
+        throw 'Release ZIP contains Windows path separators that WordPress cannot install reliably.'
+    }
+    if (@($entries | Where-Object { $_.FullName -ceq 'taborovajizda/style.css' }).Count -ne 1) {
+        throw 'Release ZIP must contain exactly one taborovajizda/style.css entry.'
     }
     $entryCount = $entries.Count
 }
