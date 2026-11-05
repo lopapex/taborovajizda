@@ -1,6 +1,5 @@
 <?php
 $season = taborovajizda_season();
-$seasonLogo = $season->asset('logo') ?: 'web_images/logo_color.png';
 $locations = get_nav_menu_locations();
 $mobileMenu = isset($locations['menu_main_mobile']) ? wp_get_nav_menu_object($locations['menu_main_mobile']) : null;
 $mobileItems = $mobileMenu ? wp_get_nav_menu_items($mobileMenu) : [];
@@ -13,7 +12,6 @@ $currentTitle = $currentItem ? $currentItem->title : 'domů';
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="author" content="https://www.martin-web.cz">
-	<meta name="keywords" content="tábor <?php echo esc_attr((string) $season->year()); ?>,plátěná osada,tábor,letní tábor,žamberk,táborová jízda,zábava,táborové hry">
 	<meta name="facebook-domain-verification" content="k0jm5er9z71c32gqyg6hmjom8pm93r">
 	<?php wp_head(); ?>
 </head>
@@ -23,7 +21,7 @@ $currentTitle = $currentItem ? $currentItem->title : 'domů';
 <div id="page-background" class="page-background tj:fixed tj:inset-0 tj:-z-10 tj:h-screen tj:w-screen tj:bg-cover tj:bg-center"></div>
 <div class="main-page tj:mx-auto tj:mt-8 tj:flex tj:w-screen tj:flex-col tj:sm:w-[90vw]">
 	<header class="zahlavi tj:relative tj:flex tj:h-80">
-		<div id="logo"><img class="tj:absolute tj:left-[.3em] tj:top-[.3em] tj:h-12 tj:md:h-[8vw]" src="<?php echo esc_url(get_theme_file_uri('/' . ltrim($seasonLogo, '/'))); ?>" alt="Logo Táborové jízdy"></div>
+		<div id="logo"><img class="tj:absolute tj:left-[.3em] tj:top-[.3em] tj:h-12 tj:md:h-[8vw]" src="<?php echo esc_url(get_theme_file_uri('/web_images/logo_color.png')); ?>" alt="Logo Táborové jízdy"></div>
 		<a id="call-to-action" class="tj:absolute tj:left-1/2 tj:top-[40%] tj:w-4/5 tj:-translate-x-1/2 tj:-translate-y-1/2 tj:cursor-pointer tj:rounded-[5px] tj:px-0 tj:py-[.4em] tj:text-center tj:text-[1.2rem] tj:font-bold tj:no-underline tj:md:top-1/2 tj:md:w-[12em] tj:md:text-2xl" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>">Chci se přihlásit</a>
 		<div class="camp-date tj:absolute tj:right-0 tj:top-0 tj:px-8 tj:py-4 tj:text-[2rem] tj:text-white tj:md:text-[2.5rem]">
 			<?php echo esc_html($season->formattedDateRange()); ?>

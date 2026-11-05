@@ -44,7 +44,9 @@ jobs:
 
       - name: Run PHP domain tests
         working-directory: .
-        run: php theme/tests/SeasonTest.php
+        run: |
+          php theme/tests/SeasonTest.php
+          php theme/tests/PersonalIdValidatorTest.php
 
       - name: Verify release-only files stay untracked
         working-directory: .

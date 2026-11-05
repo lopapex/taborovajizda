@@ -77,6 +77,11 @@ final class Season implements JsonSerializable
             throw new \UnexpectedValueException('Season registration status is invalid.');
         }
 
+        $remainingPlaces = $data['registration']['remainingPlaces'] ?? null;
+        if ($remainingPlaces !== null && (! is_int($remainingPlaces) || $remainingPlaces < 0)) {
+            throw new \UnexpectedValueException('Remaining places must be a non-negative integer or null.');
+        }
+
         $externalSeasonKey = $data['registration']['externalSeasonKey'] ?? null;
         if ($externalSeasonKey !== null && (! is_string($externalSeasonKey) || ! ctype_digit($externalSeasonKey))) {
             throw new \UnexpectedValueException('External season key must contain digits only or be null.');
@@ -99,8 +104,7 @@ final class Season implements JsonSerializable
             'startDate' => null,
             'endDate' => null,
             'price' => ['amount' => null, 'currency' => 'CZK'],
-            'registration' => ['status' => 'hidden', 'externalSeasonKey' => null],
-            'assets' => ['hero' => null, 'logo' => 'web_images/logo_color.png'],
+            'registration' => ['status' => 'hidden', 'remainingPlaces' => null, 'externalSeasonKey' => null],
         ]);
     }
 
@@ -146,15 +150,20 @@ final class Season implements JsonSerializable
         return $this->data['registration']['status'];
     }
 
+    public function remainingPlaces(): ?int
+    {
+        $value = $this->data['registration']['remainingPlaces'] ?? null;
+        return is_int($value) ? $value : null;
+    }
+
+    public function isFull(): bool
+    {
+        return $this->registrationStatus() === 'full' || $this->remainingPlaces() === 0;
+    }
+
     public function externalSeasonKey(): ?string
     {
         $value = $this->data['registration']['externalSeasonKey'] ?? null;
-        return is_string($value) && $value !== '' ? $value : null;
-    }
-
-    public function asset(string $name): ?string
-    {
-        $value = $this->data['assets'][$name] ?? null;
         return is_string($value) && $value !== '' ? $value : null;
     }
 

@@ -75,7 +75,7 @@ try {
     foreach ($file in @('style.css', 'theme.json')) {
         Copy-Item -LiteralPath (Join-Path $sourceTheme $file) -Destination $packageTheme -Force
     }
-    foreach ($directory in @('app', 'config', 'fonts', 'languages', 'patterns', 'template-parts', 'web_images', 'public\build')) {
+    foreach ($directory in @('app', 'config', 'fonts', 'template-parts', 'web_images', 'public\build')) {
         $source = Join-Path $sourceTheme $directory
         if (Test-Path -LiteralPath $source) {
             $destination = Join-Path $packageTheme $directory

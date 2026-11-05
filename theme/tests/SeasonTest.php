@@ -13,14 +13,30 @@ $valid = [
     'startDate' => '2027-08-01',
     'endDate' => '2027-08-14',
     'price' => ['amount' => 5000, 'currency' => 'CZK'],
-    'registration' => ['status' => 'open', 'externalSeasonKey' => '42'],
-    'assets' => ['hero' => null, 'logo' => null],
+    'registration' => ['status' => 'open', 'remainingPlaces' => 1, 'externalSeasonKey' => '42'],
 ];
 
 $season = Season::fromArray($valid);
-if ($season->year() !== 2027 || $season->externalSeasonKey() !== '42') {
+if ($season->year() !== 2027 || $season->remainingPlaces() !== 1 || $season->isFull() || $season->externalSeasonKey() !== '42') {
     fwrite(STDERR, "Season value mapping failed.\n");
     exit(1);
+}
+
+$full = $valid;
+$full['registration']['remainingPlaces'] = 0;
+if (! Season::fromArray($full)->isFull()) {
+    fwrite(STDERR, "Zero remaining places was not treated as full.\n");
+    exit(1);
+}
+
+$invalid = $valid;
+$invalid['registration']['remainingPlaces'] = -1;
+try {
+    Season::fromArray($invalid);
+    fwrite(STDERR, "Negative remaining places was accepted.\n");
+    exit(1);
+} catch (UnexpectedValueException) {
+    // Expected.
 }
 
 $invalid = $valid;

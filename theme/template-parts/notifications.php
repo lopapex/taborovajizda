@@ -23,7 +23,7 @@ if ($message === '') {
 ?>
 <div class="notification_container tj:fixed tj:inset-0 tj:z-[200] tj:h-full tj:w-screen" role="dialog" aria-modal="true">
 	<div class="notification tj:absolute tj:left-1/2 tj:top-1/2 tj:w-[90%] tj:-translate-x-1/2 tj:-translate-y-1/2 tj:pb-4 tj:md:w-1/2">
-		<h2 class="tj:mt-0 tj:pl-[.6em] tj:pb-[.25em] tj:font-bold tj:tracking-[.08em] tj:text-white"><?php echo $error ? 'Omlouváme se, ale došlo k chybě' : 'Zpráva'; ?></h2>
+		<h2 class="tj-card-title"><?php echo $error ? 'Omlouváme se, ale došlo k chybě' : 'Zpráva'; ?></h2>
 		<p class="tj:px-4 tj:pb-8 tj:pt-2"><?php echo $error ? 'Chyba: ' : ''; ?><?php echo esc_html($message); ?>
 		<?php if ($error === 12 && isset($_GET['email'])) : ?><a href="<?php echo esc_url(add_query_arg('validation_resend', sanitize_email(wp_unslash($_GET['email'])), home_url('/odeslat-dotaz/'))); ?>"> → Znovu zaslat ověřovací zprávu ←</a><?php endif; ?></p>
 		<button type="button" class="btn_close tj:absolute tj:bottom-[10px] tj:right-[10px] tj:cursor-pointer tj:px-[10px] tj:py-[2px]" data-dialog-close>Zavřít</button>

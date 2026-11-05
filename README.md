@@ -67,7 +67,7 @@ cd ..
 
 ```text
 theme/
-├── app/                         malé PHP moduly pro theme, formuláře a integrace
+├── app/                         theme, roční data a samostatné formulářové handlery
 ├── config/season.json           aktivní ročník
 ├── resources/
 │   ├── css/app.css              Tailwind vstup a design tokeny
@@ -76,7 +76,6 @@ theme/
 │   ├── ts/                      TypeScript
 │   └── assets/season/           grafika aktivního ročníku
 ├── template-parts/              pouze skutečně sdílený příspěvek a notifikace
-├── patterns/                    WordPress block patterns
 ├── public/build/                generovaný a ignorovaný build
 ├── theme.json                   WordPress design tokeny
 └── style.css                    pouze povinná hlavička šablony
@@ -122,7 +121,7 @@ Repozitářový adresář `theme/` je s LocalWP propojený přímo pomocí junct
 
 Po zavření terminálu se vývojový build zastaví. Při příští práci stačí v `theme/` znovu spustit `npm run dev`; `npm install` se neopakuje, pokud se nezměnily závislosti nebo nebyl odstraněn `node_modules`.
 
-Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup styluj přímo prefixovanými `tj:` utilitami; `@apply` nepoužívej. Do `compat.css` patří jen selektory dynamického WordPress/plugin markup, který nelze opatřit třídami, a do `season.css` pouze roční fonty, grafika a efekty. React se nepoužívá.
+Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup styluj přímo prefixovanými `tj:` utilitami; `@apply` nepoužívej. Sémantickou komponentní třídu přidej pouze pro stejný vzor použitý alespoň třikrát. Do `compat.css` patří jen selektory dynamického WordPress/plugin markup, který nelze opatřit třídami, a do `season.css` pouze roční fonty, grafika a efekty. React se nepoužívá.
 
 `npm run dev` zůstává spuštěný a při každém uložení CSS nebo TypeScriptu automaticky obnoví `public/build/`. Potom stačí refresh prohlížeče. Změny PHP a `template-parts` build nepotřebují a projeví se hned po refreshi. Samostatné `npm run build` je potřeba až pro finální kontrolu, CI a release.
 
@@ -130,13 +129,20 @@ Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup st
 
 Provozní údaje jsou pouze v `theme/config/season.json`. V templates se rok, název a termín nepíšou natvrdo. Vizuální tokeny jsou v `theme/theme.json` a aktuální roční CSS v `theme/resources/css/season.css`.
 
+Každý ročník se připraví ve čtyřech oddělených krocích:
+
+1. Aktualizuj data v `config/season.json`, včetně ručně spravovaného `registration.remainingPlaces`; `null` znamená, že počet nezobrazujeme.
+2. Nahraď přesně dva soubory: `resources/assets/season/hero.jpg` a `resources/assets/season/background.jpg`.
+3. Uprav potvrzené barvy v `theme.json` a pouze roční efekty v `season.css`.
+4. Po potvrzení termínu nastav countdown widget ve WordPress administraci a odstraň pravidlo, které `#countdowntimer-2` skrývá.
+
 Pro nový ročník použij skill `$tj-new-season` nebo náhled skriptu:
 
 ```powershell
 .\scripts\new-season.ps1 -Year 2027 -Slug novy-motiv -Title "DOPLNIT NÁZEV"
 ```
 
-Skript bez `-Apply` nic nemění. Nevymýšlej nepotvrzené datum, cenu, databázový klíč ani vizuální brief. Staré ročníky jsou archivované v Git historii; nevytvářej další kopii celého ročního CSS.
+Skript bez `-Apply` nic nemění. Nevymýšlej nepotvrzené datum, cenu, databázový klíč ani vizuální brief. Názvy ročních obrázků jsou pevné a nejsou součástí JSON konfigurace. Staré ročníky jsou archivované v Git historii; nevytvářej další kopii celého ročního CSS.
 
 Odpočet není součástí šablony: vytváří jej plugin `jquery-t-countdown-widget` z konfigurace uložené ve WordPress databázi. Dokud není potvrzený nový termín, `season.css` skrývá widget `#countdowntimer-2`. Pro nový ročník nejdřív nastav datum widgetu ve WordPressu a potom odstraň toto CSS pravidlo.
 

@@ -1,56 +1,348 @@
-@font-face { font-family: themed-font; src: url('../../fonts/third-man.otf') format('opentype'); font-display: swap; }
-@font-face { font-family: bariol; src: url('../../fonts/bariol_regular-webfont.woff2') format('woff2'); font-display: swap; }
-@font-face { font-family: bariol; src: url('../../fonts/bariol_regular_italic-webfont.woff2') format('woff2'); font-style: italic; font-display: swap; }
-
-:root {
-  --theme-color-01-rgb: 152, 255, 122;
-  --theme-color-01: rgb(var(--theme-color-01-rgb));
-  --theme-color-02-rgb: 26, 56, 48;
-  --theme-color-03-rgb: 196, 32, 54;
-  --theme-color-03: rgb(var(--theme-color-03-rgb));
-  --theme-color-04: #0c1417;
+@font-face {
+  font-family: themed-font;
+  src: url("../../fonts/third-man.otf") format("opentype");
+  font-display: swap;
 }
-html { color: #d4e9da; background-color: #050a0f; background-image: radial-gradient(circle at 20% 15%, rgba(255,255,255,.08), transparent 45%), url('../assets/season/background.jpg'); background-repeat: no-repeat; background-position: center top; background-attachment: fixed; font-family: bariol, 'Segoe UI', sans-serif; }
-#taborovajizda_body { background: transparent; }
-::selection { color: #050a0f; background: rgba(var(--theme-color-01-rgb), .35); }
-.page-background { background-image: url('../assets/season/background.jpg'); background-repeat: no-repeat; filter: saturate(110%); }
-.zahlavi { position: relative; background: url('../assets/season/hero.jpg') center / cover; box-shadow: 0 1rem 3rem rgba(0,0,0,.85); }
-.camp-name, .camp-date { font-family: themed-font, cursive; text-shadow: 0 0 5px #000, 0 0 20px #000; }
-.main-content { border: 1px solid rgba(255,255,255,.05); background: rgba(12,20,23,.8); backdrop-filter: blur(8px); }
-.zvyraznit { color: var(--theme-color-01); text-shadow: 0 0 8px rgba(0,0,0,.7); }
-.themed-font { font: 30pt themed-font, cursive; letter-spacing: 1px; text-transform: uppercase; }
 
-#taborovajizda_body #call-to-action { border: 6px solid var(--theme-color-03); color: #fff; background: rgba(var(--theme-color-02-rgb), .7); box-shadow: 0 0 15px rgba(var(--theme-color-01-rgb), .35), inset 0 0 10px rgba(0,0,0,.5); font-family: themed-font, sans-serif; letter-spacing: 4px; transition: box-shadow .2s, background .2s, color .2s; }
-#taborovajizda_body #call-to-action:hover { color: var(--theme-color-01); background: rgba(var(--theme-color-03-rgb), .8); box-shadow: inset 0 0 12px rgba(0,0,0,.7); }
-#taborovajizda_body a { color: var(--theme-color-01); box-shadow: inset 0 -.1em rgba(var(--theme-color-01-rgb), .15); text-decoration: none; transition: color .15s, box-shadow .15s; }
-#taborovajizda_body a:hover { color: var(--theme-color-03); box-shadow: inset 0 -.3em rgba(var(--theme-color-03-rgb), .25); }
-#taborovajizda_body .button > a { display: inline-block; margin: .15em; padding: .35em .8em; border-radius: 30px; color: #fff; background: linear-gradient(rgba(var(--theme-color-03-rgb), .9), rgba(var(--theme-color-03-rgb), .7)); box-shadow: 0 10px 20px rgba(0,0,0,.35); letter-spacing: .05em; }
+html {
+  color: var(--wp--preset--color--text);
+  background-color: var(--wp--preset--color--background);
+  background-image:
+    radial-gradient(
+      circle at 20% 15%,
+      rgba(255, 255, 255, 0.08),
+      transparent 45%
+    ),
+    url("../assets/season/background.jpg");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-attachment: fixed;
+  font-family: var(--wp--preset--font-family--body);
+}
+#taborovajizda_body {
+  background: transparent;
+}
+::selection {
+  color: var(--wp--preset--color--background);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--primary) 35%,
+    transparent
+  );
+}
+.page-background {
+  background-image: url("../assets/season/background.jpg");
+  background-repeat: no-repeat;
+  filter: saturate(110%);
+}
+.zahlavi {
+  position: relative;
+  background: url("../assets/season/hero.jpg") center / cover;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.85);
+}
+.camp-name,
+.camp-date {
+  font-family: themed-font, cursive;
+  text-shadow:
+    0 0 5px #000,
+    0 0 20px #000;
+}
+.main-content {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--surface) 80%,
+    transparent
+  );
+  backdrop-filter: blur(8px);
+}
+.zvyraznit {
+  color: var(--wp--preset--color--primary);
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+}
+.themed-font {
+  font:
+    30pt themed-font,
+    cursive;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
 
-.ribbon > ul { position: relative; margin-left: -.625em !important; padding-inline: .7em !important; border: 1px solid rgba(255,255,255,.05); border-radius: 0 .25em .25em 0; background: linear-gradient(90deg, rgba(12,20,23,.95), rgba(30,50,44,.9)); box-shadow: -1px 3px 8px rgba(0,0,0,.6); }
-.ribbon > ul::before, .ribbon > ul::after { position: absolute; display: block; content: ''; }
-.ribbon > ul::before { top: 0; left: -.469em; width: .469em; height: 100%; padding-left: .438em; border-radius: .313em 0 0 .313em; background: inherit; }
-.ribbon > ul::after { bottom: -.313em; left: -.313em; width: .313em; height: .313em; border-radius: .313em 0 0 .313em; background: rgba(0,0,0,.55); }
-.desktop-menu ul { border: 1px solid rgba(255,255,255,.05); background: rgba(5,10,15,.95); box-shadow: 0 10px 25px rgba(0,0,0,.8); }
-.desktop-menu a { color: rgba(255,255,255,.85) !important; letter-spacing: .04em; }
-.desktop-menu .sub-menu { border-color: rgba(255,255,255,.08); }
-.desktop-menu .sub-menu a { color: rgba(255,255,255,.7) !important; background: transparent; }
-.mobile-menu > div { border: 1px solid rgba(255,255,255,.08); background: rgba(8,18,18,.8); }
-.mobile-menu a { border: .25vw solid rgba(var(--theme-color-01-rgb), .6); border-radius: 6px; color: rgba(255,255,255,.9) !important; background: rgba(8,18,18,.9); }
-.mobile-menu button { border: 2px solid rgba(255,255,255,.15); border-radius: 6px; color: #fff; background: rgba(var(--theme-color-03-rgb), .85); }
-.mobile-menu .sub-menu { background: rgba(50,50,50,.5); }
-.desktop-menu li.current-menu-item > a, .desktop-menu a:hover, .desktop-menu li:hover > a, .mobile-menu li.current-menu-item > a, .mobile-menu a:hover { border-color: rgba(var(--theme-color-03-rgb), .8); color: #050a0f !important; background: var(--theme-color-01) !important; box-shadow: 0 0 15px rgba(var(--theme-color-01-rgb), .45) !important; }
+#taborovajizda_body #call-to-action {
+  border: 6px solid var(--wp--preset--color--accent);
+  color: #fff;
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--surface) 70%,
+    transparent
+  );
+  box-shadow:
+    0 0 15px
+      color-mix(in srgb, var(--wp--preset--color--primary) 35%, transparent),
+    inset 0 0 10px rgba(0, 0, 0, 0.5);
+  font-family: themed-font, sans-serif;
+  letter-spacing: 4px;
+  transition:
+    box-shadow 0.2s,
+    background 0.2s,
+    color 0.2s;
+}
+#taborovajizda_body #call-to-action:hover {
+  color: var(--wp--preset--color--primary);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--accent) 80%,
+    transparent
+  );
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.7);
+}
+#taborovajizda_body a {
+  color: var(--wp--preset--color--primary);
+  box-shadow: inset 0 -0.1em
+    color-mix(in srgb, var(--wp--preset--color--primary) 15%, transparent);
+  text-decoration: none;
+  transition:
+    color 0.15s,
+    box-shadow 0.15s;
+}
+#taborovajizda_body a:hover {
+  color: var(--wp--preset--color--accent);
+  box-shadow: inset 0 -0.3em
+    color-mix(in srgb, var(--wp--preset--color--accent) 25%, transparent);
+}
+#taborovajizda_body .button > a {
+  display: inline-block;
+  margin: 0.15em;
+  padding: 0.35em 0.8em;
+  border-radius: 30px;
+  color: #fff;
+  background: linear-gradient(
+    color-mix(in srgb, var(--wp--preset--color--accent) 90%, transparent),
+    color-mix(in srgb, var(--wp--preset--color--accent) 70%, transparent)
+  );
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+  letter-spacing: 0.05em;
+}
 
-.blog_post, .widget, .notification { border: 1px solid rgba(255,255,255,.06); background: rgba(7,14,16,.9); box-shadow: 0 20px 40px rgba(0,0,0,.55); }
-.blog_post h2, .widget h2, .notification h2 { border-left: 8px solid var(--theme-color-03); background: linear-gradient(90deg, rgba(var(--theme-color-02-rgb), .8), rgba(var(--theme-color-03-rgb), .7)); }
-.blog_content summary.ab-accordion-title { border-bottom: 2px solid rgba(var(--theme-color-01-rgb), .4); color: var(--theme-color-01); background: rgba(0,0,0,.35); }
-.blog_content .ab-accordion-text { border-left: 3px solid rgba(var(--theme-color-03-rgb), .6); background: rgba(5,10,15,.65); }
-.blog_content .wp-block-image img, img.attachment-post-thumbnail, img.attachment-thumbnail, .cat-post-format-standard img { padding: 4px; border: 1px solid rgba(255,255,255,.05); background: rgba(10,20,20,.75); box-shadow: 0 0 15px rgba(0,0,0,.6); }
-.notification_container { background: rgba(5,10,15,.85); backdrop-filter: blur(6px); }
-.notification .btn_close { border: 1px solid rgba(255,255,255,.15); color: #fff; background: rgba(var(--theme-color-03-rgb), .6); }
-.notification .btn_close:hover { background: rgba(var(--theme-color-03-rgb), .9); }
+.ribbon > ul {
+  position: relative;
+  margin-left: -0.625em !important;
+  padding-inline: 0.7em !important;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0 0.25em 0.25em 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--wp--preset--color--background) 95%, transparent),
+    color-mix(in srgb, var(--wp--preset--color--surface) 90%, transparent)
+  );
+  box-shadow: -1px 3px 8px rgba(0, 0, 0, 0.6);
+}
+.ribbon > ul::before,
+.ribbon > ul::after {
+  position: absolute;
+  display: block;
+  content: "";
+}
+.ribbon > ul::before {
+  top: 0;
+  left: -0.469em;
+  width: 0.469em;
+  height: 100%;
+  padding-left: 0.438em;
+  border-radius: 0.313em 0 0 0.313em;
+  background: inherit;
+}
+.ribbon > ul::after {
+  bottom: -0.313em;
+  left: -0.313em;
+  width: 0.313em;
+  height: 0.313em;
+  border-radius: 0.313em 0 0 0.313em;
+  background: rgba(0, 0, 0, 0.55);
+}
+.desktop-menu ul {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--background) 95%,
+    transparent
+  );
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+}
+.desktop-menu a {
+  color: rgba(255, 255, 255, 0.85) !important;
+  letter-spacing: 0.04em;
+}
+.desktop-menu .sub-menu {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.desktop-menu .sub-menu a {
+  color: rgba(255, 255, 255, 0.7) !important;
+  background: transparent;
+}
+.mobile-menu > div {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--surface) 80%,
+    transparent
+  );
+}
+.mobile-menu a {
+  border: 0.25vw solid
+    color-mix(in srgb, var(--wp--preset--color--primary) 60%, transparent);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--surface) 90%,
+    transparent
+  );
+}
+.mobile-menu button {
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #fff;
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--accent) 85%,
+    transparent
+  );
+}
+.mobile-menu .sub-menu {
+  background: rgba(50, 50, 50, 0.5);
+}
+.desktop-menu li.current-menu-item > a,
+.desktop-menu a:hover,
+.desktop-menu li:hover > a,
+.mobile-menu li.current-menu-item > a,
+.mobile-menu a:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--wp--preset--color--accent) 80%,
+    transparent
+  );
+  color: var(--wp--preset--color--background) !important;
+  background: var(--wp--preset--color--primary) !important;
+  box-shadow: 0 0 15px
+    color-mix(in srgb, var(--wp--preset--color--primary) 45%, transparent) !important;
+}
 
-.carbonlite-dashboard { color: var(--theme-color-01); background: none; font-family: themed-font, sans-serif; }
-.carbonlite-dash, .carbonlite-tripdash { color: var(--theme-color-01); background: rgba(5,10,15,.85); }
-.carbonlite-dash::after, .carbonlite-tripdash::after { background: rgba(var(--theme-color-03-rgb), .6); }
-#taborovajizda_body #countdowntimer-2 { display: none !important; }
-.zapati > div { border-block: 2px solid; border-top-color: rgba(var(--theme-color-01-rgb), .6); border-bottom-color: rgba(var(--theme-color-03-rgb), .6); color: #d4e9da; background: rgba(var(--theme-color-02-rgb), .9); }
+.blog_post,
+.widget,
+.notification {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--background) 90%,
+    transparent
+  );
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.55);
+}
+.blog_post h2,
+.widget h2,
+.notification h2 {
+  border-left: 8px solid var(--wp--preset--color--accent);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--wp--preset--color--surface) 80%, transparent),
+    color-mix(in srgb, var(--wp--preset--color--accent) 70%, transparent)
+  );
+}
+.blog_content summary.ab-accordion-title {
+  border-bottom: 2px solid
+    color-mix(in srgb, var(--wp--preset--color--primary) 40%, transparent);
+  color: var(--wp--preset--color--primary);
+  background: rgba(0, 0, 0, 0.35);
+}
+.blog_content .ab-accordion-text {
+  border-left: 3px solid
+    color-mix(in srgb, var(--wp--preset--color--accent) 60%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--background) 65%,
+    transparent
+  );
+}
+.blog_content .wp-block-image img,
+img.attachment-post-thumbnail,
+img.attachment-thumbnail,
+.cat-post-format-standard img {
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--surface) 75%,
+    transparent
+  );
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+}
+.notification_container {
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--background) 85%,
+    transparent
+  );
+  backdrop-filter: blur(6px);
+}
+.notification .btn_close {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--accent) 60%,
+    transparent
+  );
+}
+.notification .btn_close:hover {
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--accent) 90%,
+    transparent
+  );
+}
+
+.carbonlite-dashboard {
+  color: var(--wp--preset--color--primary);
+  background: none;
+  font-family: themed-font, sans-serif;
+}
+.carbonlite-dash,
+.carbonlite-tripdash {
+  color: var(--wp--preset--color--primary);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--background) 85%,
+    transparent
+  );
+}
+.carbonlite-dash::after,
+.carbonlite-tripdash::after {
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--accent) 60%,
+    transparent
+  );
+}
+#taborovajizda_body #countdowntimer-2 {
+  display: none !important;
+}
+.zapati > div {
+  border-block: 2px solid;
+  border-top-color: color-mix(
+    in srgb,
+    var(--wp--preset--color--primary) 60%,
+    transparent
+  );
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--wp--preset--color--accent) 60%,
+    transparent
+  );
+  color: var(--wp--preset--color--text);
+  background: color-mix(
+    in srgb,
+    var(--wp--preset--color--surface) 90%,
+    transparent
+  );
+}

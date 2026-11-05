@@ -6,6 +6,8 @@
 @import "./season.css";
 
 @theme inline {
+  --breakpoint-sm: 35rem;
+  --breakpoint-md: 48rem;
   --color-season-background: var(--wp--preset--color--background);
   --color-season-surface: var(--wp--preset--color--surface);
   --color-season-text: var(--wp--preset--color--text);
@@ -14,8 +16,88 @@
   --font-body: var(--wp--preset--font-family--body);
 }
 
+@layer components {
+  .blog_post {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    text-align: left;
+  }
+  .blog_post_title,
+  .tj-card-title {
+    margin-top: 0;
+    padding-bottom: 0.25em;
+    padding-left: 0.6em;
+    color: var(--wp--preset--color--text);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .blog_content,
+  .tj-card-body {
+    padding-right: 1rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+  }
+  .tj-form-section {
+    display: block;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .tj-form-heading {
+    flex-basis: 100%;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  .tj-registration-label,
+  .tj-contact-label {
+    align-self: center;
+    text-align: left;
+    font-style: italic;
+  }
+  .tj-registration-control,
+  .tj-contact-control {
+    min-width: 0;
+    max-width: 80vw;
+    margin-bottom: 0.2em;
+    box-sizing: border-box;
+  }
+  .tj-registration-control {
+    margin-top: 0.2em;
+    margin-right: auto;
+    margin-left: auto;
+    flex-basis: 66%;
+  }
+  .tj-contact-label {
+    margin-right: 1rem;
+    margin-bottom: 0.3em;
+    flex-basis: 40%;
+  }
+  .tj-contact-control {
+    flex-basis: 60%;
+    flex-grow: 1;
+  }
+
+  @media (min-width: 35rem) {
+    .tj-form-section {
+      display: flex;
+    }
+    .tj-registration-label {
+      flex-basis: 30%;
+      text-align: right;
+    }
+    .tj-registration-control {
+      max-width: 60vw;
+    }
+    .tj-contact-label {
+      flex-basis: 20%;
+      text-align: right;
+    }
+  }
+}
+
 @layer base {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
   }
 

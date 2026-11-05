@@ -11,10 +11,7 @@
   },
   "registration": {
     "status": "open",
+    "remainingPlaces": 1,
     "externalSeasonKey": null
-  },
-  "assets": {
-    "hero": "resources/assets/season/hero.jpg",
-    "logo": "web_images/logo_color.png"
   }
 }

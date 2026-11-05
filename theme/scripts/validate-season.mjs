@@ -21,8 +21,10 @@ if (season.startDate && season.endDate && season.startDate > season.endDate) {
   process.exit(1);
 }
 
-for (const [name, asset] of Object.entries(season.assets)) {
-  if (!asset) continue;
+for (const [name, asset] of Object.entries({
+  hero: 'resources/assets/season/hero.jpg',
+  background: 'resources/assets/season/background.jpg',
+})) {
   try {
     await access(path.join(root, asset));
   } catch {

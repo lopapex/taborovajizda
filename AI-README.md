@@ -68,14 +68,13 @@ Ověř existenci `theme/public/build/manifest.json`. Build je ignorovaný; `pack
 
 ## Architektura
 
-- `app/`: několik malých namespaced modulů pro theme, formuláře a integrace;
+- `app/`: malé namespaced moduly pro theme, roční data a oddělené formulářové handlery;
 - `config/season.json`: aktivní roční provozní data;
 - `resources/css/app.css`: Tailwind vstup; vlastní markup používá přímo `tj:` utility bez `@apply`;
 - `resources/css/compat.css`: pouze dynamický WordPress/plugin markup;
 - `resources/css/season.css`: pouze aktivní roční vzhled a efekty;
 - `resources/ts`: TypeScript bez Reactu;
 - `template-parts/`: pouze skutečně sdílené části; jednorázový markup zůstává ve WordPress entrypointu;
-- `patterns/`: WordPress block patterns;
 - `theme.json`: společné design tokeny;
 - kořenové WordPress templates: pouze kompatibilní entrypointy.
 
@@ -95,7 +94,9 @@ Lokální formulářové testy nesmí zapisovat do externí produkční databáz
 
 Git je zdroj pravdy pro aktivní rok, název, datum, cenu, stav registrace a explicitní externí season key. Nepotvrzené hodnoty nech `null`; nevymýšlej je.
 
-Použij `$tj-new-season` nebo nejdřív spusť `scripts/new-season.ps1` bez `-Apply`. Nevytvářej kopii celého ročního stylesheetu. Aktualizuj `season.json`, `theme.json`, `resources/css/season.css` a potvrzené assety.
+Použij `$tj-new-season` nebo nejdřív spusť `scripts/new-season.ps1` bez `-Apply`. Nevytvářej kopii celého ročního stylesheetu. Provozní data měň v `season.json`; `registration.remainingPlaces` je ručně spravovaný počet volných míst a `null` jej skryje. Nahraď pevně pojmenované `resources/assets/season/hero.jpg` a `background.jpg`, design tokeny měň v `theme.json` a roční efekty v `resources/css/season.css`. Sémantickou CSS komponentu vytvářej pouze pro vzor použitý alespoň třikrát; nepoužívej `@apply`.
+
+Countdown pochází z databázového WordPress widgetu, ne ze šablony. Po potvrzení termínu jej aktualizuj v administraci a teprve potom odstraň skrytí `#countdowntimer-2` ze `season.css`.
 
 Při redesignu nejprve načti repozitářový `$design-taste-frontend`, proveď audit a zachovej SEO a informační architekturu.
 

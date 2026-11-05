@@ -4,7 +4,7 @@
   "title": "Táborová jízda season",
   "type": "object",
   "additionalProperties": false,
-  "required": ["year", "slug", "title", "startDate", "endDate", "price", "registration", "assets"],
+  "required": ["year", "slug", "title", "startDate", "endDate", "price", "registration"],
   "properties": {
     "$schema": { "type": "string" },
     "year": { "type": "integer", "minimum": 2000, "maximum": 2200 },
@@ -24,24 +24,16 @@
     "registration": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "externalSeasonKey"],
+      "required": ["status", "remainingPlaces", "externalSeasonKey"],
       "properties": {
         "status": { "enum": ["hidden", "coming-soon", "open", "full", "closed"] },
+        "remainingPlaces": { "type": ["integer", "null"], "minimum": 0 },
         "externalSeasonKey": {
           "anyOf": [
             { "type": "string", "pattern": "^[0-9]+$" },
             { "type": "null" }
           ]
         }
-      }
-    },
-    "assets": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["hero", "logo"],
-      "properties": {
-        "hero": { "type": ["string", "null"] },
-        "logo": { "type": ["string", "null"] }
       }
     }
   }

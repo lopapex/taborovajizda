@@ -37,7 +37,6 @@ final class Theme
 
     public static function setup(): void
     {
-        load_theme_textdomain('taborovajizda', self::$root . '/languages');
         add_theme_support('automatic-feed-links');
         add_theme_support('post-thumbnails');
         add_theme_support('align-wide');

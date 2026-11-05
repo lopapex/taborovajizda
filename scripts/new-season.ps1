@@ -25,6 +25,9 @@ param(
     [string]$RegistrationStatus = 'coming-soon',
 
     [AllowNull()]
+    [Nullable[int]]$RemainingPlaces,
+
+    [AllowNull()]
     [string]$ExternalSeasonKey,
 
     [switch]$Apply
@@ -36,6 +39,8 @@ Set-StrictMode -Version Latest
 $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $seasonPath = Join-Path $repositoryRoot 'theme\config\season.json'
 $assetDirectory = Join-Path $repositoryRoot 'theme\resources\assets\season'
+$heroPath = Join-Path $assetDirectory 'hero.jpg'
+$backgroundPath = Join-Path $assetDirectory 'background.jpg'
 $branchSlug = "$Year-$Slug"
 $branchName = "season/$branchSlug"
 
@@ -68,11 +73,8 @@ $configuration = [ordered]@{
     }
     registration = [ordered]@{
         status = $RegistrationStatus
+        remainingPlaces = if ($null -eq $RemainingPlaces) { $null } else { [int]$RemainingPlaces }
         externalSeasonKey = if ([string]::IsNullOrWhiteSpace($ExternalSeasonKey)) { $null } else { $ExternalSeasonKey }
-    }
-    assets = [ordered]@{
-        hero = $null
-        logo = 'web_images/logo_color.svg'
     }
 }
 
@@ -85,7 +87,8 @@ if ($LASTEXITCODE -gt 1) { throw 'Unable to scan previous-season references.' }
     Mode = if ($Apply) { 'APPLY' } else { 'PREVIEW' }
     Branch = $branchName
     SeasonFile = $seasonPath
-    AssetDirectory = $assetDirectory
+    Hero = $heroPath
+    Background = $backgroundPath
     PreviousYear = $previousYear
     PreviousYearReferences = $references.Count
 } | Format-List
@@ -113,8 +116,7 @@ if ($currentBranch -eq 'main') {
     throw "Run from main or the intended '$branchName' branch. Current branch: '$currentBranch'."
 }
 
-New-Item -ItemType Directory -Path $assetDirectory -Force | Out-Null
 $json = $configuration | ConvertTo-Json -Depth 10
 Set-Content -LiteralPath $seasonPath -Value $json -Encoding UTF8
 
-"Updated $seasonPath. Add confirmed season artwork, update theme.json tokens, then run npm run check from theme/."
+"Updated $seasonPath. Replace hero.jpg and background.jpg with confirmed artwork, update theme.json tokens and season.css, then run npm run check from theme/."
