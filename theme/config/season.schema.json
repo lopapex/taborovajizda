@@ -4,12 +4,13 @@
   "title": "Táborová jízda season",
   "type": "object",
   "additionalProperties": false,
-  "required": ["year", "slug", "title", "startDate", "endDate", "price", "registration"],
+  "required": ["year", "slug", "title", "contactEmail", "startDate", "endDate", "price", "registration"],
   "properties": {
     "$schema": { "type": "string" },
     "year": { "type": "integer", "minimum": 2000, "maximum": 2200 },
     "slug": { "type": "string", "pattern": "^[0-9]{4}-[a-z0-9-]+$" },
     "title": { "type": "string", "minLength": 1 },
+    "contactEmail": { "type": "string", "format": "email" },
     "startDate": { "type": ["string", "null"], "format": "date" },
     "endDate": { "type": ["string", "null"], "format": "date" },
     "price": {

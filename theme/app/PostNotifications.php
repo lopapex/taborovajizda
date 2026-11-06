@@ -32,13 +32,14 @@ final class PostNotifications
             $subject = sprintf('www.taborovajizda.cz má nový příspěvek: %s', $post->post_title);
             $permalink = get_permalink($post->ID);
             $message = sprintf('Pokud se Vám příspěvek nezobrazuje správně, klikněte na odkaz: %s', $permalink) . "\n\n" . $post->post_content;
-            $headers = ['From: Táborová jízda <info@taborovajizda.cz>', 'Content-Type: text/html; charset=UTF-8'];
+            $contactEmail = Season\Season::current()->contactEmail();
+            $headers = ["From: Táborová jízda <$contactEmail>", 'Content-Type: text/html; charset=UTF-8'];
 
             while ($row = $result->fetch_assoc()) {
                 $unsubscribe = "\n\nPro odhlášení odběru novinek klikněte na následující odkaz: https://www.taborovajizda.cz/odeslat-dotaz/?unsubscribe={$row['validate_id']}";
                 wp_mail($row['email'], $subject, $message . $unsubscribe, $headers);
             }
-            wp_mail('info@taborovajizda.cz', $subject, $message, $headers);
+            wp_mail($contactEmail, $subject, $message, $headers);
         } catch (\Throwable $error) {
             error_log('[taborovajizda] Newsletter notification failed: ' . $error->getMessage());
         }

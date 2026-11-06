@@ -10,6 +10,7 @@ $valid = [
     'year' => 2027,
     'slug' => '2027-test',
     'title' => 'Test',
+    'contactEmail' => 'test@example.com',
     'startDate' => '2027-08-01',
     'endDate' => '2027-08-14',
     'price' => ['amount' => 5000, 'currency' => 'CZK'],
@@ -17,9 +18,19 @@ $valid = [
 ];
 
 $season = Season::fromArray($valid);
-if ($season->year() !== 2027 || $season->remainingPlaces() !== 1 || $season->isFull() || $season->externalSeasonKey() !== '42') {
+if ($season->year() !== 2027 || $season->contactEmail() !== 'test@example.com' || $season->remainingPlaces() !== 1 || $season->isFull() || $season->externalSeasonKey() !== '42') {
     fwrite(STDERR, "Season value mapping failed.\n");
     exit(1);
+}
+
+$invalid = $valid;
+$invalid['contactEmail'] = 'invalid';
+try {
+    Season::fromArray($invalid);
+    fwrite(STDERR, "Invalid contact email was accepted.\n");
+    exit(1);
+} catch (UnexpectedValueException) {
+    // Expected.
 }
 
 $full = $valid;

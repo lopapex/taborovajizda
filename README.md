@@ -26,6 +26,8 @@ Composer není potřeba.
 
 Přístupové údaje, hesla ani obnovovací kódy se nikdy necommitují. Přehled WordPress stránek, příspěvků, rubrik a jejich vazby na PHP šablony je v [mapě WordPress obsahu](WORDPRESS-CONTENT.md).
 
+Datový tok elektronické přihlášky, newsletteru a formulářových e-mailů popisuje [dokumentace formulářů a e-mailů](FORMS-AND-EMAILS.md).
+
 ## První zprovoznění
 
 ```powershell
@@ -134,11 +136,11 @@ Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup st
 
 ## Každoroční změna
 
-Provozní údaje jsou pouze v `theme/config/season.json`. V templates se rok, název a termín nepíšou natvrdo. Vizuální tokeny jsou v `theme/theme.json` a aktuální roční CSS v `theme/resources/css/season.css`.
+Provozní údaje jsou pouze v `theme/config/season.json`. V templates se rok, název, termín ani kontaktní e-mail nepíšou natvrdo. Vizuální tokeny jsou v `theme/theme.json` a aktuální roční CSS v `theme/resources/css/season.css`.
 
 Každý ročník se připraví ve čtyřech oddělených krocích:
 
-1. Aktualizuj data v `config/season.json`, včetně ručně spravovaného `registration.remainingPlaces`; `null` znamená, že počet nezobrazujeme.
+1. Aktualizuj data v `config/season.json`, včetně `contactEmail` a ručně spravovaného `registration.remainingPlaces`; `null` znamená, že počet nezobrazujeme.
 2. Nahraď přesně dva soubory: `resources/assets/season/hero.jpg` a `resources/assets/season/background.jpg`.
 3. Uprav potvrzené barvy v `theme.json` a pouze roční efekty v `season.css`.
 4. Po potvrzení termínu nastav countdown widget ve WordPress administraci a odstraň pravidlo, které `#countdowntimer-2` skrývá.

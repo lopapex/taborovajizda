@@ -92,7 +92,7 @@ Lokální formulářové testy nesmí zapisovat do externí produkční databáz
 
 ## Roční změna
 
-Git je zdroj pravdy pro aktivní rok, název, datum, cenu, stav registrace a explicitní externí season key. Nepotvrzené hodnoty nech `null`; nevymýšlej je.
+Git je zdroj pravdy pro aktivní rok, název, datum, cenu, kontaktní e-mail, stav registrace a explicitní externí season key. Nepotvrzené hodnoty nech `null`; nevymýšlej je. `contactEmail` je povinná platná adresa a používá se jako provozní odesílatel a interní příjemce formulářových zpráv.
 
 Použij `$tj-new-season` nebo nejdřív spusť `scripts/new-season.ps1` bez `-Apply`. Nevytvářej kopii celého ročního stylesheetu. Provozní data měň v `season.json`; `registration.remainingPlaces` je ručně spravovaný počet volných míst a `null` jej skryje. Nahraď pevně pojmenované `resources/assets/season/hero.jpg` a `background.jpg`, design tokeny měň v `theme.json` a roční efekty v `resources/css/season.css`. Sémantickou CSS komponentu vytvářej pouze pro vzor použitý alespoň třikrát; nepoužívej `@apply`.
 

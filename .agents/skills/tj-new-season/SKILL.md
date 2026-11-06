@@ -7,7 +7,7 @@ description: Prepare a new Táborová jízda camp season in Git by updating vali
 
 Read `AI-README.md` and treat Git as the source of truth for active season data and visuals.
 
-1. Inspect `theme/config/season.json`, `theme/theme.json`, current season assets, the branch, and Git status.
+1. Inspect `theme/config/season.json`, including `contactEmail`, `theme/theme.json`, current season assets, the branch, and Git status.
 2. Ask only for missing facts that cannot be inferred: year, slug, public title, confirmed dates, price, registration state, optional manually maintained remaining-place count, external database season key, and visual brief. Never invent them. Use `null` when the remaining-place count should not be displayed.
 3. Use `scripts/new-season.ps1` without `-Apply` to preview changes. Show the proposed branch, configuration, fixed `hero.jpg` and `background.jpg` paths, and references to the previous year.
 4. Before `-Apply`, require confirmation. The script refuses a dirty tree and creates `season/<year>-<slug>` when run from `main`.

@@ -68,10 +68,11 @@ final class RegistrationHandler
             $this->response->redirect('error', $statement->errno === 1062 ? 5 : 4);
         }
 
+        $contactEmail = $season->contactEmail();
         wp_mail($email, $this->emailSubject($season), $this->emailMessage($season, $camp, $values), [
-            'From: Táborová jízda <info@taborovajizda.cz>',
+            "From: Táborová jízda <$contactEmail>",
             'Content-Type: text/plain; charset=UTF-8',
-            'Cc: Táborová jízda <info@taborovajizda.cz>',
+            "Cc: Táborová jízda <$contactEmail>",
         ]);
         $this->response->redirect('success', 1);
     }

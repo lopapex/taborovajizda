@@ -1,6 +1,7 @@
 <?php
+$contactEmail = \TaborovaJizda\Theme\Season\Season::current()->contactEmail();
 $successMessages = [
-	1 => 'Přihláška byla úspěšně přijata. Zkontrolujte, že vám přišel potvrzující e-mail. Pokud e-mail během několika minut nedorazí, kontaktujte nás na info@taborovajizda.cz.',
+	1 => sprintf('Přihláška byla úspěšně přijata. Zkontrolujte, že vám přišel potvrzující e-mail. Pokud e-mail během několika minut nedorazí, kontaktujte nás na %s.', $contactEmail),
 	2 => 'Váš dotaz byl úspěšně odeslán. Odpověď obdržíte na Vámi zadanou e-mailovou adresu.',
 	3 => 'E-mailová adresa byla uložena a zároveň na ni byla odeslána potvrzující zpráva. Adresu je nutné nejprve ověřit, v opačném případě nebudete dostávat žádné zprávy o aktuálním dění. Nepotvrzené e-mailové adresy budou po 30 dnech z databáze odstraněny.',
 	4 => 'Ověřovací zpráva byla úspěšně odeslána. E-mailovou adresu je nutné ověřit, v opačném případě nebudete dostávat žádné zprávy o aktuálním dění. Nepotvrzené e-mailové adresy budou po 30 dnech z databáze odstraněny.',

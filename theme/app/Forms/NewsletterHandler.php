@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TaborovaJizda\Theme\Forms;
 
 use TaborovaJizda\Theme\ExternalDatabase;
+use TaborovaJizda\Theme\Season\Season;
 
 final class NewsletterHandler
 {
@@ -38,7 +39,7 @@ final class NewsletterHandler
             $row = $statement->get_result()->fetch_row();
             $this->response->redirect('error', empty($row[0]) ? 12 : 11, ['email' => $email]);
         }
-        wp_mail('info@taborovajizda.cz', 'Nová registrace odběru novinek', "Zaregistrován odběr. \nE-mail: $email");
+        wp_mail(Season::current()->contactEmail(), 'Nová registrace odběru novinek', "Zaregistrován odběr. \nE-mail: $email");
         $this->sendValidationEmail($email, $token);
         $this->response->redirect('success', 3);
     }
@@ -86,7 +87,7 @@ final class NewsletterHandler
         if (! $row) {
             $this->response->redirect('error', 14);
         }
-        wp_mail('info@taborovajizda.cz', 'Žádost o znovuověření', "Zpráva zaslána na e-mail: $email");
+        wp_mail(Season::current()->contactEmail(), 'Žádost o znovuověření', "Zpráva zaslána na e-mail: $email");
         $this->sendValidationEmail($email, (string) $row[0]);
         $this->response->redirect('success', 4);
     }
@@ -99,7 +100,8 @@ final class NewsletterHandler
             "Pro dokončení je nutné ověřit váš e-mail na následujícím odkaze: \n$validateUrl \n\n" .
             "Pokud si již nebudete přát dostávat upozornění nebo si myslíte, že byl Váš e-mail použit neoprávněně, použijte následující odkaz k odhlášení odběru: \n$unsubscribeUrl \n\n" .
             "Díky za zájem.\nVaše Táborová jízda\n\nNa tento e-mail prosím neodpovídejte.";
-        wp_mail($email, 'Registrace na www.taborovajizda.cz', $message, "From: Táborová jízda <info@taborovajizda.cz>\r\nContent-Type: text/plain; charset=UTF-8");
+        $contactEmail = Season::current()->contactEmail();
+        wp_mail($email, 'Registrace na www.taborovajizda.cz', $message, "From: Táborová jízda <$contactEmail>\r\nContent-Type: text/plain; charset=UTF-8");
     }
 
     private function post(string $key): string

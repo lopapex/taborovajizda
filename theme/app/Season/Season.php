@@ -52,10 +52,14 @@ final class Season implements JsonSerializable
             throw new \UnexpectedValueException('Season year must be an integer greater than 1999.');
         }
 
-        foreach (['slug', 'title'] as $key) {
+        foreach (['slug', 'title', 'contactEmail'] as $key) {
             if (! isset($data[$key]) || ! is_string($data[$key]) || trim($data[$key]) === '') {
                 throw new \UnexpectedValueException(sprintf('Season field "%s" is required.', $key));
             }
+        }
+
+        if (! filter_var($data['contactEmail'], FILTER_VALIDATE_EMAIL)) {
+            throw new \UnexpectedValueException('Season contact email is invalid.');
         }
 
         foreach (['startDate', 'endDate'] as $key) {
@@ -101,6 +105,7 @@ final class Season implements JsonSerializable
             'year' => (int) gmdate('Y'),
             'slug' => 'season-unavailable',
             'title' => __('Táborová jízda', 'taborovajizda'),
+            'contactEmail' => 'info@taborovajizda.cz',
             'startDate' => null,
             'endDate' => null,
             'price' => ['amount' => null, 'currency' => 'CZK'],
@@ -121,6 +126,11 @@ final class Season implements JsonSerializable
     public function title(): string
     {
         return $this->data['title'];
+    }
+
+    public function contactEmail(): string
+    {
+        return $this->data['contactEmail'];
     }
 
     public function startDate(): ?DateTimeImmutable

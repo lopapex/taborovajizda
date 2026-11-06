@@ -13,6 +13,9 @@ param(
     [string]$Title,
 
     [AllowNull()]
+    [string]$ContactEmail,
+
+    [AllowNull()]
     [string]$StartDate,
 
     [AllowNull()]
@@ -60,11 +63,18 @@ if ($normalisedStart -and $normalisedEnd -and $normalisedStart -gt $normalisedEn
     throw 'StartDate must not be after EndDate.'
 }
 
+$previous = Get-Content -Raw -LiteralPath $seasonPath | ConvertFrom-Json
+$resolvedContactEmail = if ([string]::IsNullOrWhiteSpace($ContactEmail)) { [string]$previous.contactEmail } else { $ContactEmail }
+if ($resolvedContactEmail -notmatch '^[^@\s]+@[^@\s]+\.[^@\s]+$') {
+    throw 'ContactEmail must contain a valid e-mail address.'
+}
+
 $configuration = [ordered]@{
     '$schema' = './season.schema.json'
     year = $Year
     slug = $branchSlug
     title = $Title
+    contactEmail = $resolvedContactEmail
     startDate = $normalisedStart
     endDate = $normalisedEnd
     price = [ordered]@{
@@ -78,7 +88,6 @@ $configuration = [ordered]@{
     }
 }
 
-$previous = Get-Content -Raw -LiteralPath $seasonPath | ConvertFrom-Json
 $previousYear = [string]$previous.year
 $references = @(& rg -n --glob '!node_modules/**' --glob '!public/build/**' $previousYear (Join-Path $repositoryRoot 'theme'))
 if ($LASTEXITCODE -gt 1) { throw 'Unable to scan previous-season references.' }
