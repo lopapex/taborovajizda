@@ -84,13 +84,20 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 
 - [x] Porovnat sitemap a `WORDPRESS-CONTENT.md`; aktualizovat úplný seznam veřejných URL.
   - Ověřeno 10. 11. 2026 na lokální sitemapě: 13 stránek, 152 publikovaných příspěvků a 12 rubrik. `WORDPRESS-CONTENT.md` nyní uvádí tři autoritativní sitemapové zdroje, které tvoří úplný inventář URL pro regresní kontrolu.
-- [ ] Inventarizovat stránky, rubriky, příspěvky, menu, widgety, dokumenty, plakáty, trailery a galerie.
-- [ ] U každé současné stránky rozhodnout: sekce homepage / archiv / zachovaná samostatná URL / 301 redirect.
-- [ ] Zmapovat všechny interní odkazy na stránky, které mohou být přesunuty.
-- [ ] Rozlišit roční provozní obsah od globálních informací.
-- [ ] Navrhnout mapování historických článků na ročníky; neodvozovat ročník pouze z data publikace.
-- [ ] Zvolit způsob evidence ročníků v administraci až po inventuře pluginů: vlastní taxonomie a term meta, ACF nebo minimální vlastní řešení.
-- [ ] Připravit migrační a rollback plán bez změn produkčních dat.
+- [x] Inventarizovat stránky, rubriky, příspěvky, menu, widgety, dokumenty, plakáty, trailery a galerie.
+  - Inventář je v `CONTENT-MIGRATION-2027.md`; vychází z lokální sitemap, WordPress menu, widgetů a aktivních pluginů.
+- [x] U každé současné stránky rozhodnout: sekce homepage / archiv / zachovaná samostatná URL / 301 redirect.
+  - Všechny URL zůstávají dostupné. Homepage znovu použije obsah jako sekce, archiv zůstává na `/minule-rocniky/` a žádný 301 redirect není navržen.
+- [x] Zmapovat všechny interní odkazy na stránky, které mohou být přesunuty.
+  - Mapování menu, kotvových cílů a explicitních PHP odkazů je v `CONTENT-MIGRATION-2027.md`; stávající URL se nemění.
+- [x] Rozlišit roční provozní obsah od globálních informací.
+  - Aktivní roční data zůstávají v `season.json`; globální a historický obsah zůstává ve WordPressu.
+- [x] Navrhnout mapování historických článků na ročníky; neodvozovat ročník pouze z data publikace.
+  - Použijí se výhradně explicitní roční rubriky; nezařazené a nejednoznačné položky vyžadují ruční rozhodnutí.
+- [x] Zvolit způsob evidence ročníků v administraci až po inventuře pluginů: vlastní taxonomie a term meta, ACF nebo minimální vlastní řešení.
+  - Pro první vizuální krok zůstává zdrojem aktivního ročníku `season.json`; CMS model se nyní nepřidává.
+- [x] Připravit migrační a rollback plán bez změn produkčních dat.
+  - Postup pro budoucí migraci a rollback je v `CONTENT-MIGRATION-2027.md`; neprovádí se žádná změna databáze.
 
 ## Fáze B — design systém
 
