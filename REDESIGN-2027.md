@@ -136,8 +136,10 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
   - Trailer aktivního roku se bere z `archive-seasons.json`; iframe vznikne až po kliknutí na náhled. Bez JavaScriptu zůstává odkaz na YouTube.
 - [x] Ošetřit nepotvrzený termín, cenu, chybějící plakát a chybějící trailer.
   - Termín bez dat zobrazí „Termín připravujeme“, cena `null` zobrazí „Upřesníme“ (u skončeného ročníku se nezobrazuje), nevyplněné místo a věk se vynechají, bez traileru se hero vykreslí v jednom sloupci a chybějící `hero.jpg` zastaví build v `validate-season.mjs`.
-- [ ] Odstranit možnost záporného countdownu; při skončeném termínu zobrazit neutrální stav.
+- [x] Odstranit možnost záporného countdownu; při skončeném termínu zobrazit neutrální stav.
+  - Ověřeno 11. 11. 2026: lokální widget `countdowntimer-2` měl cíl 15. 8. 2026 08:15 a vykresloval „-89 dní“, jen skrytý přes CSS. `app/CountdownWidget.php` jej přes `widget_display_callback` nevykreslí, jakmile cílový čas uplyne nebo nejde přečíst (stejné fallbacky `t` / `year` / `date` jako plugin; 5 kontrol parseru prošlo). CSS skrytí ze `season.css` je odstraněné, neutrální informační widget ročníku zůstává. AI-README, README a `$tj-new-season` popisují nový postup. Databáze se neměnila.
 - [ ] Optimalizovat LCP plakát bez ořezu důležité grafiky.
+  - Hotová část: homepage v `<head>` preloaduje roční `hero.jpg` z Vite manifestu s `fetchpriority="high"`. Lokálně se obrázek stahuje souběžně se stylesheetem, ne zhruba 650 ms po něm. Zbývá: `hero.jpg` je banner 1536×512, takže ho `background-size: cover` na mobilu ořízne. Bez ořezu to půjde až se skutečným plakátem nebo schváleným mobilním výřezem.
 
 ### Sticky CTA
 

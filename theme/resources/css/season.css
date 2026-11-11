@@ -329,9 +329,6 @@ img.attachment-thumbnail,
     transparent
   );
 }
-#taborovajizda_body #countdowntimer-2 {
-  display: none !important;
-}
 .zapati > div {
   border-block: 2px solid;
   border-top-color: color-mix(

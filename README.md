@@ -143,7 +143,7 @@ Každý ročník se připraví ve čtyřech oddělených krocích:
 1. Aktualizuj data v `config/season.json`, včetně `contactEmail` a ručně spravovaného `registration.remainingPlaces`; `null` znamená, že počet nezobrazujeme.
 2. Nahraď přesně dva soubory: `resources/assets/season/hero.jpg` a `resources/assets/season/background.jpg`.
 3. Uprav potvrzené barvy v `theme.json` a pouze roční efekty v `season.css`.
-4. Po potvrzení termínu nastav countdown widget ve WordPress administraci a odstraň pravidlo, které `#countdowntimer-2` skrývá.
+4. Po potvrzení termínu nastav countdown widget ve WordPress administraci; šablona jej sama zobrazí, dokud cílový čas neuplyne.
 
 Pro nový ročník použij skill `$tj-new-season` nebo náhled skriptu:
 
@@ -153,7 +153,7 @@ Pro nový ročník použij skill `$tj-new-season` nebo náhled skriptu:
 
 Skript bez `-Apply` nic nemění. Nevymýšlej nepotvrzené datum, cenu, databázový klíč ani vizuální brief. Názvy ročních obrázků jsou pevné a nejsou součástí JSON konfigurace. Staré ročníky jsou archivované v Git historii; nevytvářej další kopii celého ročního CSS.
 
-Odpočet není součástí šablony: vytváří jej plugin `jquery-t-countdown-widget` z konfigurace uložené ve WordPress databázi. Dokud není potvrzený nový termín, `season.css` skrývá widget `#countdowntimer-2`. Pro nový ročník nejdřív nastav datum widgetu ve WordPressu a potom odstraň toto CSS pravidlo.
+Odpočet není součástí šablony: vytváří jej plugin `jquery-t-countdown-widget` z konfigurace uložené ve WordPress databázi. Šablona (`app/CountdownWidget.php`) widget nevykreslí, jakmile jeho cílový čas uplyne nebo nejde přečíst, takže se nikdy nezobrazí záporný odpočet. Pro nový ročník stačí nastavit nové datum widgetu ve WordPressu.
 
 ## Formuláře a lokální prostředí
 

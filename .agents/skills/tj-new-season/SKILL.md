@@ -19,4 +19,4 @@ During visual work keep `npm run dev` running so CSS, TypeScript, and season ass
 
 Keep old seasons in Git history, not as active runtime variants. Do not delete old assets until their references have been audited and the user approves removal.
 
-The countdown is a database-backed WordPress widget. After its date is updated in WordPress, remove the `#countdowntimer-2` hiding rule from `season.css`; do not invent or hard-code the date in the theme.
+The countdown is a database-backed WordPress widget. `app/CountdownWidget.php` suppresses it automatically once its target time has passed or cannot be parsed, so it never shows a negative value. After the new date is confirmed, update it in the WordPress widget; do not invent or hard-code the date in the theme.

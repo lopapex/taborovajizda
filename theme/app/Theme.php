@@ -28,6 +28,7 @@ final class Theme
         add_action('init', [self::class, 'registerSeasonTaxonomy']);
         add_action('widgets_init', [self::class, 'registerWidgets']);
         add_action('wp_enqueue_scripts', [self::class, 'enqueueAssets']);
+        add_action('wp_head', [self::class, 'preloadHeroImage'], 1);
         add_filter('nav_menu_link_attributes', [self::class, 'menuLinkAttributes'], 10, 4);
 
         if (wp_get_environment_type() !== 'production') {
@@ -36,6 +37,7 @@ final class Theme
 
         (new Forms())->register();
         (new PostNotifications())->register();
+        (new CountdownWidget())->register();
     }
 
     public static function setup(): void
@@ -78,15 +80,59 @@ final class Theme
         ]);
     }
 
-    public static function enqueueAssets(): void
+    /**
+     * The hero artwork is a CSS background, so the browser would only discover it
+     * after the stylesheet is parsed. Preloading it lets the LCP image start
+     * downloading in parallel with the CSS.
+     */
+    public static function preloadHeroImage(): void
     {
+        if (! is_front_page()) {
+            return;
+        }
+
+        $file = self::manifest()['resources/assets/season/hero.jpg']['file'] ?? null;
+        if (! is_string($file) || $file === '') {
+            return;
+        }
+
+        printf(
+            '<link rel="preload" as="image" href="%s" fetchpriority="high">' . "\n",
+            esc_url(get_theme_file_uri('/public/build/' . ltrim($file, '/')))
+        );
+    }
+
+    private static function manifest(): array
+    {
+        static $manifest = null;
+        if (is_array($manifest)) {
+            return $manifest;
+        }
+
+        $manifest = [];
         $manifestPath = self::$root . '/public/build/manifest.json';
         if (! is_readable($manifestPath)) {
+            return $manifest;
+        }
+
+        try {
+            $decoded = json_decode((string) file_get_contents($manifestPath), true, 512, JSON_THROW_ON_ERROR);
+            $manifest = is_array($decoded) ? $decoded : [];
+        } catch (\Throwable $error) {
+            error_log('[taborovajizda] Unable to load build manifest: ' . $error->getMessage());
+        }
+
+        return $manifest;
+    }
+
+    public static function enqueueAssets(): void
+    {
+        $manifest = self::manifest();
+        if ($manifest === []) {
             return;
         }
 
         try {
-            $manifest = json_decode((string) file_get_contents($manifestPath), true, 512, JSON_THROW_ON_ERROR);
             $entry = $manifest['resources/ts/app.ts'] ?? null;
             if (! is_array($entry) || empty($entry['file'])) {
                 return;
