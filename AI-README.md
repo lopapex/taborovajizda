@@ -70,6 +70,7 @@ Ověř existenci `theme/public/build/manifest.json`. Build je ignorovaný; `pack
 
 - `app/`: malé namespaced moduly pro theme, roční data a oddělené formulářové handlery;
 - `config/season.json`: aktivní roční provozní data;
+- `config/archive-seasons.json`: ověřené historické ročníky, trailery a explicitní vazby na rubriky; bez historických cen a termínů;
 - `resources/css/app.css`: Tailwind vstup; vlastní markup používá přímo `tj:` utility bez `@apply`;
 - `resources/css/compat.css`: pouze dynamický WordPress/plugin markup;
 - `resources/css/season.css`: pouze aktivní roční vzhled a efekty;
@@ -90,13 +91,15 @@ Zachovej URL, slugy, navigaci, názvy a pořadí formulářových polí, logo a 
 
 Lokální formulářové testy nesmí zapisovat do externí produkční databáze ani posílat skutečné e-maily.
 
+Veřejný redesign nepřidává newsletter. Homepage a kontakt používají sdílený dotazový formulář. Jeho příjemce je `contactEmail` ze `season.json`; starý newsletterový backend se zatím zachovává jen kvůli kompatibilitě dříve odeslaných validačních a odhlašovacích odkazů.
+
 ## Roční změna
 
 Git je zdroj pravdy pro aktivní rok, název, datum, cenu, kontaktní e-mail, stav registrace a explicitní externí season key. Nepotvrzené hodnoty nech `null`; nevymýšlej je. `contactEmail` je povinná platná adresa a používá se jako provozní odesílatel a interní příjemce formulářových zpráv.
 
 Použij `$tj-new-season` nebo nejdřív spusť `scripts/new-season.ps1` bez `-Apply`. Nevytvářej kopii celého ročního stylesheetu. Provozní data měň v `season.json`; `registration.remainingPlaces` je ručně spravovaný počet volných míst a `null` jej skryje. Nahraď pevně pojmenované `resources/assets/season/hero.jpg` a `background.jpg`, design tokeny měň v `theme.json` a roční efekty v `resources/css/season.css`. Sémantickou CSS komponentu vytvářej pouze pro vzor použitý alespoň třikrát; nepoužívej `@apply`.
 
-Countdown pochází z databázového WordPress widgetu, ne ze šablony. Po potvrzení termínu jej aktualizuj v administraci a teprve potom odstraň skrytí `#countdowntimer-2` ze `season.css`.
+Countdown pochází z databázového WordPress widgetu, ne ze šablony. `app/CountdownWidget.php` jej nevykreslí, jakmile jeho cílový čas uplyne nebo nejde přečíst, takže nikdy neukáže záporný odpočet. Po potvrzení termínu stačí nastavit nové datum widgetu v administraci.
 
 Při redesignu nejprve načti repozitářový `$design-taste-frontend`, proveď audit a zachovej SEO a informační architekturu.
 

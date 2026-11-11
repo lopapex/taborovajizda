@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://taborovajizda.cz/schemas/archive-seasons.schema.json",
+  "title": "Táborová jízda archive seasons",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["seasons"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "seasons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["year", "title", "youtubeId", "thumbnail", "categorySlug"],
+        "properties": {
+          "year": { "type": "integer", "minimum": 2000, "maximum": 2200 },
+          "title": { "type": "string", "minLength": 1 },
+          "youtubeId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{11}$" },
+          "thumbnail": { "enum": ["maxresdefault", "sddefault", "hqdefault"] },
+          "categorySlug": {
+            "anyOf": [
+              { "type": "string", "pattern": "^[a-z0-9-]+$" },
+              { "type": "null" }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -91,6 +91,30 @@ final class Season implements JsonSerializable
             throw new \UnexpectedValueException('External season key must contain digits only or be null.');
         }
 
+        $location = $data['location'] ?? null;
+        if ($location !== null && (! is_string($location) || trim($location) === '')) {
+            throw new \UnexpectedValueException('Season location must be a non-empty string or null.');
+        }
+
+        $ageRange = $data['ageRange'] ?? null;
+        if (
+            $ageRange !== null
+            && (
+                ! is_array($ageRange)
+                || ! is_int($ageRange['min'] ?? null)
+                || ! is_int($ageRange['max'] ?? null)
+                || $ageRange['min'] < 1
+                || $ageRange['min'] > $ageRange['max']
+            )
+        ) {
+            throw new \UnexpectedValueException('Season age range must contain integers min <= max or be null.');
+        }
+
+        $map = $data['mapCoordinates'] ?? null;
+        if ($map !== null && (! is_array($map) || ! is_numeric($map['lat'] ?? null) || ! is_numeric($map['lon'] ?? null) || abs((float) $map['lat']) > 90 || abs((float) $map['lon']) > 180)) {
+            throw new \UnexpectedValueException('Season map coordinates must contain numeric lat and lon or be null.');
+        }
+
         $amount = $data['price']['amount'] ?? null;
         if ($amount !== null && (! is_int($amount) || $amount < 0)) {
             throw new \UnexpectedValueException('Season price amount must be a non-negative integer or null.');
@@ -108,7 +132,10 @@ final class Season implements JsonSerializable
             'contactEmail' => 'info@taborovajizda.cz',
             'startDate' => null,
             'endDate' => null,
-            'price' => ['amount' => null, 'currency' => 'CZK'],
+            'location' => null,
+            'ageRange' => null,
+            'mapCoordinates' => null,
+            'price' =>['amount' => null, 'currency' => 'CZK'],
             'registration' => ['status' => 'hidden', 'remainingPlaces' => null, 'externalSeasonKey' => null],
         ]);
     }
@@ -155,6 +182,52 @@ final class Season implements JsonSerializable
         return sprintf('%s. %s. - %s. %s. %d', $start->format('j'), $start->format('n'), $end->format('j'), $end->format('n'), $end->format('Y'));
     }
 
+    public function formattedPrice(): ?string
+    {
+        $amount = $this->data['price']['amount'] ?? null;
+        return is_int($amount) ? number_format($amount, 0, ',', "\u{00A0}") . "\u{00A0}Kč" : null;
+    }
+
+    public function location(): ?string
+    {
+        $value = $this->data['location'] ?? null;
+        return is_string($value) ? $value : null;
+    }
+
+    /**
+     * @return array{lat: float, lon: float}|null
+     */
+    public function mapCoordinates(): ?array
+    {
+        $map = $this->data['mapCoordinates'] ?? null;
+        return is_array($map) ? ['lat' => (float) $map['lat'], 'lon' => (float) $map['lon']] : null;
+    }
+
+    public function formattedAgeRange(): ?string
+    {
+        $range = $this->data['ageRange'] ?? null;
+        return is_array($range) ? sprintf('%d-%d let', $range['min'], $range['max']) : null;
+    }
+
+    public function hasEnded(?DateTimeImmutable $today = null): bool
+    {
+        $end = $this->endDate();
+        if (! $end) {
+            return false;
+        }
+
+        return $end->format('Y-m-d') < ($today ?? self::today())->format('Y-m-d');
+    }
+
+    /**
+     * Registration, including the waiting list of a full season, is offered only
+     * while the season is open or full and its end date has not passed.
+     */
+    public function acceptsRegistrations(?DateTimeImmutable $today = null): bool
+    {
+        return in_array($this->registrationStatus(), ['open', 'full'], true) && ! $this->hasEnded($today);
+    }
+
     public function registrationStatus(): string
     {
         return $this->data['registration']['status'];
@@ -186,6 +259,12 @@ final class Season implements JsonSerializable
     {
         $value = $this->data[$key] ?? null;
         return is_string($value) ? DateTimeImmutable::createFromFormat('!Y-m-d', $value) ?: null : null;
+    }
+
+    private static function today(): DateTimeImmutable
+    {
+        $timezone = function_exists('wp_timezone') ? wp_timezone() : new \DateTimeZone('Europe/Prague');
+        return new DateTimeImmutable('today', $timezone);
     }
 
     private static function isIsoDate(mixed $value): bool

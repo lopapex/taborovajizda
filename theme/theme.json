@@ -6,11 +6,46 @@
     "color": {
       "custom": false,
       "palette": [
-        { "slug": "background", "name": "Pozadí", "color": "#050a0f" },
-        { "slug": "surface", "name": "Plocha", "color": "#0c1417" },
-        { "slug": "text", "name": "Text", "color": "#d4e9da" },
-        { "slug": "primary", "name": "Hlavní", "color": "#98ff7a" },
-        { "slug": "accent", "name": "Akcent", "color": "#16a34a" }
+        {
+          "slug": "background",
+          "name": "Nebeské pozadí",
+          "color": "#f4f9ff"
+        },
+        {
+          "slug": "surface",
+          "name": "Bílá plocha",
+          "color": "#ffffff"
+        },
+        {
+          "slug": "text",
+          "name": "Text (námořnická modř)",
+          "color": "#17324d"
+        },
+        {
+          "slug": "muted",
+          "name": "Vedlejší text",
+          "color": "#4a6378"
+        },
+        {
+          "slug": "primary",
+          "name": "Slunce",
+          "color": "#ffb703"
+        },
+        {
+          "slug": "accent",
+          "name": "Mandarinka",
+          "color": "#fb5607"
+        },
+        {
+          "slug": "secondary",
+          "name": "Nebe",
+          "color": "#219ebc"
+        },
+        {
+          "slug": "link",
+          "name": "Odkaz",
+          "color": "#0f6f94"
+        }
       ]
     },
     "layout": {
@@ -18,10 +53,35 @@
       "wideSize": "1300px"
     },
     "spacing": {
-      "units": ["px", "rem", "%", "vw", "vh"]
+      "units": ["px", "rem", "%", "vw", "vh"],
+      "spacingSizes": [
+        { "name": "1", "slug": "1", "size": "0.25rem" },
+        { "name": "2", "slug": "2", "size": "0.5rem" },
+        { "name": "3", "slug": "3", "size": "0.75rem" },
+        { "name": "4", "slug": "4", "size": "1rem" },
+        { "name": "6", "slug": "6", "size": "1.5rem" },
+        { "name": "8", "slug": "8", "size": "2rem" },
+        { "name": "12", "slug": "12", "size": "3rem" },
+        { "name": "16", "slug": "16", "size": "4rem" }
+      ]
+    },
+    "border": {
+      "radius": true
+    },
+    "shadow": {
+      "presets": [
+        { "name": "Měkký", "slug": "soft", "shadow": "0 1.25rem 3rem rgb(0 0 0 / 0.25)" }
+      ]
     },
     "typography": {
       "fluid": true,
+      "fontSizes": [
+        { "name": "Malý", "slug": "sm", "size": "0.875rem" },
+        { "name": "Základní", "slug": "base", "size": "1rem" },
+        { "name": "Střední", "slug": "lg", "size": "1.25rem" },
+        { "name": "Nadpis", "slug": "xl", "size": "clamp(1.75rem, 4vw, 3rem)" },
+        { "name": "Hero", "slug": "hero", "size": "clamp(2.5rem, 7vw, 5.5rem)" }
+      ],
       "fontFamilies": [
         {
           "fontFamily": "Bariol, 'Segoe UI', sans-serif",
@@ -43,6 +103,11 @@
           ]
         }
       ]
+    },
+    "custom": {
+      "radius": "0.75rem",
+      "content-width": "72rem",
+      "wide-width": "86rem"
     }
   },
   "styles": {

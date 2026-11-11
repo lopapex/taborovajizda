@@ -64,3 +64,27 @@ Příspěvek se upravuje v administraci přes Příspěvky. Při změně struktu
 ## Údržba mapy
 
 Po přidání nebo odstranění stránky či rubriky aktualizujte tuto mapu. Počty příspěvků jsou orientační snapshot; architektura a slugy jsou důležitější než přesný počet.
+
+## Ověřený inventář veřejných URL
+
+Při redesignu je autoritativním úplným seznamem indexovatelných URL WordPress sitemap na lokálu (`/wp-sitemap.xml`). Ověřeno 10. listopadu 2026:
+
+| Sitemap | Počet URL | Obsah |
+| --- | ---: | --- |
+| `/wp-sitemap-posts-page-1.xml` | 13 | stránky v tabulce výše včetně homepage |
+| `/wp-sitemap-posts-post-1.xml` | 152 | jednotlivé publikované příspěvky |
+| `/wp-sitemap-taxonomies-category-1.xml` | 12 | rubriky |
+
+Při změně šablony nebo informační architektury ověřte všechny tři sitemapové soubory. Stávající URL nesmí zmizet ani se přesměrovat bez samostatně schváleného plánu.
+
+## Snapshot pluginů pro redesign
+
+Inventura lokální administrace 10. listopadu 2026: 24 aktivních pluginů a 1 neaktivní (`WP SVG Icons`). Stav je podkladem pro audit, nikoli souhlas k deaktivaci nebo změně produkce.
+
+| Skupina | Pluginy | Postup v redesignu |
+| --- | --- | --- |
+| Runtime a veřejný obsah | Email Encoder, Envira Gallery, Fluent Forms, Insert PHP Code Snippet, jQuery T(-) Countdown Widget, LiteSpeed Cache, Photonic Gallery & Lightbox, Post SMTP, Safe SVG, SEO SIMPLE PACK, Zalomení | Zachovat, dokud audit konkrétního výstupu nepotvrdí náhradu. Countdown je widget, SEO ovlivňuje metadata a galerie mohou být v redakčním obsahu. |
+| Redakční nástroje | AJAX Thumbnail Rebuild, Copy & Delete Posts, Fix Media Library, Genesis Blocks, Gutenberg, Kadence Blocks, Media Library Organizer, Stackable | Nejsou přímou závislostí nové šablony. Před případným úklidem je nutné ověřit bloky a média používané ve všech publikovaných příspěvcích a stránkách. |
+| Správa, bezpečnost a vývoj | Advanced Access Manager, All In One Login, Backup Migration, Fail2WP, Query Monitor, WP Crontrol | Mimo rozsah redesignu. Zachovat beze změny. |
+
+Kandidáti pro budoucí samostatný úklid jsou neaktivní `WP SVG Icons`, překrývající se blokové knihovny a jednorázové redakční nástroje. Žádný z nich se nemá odstranit bez ověření závislostí, zálohy a samostatného schválení.

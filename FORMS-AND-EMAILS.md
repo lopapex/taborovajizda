@@ -7,6 +7,7 @@ Tento dokument popisuje produkční chování formulářů. Externí databáze n
 Soubor `theme/config/season.json` určuje aktivní ročník a obsahuje také:
 
 - `registration.externalSeasonKey` — ID odpovídajícího řádku v externí tabulce `tabory`;
+- `location`, `ageRange`, `mapCoordinates` — místo, věk a bod na mapě zobrazené v hero a kontaktu (formuláře je nepoužívají);
 - `contactEmail` — provozní adresa použitá jako odesílatel a interní příjemce formulářových zpráv.
 
 Na produkci má být `externalSeasonKey` nastaven explicitně. Hodnota `null` použije poslední řádek tabulky `tabory`, což je pouze nouzová zpětná kompatibilita.

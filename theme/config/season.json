@@ -6,12 +6,15 @@
   "contactEmail": "info@taborovajizda.cz",
   "startDate": "2026-08-15",
   "endDate": "2026-08-28",
+  "location": "Plátěná osada, Splzov",
+  "ageRange": { "min": 7, "max": 17 },
+  "mapCoordinates": { "lat": 50.6488846, "lon": 15.2218272 },
   "price": {
     "amount": null,
     "currency": "CZK"
   },
   "registration": {
-    "status": "open",
+    "status": "closed",
     "remainingPlaces": 1,
     "externalSeasonKey": null
   }

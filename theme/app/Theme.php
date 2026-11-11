@@ -6,6 +6,7 @@ namespace TaborovaJizda\Theme;
 
 use TaborovaJizda\Theme\Forms\Forms;
 use TaborovaJizda\Theme\Season\Season;
+use TaborovaJizda\Theme\Season\SeasonArchive;
 
 final class Theme
 {
@@ -21,10 +22,18 @@ final class Theme
         self::$booted = true;
         self::$root = $root;
         Season::configure($root . '/config/season.json');
+        SeasonArchive::configure($root . '/config/archive-seasons.json');
 
         add_action('after_setup_theme', [self::class, 'setup']);
+        add_action('init', [self::class, 'registerSeasonTaxonomy']);
         add_action('widgets_init', [self::class, 'registerWidgets']);
         add_action('wp_enqueue_scripts', [self::class, 'enqueueAssets']);
+        add_action('wp_head', [self::class, 'preloadHeroImage'], 1);
+        add_action('init', [self::class, 'trimFrontend']);
+        add_action('wp_enqueue_scripts', [self::class, 'dequeueUnusedFrontPageAssets'], 100);
+        // Homepage content iframes (maps etc.) live in closed dialogs and tabs;
+        // never let WordPress treat them as above-the-fold and load them eagerly.
+        add_filter('wp_iframe_tag_add_loading_attr', static fn ($value) => is_front_page() ? 'lazy' : $value);
         add_filter('nav_menu_link_attributes', [self::class, 'menuLinkAttributes'], 10, 4);
 
         if (wp_get_environment_type() !== 'production') {
@@ -33,6 +42,10 @@ final class Theme
 
         (new Forms())->register();
         (new PostNotifications())->register();
+        (new CountdownWidget())->register();
+        (new YouTubeEmbeds())->register();
+        (new ContactLinks())->register();
+        (new PostContentEndpoint())->register();
     }
 
     public static function setup(): void
@@ -60,15 +73,96 @@ final class Theme
         ]);
     }
 
-    public static function enqueueAssets(): void
+    public static function registerSeasonTaxonomy(): void
     {
+        register_taxonomy('rocnik', ['post'], [
+            'labels' => [
+                'name' => 'Ročníky',
+                'singular_name' => 'Ročník',
+            ],
+            'public' => true,
+            'hierarchical' => false,
+            'show_admin_column' => true,
+            'show_in_rest' => true,
+            'rewrite' => ['slug' => 'rocnik'],
+        ]);
+    }
+
+    /**
+     * The hero artwork is a CSS background, so the browser would only discover it
+     * after the stylesheet is parsed. Preloading it lets the LCP image start
+     * downloading in parallel with the CSS.
+     */
+    public static function preloadHeroImage(): void
+    {
+        if (! is_front_page()) {
+            return;
+        }
+
+        $file = self::manifest()['resources/assets/season/hero.jpg']['file'] ?? null;
+        if (! is_string($file) || $file === '') {
+            return;
+        }
+
+        printf(
+            '<link rel="preload" as="image" href="%s" fetchpriority="high">' . "\n",
+            esc_url(get_theme_file_uri('/public/build/' . ltrim($file, '/')))
+        );
+    }
+
+    private static function manifest(): array
+    {
+        static $manifest = null;
+        if (is_array($manifest)) {
+            return $manifest;
+        }
+
+        $manifest = [];
         $manifestPath = self::$root . '/public/build/manifest.json';
         if (! is_readable($manifestPath)) {
+            return $manifest;
+        }
+
+        try {
+            $decoded = json_decode((string) file_get_contents($manifestPath), true, 512, JSON_THROW_ON_ERROR);
+            $manifest = is_array($decoded) ? $decoded : [];
+        } catch (\Throwable $error) {
+            error_log('[taborovajizda] Unable to load build manifest: ' . $error->getMessage());
+        }
+
+        return $manifest;
+    }
+
+    /**
+     * Frontend weight: the WordPress emoji loader (and its s.w.org requests) is
+     * not needed, modern systems render emoji natively.
+     */
+    public static function trimFrontend(): void
+    {
+        remove_action('wp_head', 'print_emoji_detection_script', 7);
+        remove_action('wp_print_styles', 'print_emoji_styles');
+        add_filter('emoji_svg_url', '__return_false');
+    }
+
+    /** The countdown widget is not part of the redesigned homepage, so its script and styles are skipped there. */
+    public static function dequeueUnusedFrontPageAssets(): void
+    {
+        if (! is_front_page()) {
+            return;
+        }
+
+        wp_dequeue_script('countdown-script');
+        wp_dequeue_style('countdown-carbonlite-css');
+    }
+
+    public static function enqueueAssets(): void
+    {
+        $manifest = self::manifest();
+        if ($manifest === []) {
             return;
         }
 
         try {
-            $manifest = json_decode((string) file_get_contents($manifestPath), true, 512, JSON_THROW_ON_ERROR);
             $entry = $manifest['resources/ts/app.ts'] ?? null;
             if (! is_array($entry) || empty($entry['file'])) {
                 return;
