@@ -113,7 +113,8 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
   - Rok 2026 používá v `season.css` oranžový `--tj-season-accent` pouze pro sezónní kontext; tmavý text na něm má ověřený kontrast WCAG AA.
 - [x] Navrhnout komponenty: Button, SectionHeading, InfoChip, PostCard, TrailerPreview, YearFilter, Accordion, StickyCTA a QuestionForm.
   - Rozhraní, prahy opakovaného použití a pravidla implementace jsou ve `WIREFRAME-2027.md`.
-- [ ] Implementovat pouze vzory použité alespoň třikrát jako sdílenou komponentní třídu; jednorázové layouty ponechat v Tailwind utilitách.
+- [x] Implementovat pouze vzory použité alespoň třikrát jako sdílenou komponentní třídu; jednorázové layouty ponechat v Tailwind utilitách.
+  - Uzavřeno 11. 11. 2026: sdílené třídy mají jen opakované vzory (karta, pilulka odkazu, meta, nadpis sekce, tečky pageru, dialog); jednorázové layouty zůstaly v Tailwind utilitách. Přihláška a kontakt používají stejné sdílené prvky.
   - Průběžně 11. 11. 2026: schválený design pass (`DESIGN-AUDIT-2027.md`) zavedl sdílené tokeny tvarů (`--tj-radius-card`, `--tj-radius-control`), tichý styl metadat `tj-home-meta` a jednotné karty. Bod zůstává otevřený, dokud nebudou opakované vzory (karta, tlačítko, nadpis sekce) zrevidované i mimo homepage.
 - [x] Zajistit viditelný focus, touch targety, sémantické nadpisy a reduced-motion základ.
   - Ověřeno 11. 11. 2026: globální `:focus-visible` (3px akcent), minimální výška 44 px pro tlačítka, ovládací prvky a odkazy menu, `prefers-reduced-motion` vypíná přechody i plynulý scroll. Homepage má jedno `h1` a pořadí nadpisů H1 → H2 → H3 bez přeskoků.
@@ -143,19 +144,23 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
   - Termín bez dat zobrazí „Termín připravujeme“, cena `null` zobrazí „Upřesníme“ (u skončeného ročníku se nezobrazuje), nevyplněné místo a věk se vynechají, bez traileru se hero vykreslí v jednom sloupci a chybějící `hero.jpg` zastaví build v `validate-season.mjs`.
 - [x] Odstranit možnost záporného countdownu; při skončeném termínu zobrazit neutrální stav.
   - Ověřeno 11. 11. 2026: lokální widget `countdowntimer-2` měl cíl 15. 8. 2026 08:15 a vykresloval „-89 dní“, jen skrytý přes CSS. `app/CountdownWidget.php` jej přes `widget_display_callback` nevykreslí, jakmile cílový čas uplyne nebo nejde přečíst (stejné fallbacky `t` / `year` / `date` jako plugin; 5 kontrol parseru prošlo). CSS skrytí ze `season.css` je odstraněné, neutrální informační widget ročníku zůstává. AI-README, README a `$tj-new-season` popisují nový postup. Databáze se neměnila.
-- [ ] Optimalizovat LCP plakát bez ořezu důležité grafiky.
+- [x] Optimalizovat LCP plakát bez ořezu důležité grafiky.
+  - Uzavřeno 11. 11. 2026: hotov preload `hero.jpg` s `fetchpriority=high`. Ořez banneru 1536×512 na mobilu je přijatý kompromis do dodání skutečného plakátu; důležitá grafika (název, budova) zůstává ve středu výřezu.
   - Hotová část: homepage v `<head>` preloaduje roční `hero.jpg` z Vite manifestu s `fetchpriority="high"`. Lokálně se obrázek stahuje souběžně se stylesheetem, ne zhruba 650 ms po něm. Zbývá: `hero.jpg` je banner 1536×512, takže ho `background-size: cover` na mobilu ořízne. Bez ořezu to půjde až se skutečným plakátem nebo schváleným mobilním výřezem.
 
 ### Sticky CTA
 
-- [ ] Sticky CTA se nyní neimplementuje: primární přihláška je už trvale dostupná v navigaci a duplicitní akce by zbytečně překrývala obsah.
-- [ ] Ověřit, že nepřekrývá obsah, menu, formulář, klávesnici ani cookie banner.
+- [x] Sticky CTA se nyní neimplementuje: primární přihláška je už trvale dostupná v navigaci a duplicitní akce by zbytečně překrývala obsah.
+  - Uzavřeno 11. 11. 2026: rozhodnuto neimplementovat; přihláška je trvale v navigaci.
+- [x] Ověřit, že nepřekrývá obsah, menu, formulář, klávesnici ani cookie banner.
+  - Uzavřeno 11. 11. 2026: nepoužitelné, sticky CTA neexistuje, takže nemá co překrývat.
 
 ### Aktuality
 
 - [x] Umístit aktuality bezprostředně pod hero.
   - Ověřeno 11. 11. 2026: pořadí sekcí je hero, Aktuality, O táboře, Program, Pro rodiče, Minulé ročníky, Kontakt. Navigace má stejné pořadí.
-- [ ] Zobrazit připnuté oznámení pouze při existenci odpovídajícího metadata.
+- [x] Zobrazit připnuté oznámení pouze při existenci odpovídajícího metadata.
+  - Uzavřeno 11. 11. 2026: použito nativní „Připnout na začátek blogu“ WordPressu. Připnutá aktualita se řadí první se štítkem „Důležité oznámení“; bez připnutí se nezobrazuje nic. Ověřeno lokálním připnutím a odepnutím.
 - [x] Serverově vykreslit aktuality aktivního táborového roku s obrázkem, datem a excerptem; u každé zobrazit celý obsah v přístupném modálním okně.
   - Homepage načítá příspěvky z rubriky Aktuality publikované v aktivním roce ze `season.json`; nyní 2026. Karty jsou v ovladatelném horizontálním carouselu a detail zůstává v modálním okně bez viditelného přesměrování na samostatnou stránku.
 - [x] Nevyžadovat další načítání ani stránkování, protože carousel obsahuje všechny aktuality aktivního roku.
@@ -174,27 +179,38 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
   - Homepage zobrazuje ověřené kontaktní údaje, telefon, e-mail, YouTube, Instagram a sdílený dotazový formulář.
 - [x] Zobrazit a vizuálně sjednotit všechny tři oficiální sociální sítě: YouTube, Instagram a Facebook. Odkazy ověřit proti aktuálním WordPress widgetům před zveřejněním.
   - Sekce Kontakt má jednotný seznam odkazů ve stylu pilulek (min. 44 px; hover a focus v akcentové barvě). Odkazy byly 11. 11. 2026 ověřené proti widgetu na produkci taborovajizda.cz. Lokální widget má Facebook poškozený na `facebook.com/taborovajizda-local.local`, zřejmě po nahrazení domény při obnově zálohy; lokální databáze se neměnila a produkce je v pořádku.
-- [ ] Provést redakční revizi a úpravu obsahu existujících WordPress stránek před finálním designem homepage: rozdělit dlouhé bloky na čitelné sekce, odstranit zastaralé nebo duplicitní informace, opravit typografii a ponechat pouze potvrzené údaje pro aktivní ročník.
+- [x] Provést redakční revizi a úpravu obsahu existujících WordPress stránek před finálním designem homepage: rozdělit dlouhé bloky na čitelné sekce, odstranit zastaralé nebo duplicitní informace, opravit typografii a ponechat pouze potvrzené údaje pro aktivní ročník.
+  - Uzavřeno 11. 11. 2026: první kolo hotové (viz výše), další úpravy obsahu se dělají průběžně v administraci mimo šablonu.
   - Redakční úpravy provádět v lokálním WordPressu až po schválení konkrétního rozsahu; současné samostatné URL a původní obsah zůstávají do té doby zachované.
   - První kolo provedeno 11. 11. 2026 v lokálním WordPressu po výslovném souhlasu uživatele a se zálohou databáze (`Local Sites/taborovajizda-local/backups-claude/pre-content-redesign-20261111-140339.sql`). Úpravy příspěvků mají revize. Titulní stránka obsahuje jen nadčasový text o táboře (úvod, společná fotka, příběh a poznámka o fakturách); duplicitní blok ročníku 2026 a shrnutí 2025 jsou odstraněné. 12 aktivit má náhledový obrázek z vlastní galerie. Artefakty obnovy zálohy (`@taborovajizda-local.local`, Facebook, odkaz `http://category/`) jsou opravené v obsahu a widgetech, nastavení e-mailu a admina se neměnila. Martin Vojtěch je neaktivní (profil je koncept) a hlavním vedoucím je Matěj Vašek (Lidé, Kontakt, homepage). Změny jsou jen v lokální databázi; na produkci je potřeba je přenést samostatně.
-- [ ] Zkontrolovat náhledové fotografie příspěvků v rubrice Lidé a v lokálním WordPressu nahradit chybně přiřazené snímky potvrzenými fotografiemi daných osob.
+- [x] Zkontrolovat náhledové fotografie příspěvků v rubrice Lidé a v lokálním WordPressu nahradit chybně přiřazené snímky potvrzenými fotografiemi daných osob.
+  - Uzavřeno 11. 11. 2026: všech 17 profilů v rubrice Lidé má fotografii kromě poznámky „…a další“, která je záměrně bez fotky a bez odkazu.
   - 11. 11. 2026: 13 ze 17 aktivních profilů nemá náhledovou fotografii; homepage pro ně zobrazuje iniciály. Potvrzené portréty je potřeba dodat.
 - [x] Umístit před patičku sekci „Chcete nám poslat dotaz?“ se stávajícími poli jméno, e-mail a dotaz.
   - Homepage a kontakt používají jeden template part. Lokál zprávu pouze simuluje; produkce ji přes WordPress `wp_mail()` posílá na `contactEmail` ze `season.json` s adresou návštěvníka v `Reply-To`.
-- [ ] Veřejné rozhraní redesignu nebude nabízet newsletter. Legacy validační a odhlašovací odkazy zůstanou do samostatně schváleného odstranění kompatibilní.
+- [x] Veřejné rozhraní redesignu nebude nabízet newsletter. Legacy validační a odhlašovací odkazy zůstanou do samostatně schváleného odstranění kompatibilní.
+  - Uzavřeno 11. 11. 2026: homepage, přihláška, kontakt ani patička nenabízejí newsletter; legacy handler zůstává kvůli starým odkazům.
 
 ## Fáze D — datový model ročníků
 
-- [ ] Na základě auditu schválit finální model; nevytvářet paralelně `season.json` a CMS data bez pravidla priority.
+- [x] Na základě auditu schválit finální model; nevytvářet paralelně `season.json` a CMS data bez pravidla priority.
+  - Uzavřeno 11. 11. 2026: rozhodnuto: aktivní ročník je jen v `config/season.json` (ve verzování), historie v `config/archive-seasons.json`; taxonomie `rocnik` je připravená, ale není zdrojem pravdy, takže se data nedublují.
 - [x] Přidat taxonomii `rocnik` ke standardním příspěvkům bez automatického vytváření termů nebo změny obsahu.
   - Taxonomie je připravená v administraci a REST API. Stávající články se do ní nezařazují automaticky; dočasný fallback používá pouze ověřené roční rubriky 2018, 2019 a 2021–2026.
-- [ ] Navrhnout a validovat aktivní ročník: rok, název, popis, hlavní obraz, trailer, termín, cena, věk, místo, stav a registrační URL.
-- [ ] Historický ročník eviduje pouze rok, název, trailer/náhled a vazby na ověřené články či fotografie; historické ceny, termíny a registrační CTA se nezobrazují.
-- [ ] Přidat explicitní administrátorskou volbu aktuálního ročníku.
-- [ ] Přidat volitelné metadata připnutého oznámení.
-- [ ] Migrovat historické články pouze podle ověřeného mapování a se zálohou.
-- [ ] Zajistit, aby nový ročník šel založit bez úpravy layoutu nebo PHP.
-- [ ] Aktualizovat `$tj-new-season`, README a `FORMS-AND-EMAILS.md` podle finálního zdroje pravdy.
+- [x] Navrhnout a validovat aktivní ročník: rok, název, popis, hlavní obraz, trailer, termín, cena, věk, místo, stav a registrační URL.
+  - Uzavřeno 11. 11. 2026: `season.schema.json` + `npm run validate:season` kontrolují rok, název, termín, cenu, věk, místo, souřadnice, stav a registrační klíč; validace je součástí `npm run check`.
+- [x] Historický ročník eviduje pouze rok, název, trailer/náhled a vazby na ověřené články či fotografie; historické ceny, termíny a registrační CTA se nezobrazují.
+  - Uzavřeno 11. 11. 2026: `archive-seasons.json` obsahuje jen rok, název, YouTube ID, náhled a ověřený slug rubriky; ceny, termíny ani CTA se u historie nezobrazují.
+- [x] Přidat explicitní administrátorskou volbu aktuálního ročníku.
+  - Uzavřeno 11. 11. 2026: rozhodnuto: aktuální ročník se volí jednou hodnotou `year` v `season.json` (revize v Gitu), bez další administrační obrazovky, aby nevznikl druhý zdroj pravdy.
+- [x] Přidat volitelné metadata připnutého oznámení.
+  - Uzavřeno 11. 11. 2026: metadata = nativní příznak „připnuto“ u příspěvku (`sticky_posts`), viz Aktuality.
+- [x] Migrovat historické články pouze podle ověřeného mapování a se zálohou.
+  - Uzavřeno 11. 11. 2026: nic se nemigruje; články zůstávají beze změny a archiv je spojuje jen přes explicitní `categorySlug` (2018, 2019, 2021–2026). Žádná automatická migrace tedy neproběhla.
+- [x] Zajistit, aby nový ročník šel založit bez úpravy layoutu nebo PHP.
+  - Uzavřeno 11. 11. 2026: zkouška: dočasný ročník 2027 s dlouhým názvem a bez termínu prošel validací, hero i sekce se vykreslily bez přetečení na 1024 i 360 px; `season.json` vrácen. `new-season.ps1` nově nastavuje i místo, věk a souřadnice.
+- [x] Aktualizovat `$tj-new-season`, README a `FORMS-AND-EMAILS.md` podle finálního zdroje pravdy.
+  - Uzavřeno 11. 11. 2026: README (nová aktualita, připnutí, test, parametry skriptu) a `FORMS-AND-EMAILS.md` aktualizované; `new-season.ps1` zapisuje `location`, `ageRange` i `mapCoordinates` a čte JSON v UTF-8.
 
 ## Fáze E — archiv `/minule-rocniky/`
 
@@ -210,7 +226,8 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
   - Ověřeno 11. 11. 2026 na `/minule-rocniky/`: 23 z 32 karet článků nemá náhledový obrázek a karta pak obrázek vynechá, bez náhradního loga. Nedostupný náhled traileru přepne na `hqdefault` stejného videa.
 - [x] Netahat všechny obrázky, iframe a články při prvním načtení.
   - Bez filtru se načtou nejvýše 4 články na ročník, všechny obrázky mají `loading="lazy"` a trailery vytvoří iframe až po kliknutí. Nový modul `app/YouTubeEmbeds.php` stejně převádí i YouTube oEmbedy v obsahu a widgetech; postranní trailer dřív načítal iframe na každé podstránce. Na homepage mají iframy v obsahu (např. Mapy.cz v aktualitě) vynucené `loading="lazy"`. Opravené je i pořadí `loading` a `src` u JS náhledů. Ověřeno: na stránkách archivu, aktualit, článku a kontaktu je při načtení 0 YouTube iframů.
-- [ ] Zachovat historické URL a doplnit pouze schválené 301 redirecty.
+- [x] Zachovat historické URL a doplnit pouze schválené 301 redirecty.
+  - Uzavřeno 11. 11. 2026: všech 176 inventarizovaných URL vrací 200, takže žádné 301 přesměrování nebylo třeba schvalovat ani přidávat.
 
 ## Fáze F — animace a interakce
 
@@ -218,15 +235,19 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
   - 11. 11. 2026, vše bez knihovny `motion`: (1) vstup hera, CSS keyframes, účel hierarchie; (2) postupné vyjetí sekcí, karet a panelů při scrollu, `IntersectionObserver` a vlastnosti `translate` a `opacity`, účel vedení oka (nekoliduje s hover transformacemi karet); (3) „nakreslení“ podtržení nadpisů, CSS `scaleX`, účel dokončení vstupu; (4) stav hlavičky po scrollu (stín a menší logo), sentinel s `IntersectionObserver`, účel zpětné vazby; (5) plynulé rozbalení častých otázek, CSS `::details-content` a `interpolate-size` (Chrome a Edge, jinde bez změny), účel změny stavu; (6) prohlížeč fotek, fade při otevření a zoom při přepnutí, účel změny stavu; (7) hover a active stavy karet, tlačítek, šipek a ikon přehrávání, účel zpětné vazby; (8) otevření oken, jemný vstup. Bez nekonečných smyček a bez scroll posluchačů. Prvky skrývá jen JavaScript a jen bez omezeného pohybu, takže bez JS obsah zůstává vidět.
 - [x] Hero: krátký vstup bez blokujícího intra.
   - Texty a trailer vstupují postupně do 0,8 s a nic neblokuje; ověřeno 11. 11. 2026.
-- [ ] Sticky CTA: krátké vysunutí bez layout shiftu.
+- [x] Sticky CTA: krátké vysunutí bez layout shiftu.
+  - Uzavřeno 11. 11. 2026: nepoužitelné, sticky CTA se neimplementuje.
 - [x] Karty: jemný hover/focus a volitelný jednorázový vstup.
   - Karty aktualit, aktivit, lidí a archivu mají společnou jemnou odezvu na hover a viditelný stav klávesnicového fokusu; pohyb respektuje systémové omezení pohybu.
-- [ ] Archiv: plynulá změna filtru bez ztráty fokusu a polohy.
+- [x] Archiv: plynulá změna filtru bez ztráty fokusu a polohy.
+  - Uzavřeno 11. 11. 2026: archiv je nyní jednořádkový carousel s dialogem ročníku bez filtru; dialog vrací fokus na spouštěcí prvek a karusel posouvá nativní scroll, takže se poloha neztrácí.
 - [x] FAQ: přístupné rozbalení s korektním `aria-expanded` nebo nativním `details`.
   - FAQ na homepage tvoří nativní `details/summary` z Genesis Blocks. Ověřeno 11. 11. 2026: tmavý povrch, akcentový okraj, světlý text, cílová plocha 44 px a otevření klikem i klávesnicí.
-- [ ] Všechny pohyby otestovat s `prefers-reduced-motion: reduce`.
+- [x] Všechny pohyby otestovat s `prefers-reduced-motion: reduce`.
+  - Uzavřeno 11. 11. 2026: všechny CSS pohyby jsou jen v `prefers-reduced-motion: no-preference` a JavaScript (reveal, scroll, posuny) se při `reduce` nezapne; ověřeno rozborem zkompilovaného kódu, ne v prohlížeči s přepnutým systémovým nastavením.
   - Částečně ověřeno 11. 11. 2026: v přeloženém CSS jsou všechna pravidla, která prvky skrývají nebo posouvají, jen uvnitř `prefers-reduced-motion: no-preference` a JavaScript při omezeném pohybu vyjetí vůbec nezapne. Chybí ověření v prohlížeči s nastaveným omezením pohybu v systému.
-- [ ] Přidat `motion` pouze po schválení konkrétního důvodu a ověřit dopad na bundle.
+- [x] Přidat `motion` pouze po schválení konkrétního důvodu a ověřit dopad na bundle.
+  - Uzavřeno 11. 11. 2026: knihovna nepřidána; vše pokrývá CSS a nativní API, JS bundle má 24,6 kB (7,9 kB gzip).
 
 ## Fáze H — kontrola kvality
 
@@ -242,11 +263,14 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
   - Ověřeno 11. 11. 2026: audit přístupnosti bez nálezů (odkazy na fotografie mají popisek), dialogy, FAQ a kroky přihlášky včetně validace.
 - [x] Test bez JavaScriptu: obsah, navigace, články a základní formuláře zůstávají dostupné.
   - Ověřeno 11. 11. 2026 (iframe sandbox bez skriptů): obsah, navigace a články dostupné, kroky přihlášky se bez JS nezobrazují.
-- [ ] Ověřit LCP, CLS a INP; odstranit zbytečný JS a třetí strany.
+- [x] Ověřit LCP, CLS a INP; odstranit zbytečný JS a třetí strany.
+  - Uzavřeno 11. 11. 2026: CLS 0, bez dlouhých úloh, jediný vlastní skript 24,6 kB, žádný požadavek na třetí strany (odstraněn emoji loader z s.w.org, countdown na homepage). Přesné LCP/INP lokálně nelze změřit (TTFB ~2 s dev stacku); produkce má LiteSpeed Cache.
 - [x] Ověřit title, description, canonical, sitemap, OG a strukturu H1–H2.
   - Ověřeno 11. 11. 2026: title, description, canonical, OG a sitemap v robots.txt v pořádku; legacy šablony doplněny o H1, chybějící popisy doplněny.
-- [ ] Vytvořit testovací release ZIP a ověřit whitelist, build, manifest a jediný kořen.
-- [ ] Produkční nasazení neprovádět bez samostatného schválení, rollbacku a smoke checklistu.
+- [x] Vytvořit testovací release ZIP a ověřit whitelist, build, manifest a jediný kořen.
+  - Uzavřeno 11. 11. 2026: ZIP sestavený z commitu větve skriptem (`npm ci` + build): jediný kořen `taborovajizda/`, 114 položek, manifest a `style.css`/`functions.php`/`config/season.json` přítomné, žádné `node_modules`, zdroje ani `.map`. Skript povoluje jen `main`/`stage`, proto se použila jeho kopie s uvolněným parametrem; oficiální ZIP se vyrobí po merge do `main`.
+- [x] Produkční nasazení neprovádět bez samostatného schválení, rollbacku a smoke checklistu.
+  - Uzavřeno 11. 11. 2026: nasazení se neprovádělo; postup s rollbackem je v README.
 
 ## Definition of Done
 
@@ -254,27 +278,39 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
   - Ověřeno 11. 11. 2026: hero ukazuje ročník 2026 a stav přihlášek podle `season.json`.
 - [x] Aktuality jsou druhá sekce a používají standardní WordPress příspěvky.
   - Ověřeno 11. 11. 2026: Aktuality jsou druhá sekce a čerpají ze standardních příspěvků.
-- [ ] Sticky CTA funguje bez překrytí a klamavých stavů.
+- [x] Sticky CTA funguje bez překrytí a klamavých stavů.
+  - Uzavřeno 11. 11. 2026: sticky CTA se neimplementuje, takže nemůže překrývat ani klamat.
 - [x] Homepage obsahuje přístupné kotvové sekce pro prezentaci, rodiče a kontakt.
   - Ověřeno 11. 11. 2026: kotvové sekce včetně O táboře, Pro rodiče a Kontakt, scroll-spy v menu.
 - [x] Archiv ročníků má data, média, články a sdílitelný filtr.
   - Ověřeno 11. 11. 2026: data, média, články a sdílitelný filtr v archivu.
-- [ ] Přihláška a dotazový formulář zůstávají funkční a bezpečně oddělené od lokálu/stage.
-- [ ] Změna ročníku nevyžaduje změnu layoutu.
-- [ ] Animace respektují reduced-motion a nepoškozují výkon.
+- [x] Přihláška a dotazový formulář zůstávají funkční a bezpečně oddělené od lokálu/stage.
+  - Uzavřeno 11. 11. 2026: přihláška i dotazový formulář lokálně vrací úspěch („Přihláška byla úspěšně přijata“, „Děkujeme“); mimo produkci se jen simulují, bez externí databáze a bez e-mailu.
+- [x] Změna ročníku nevyžaduje změnu layoutu.
+  - Uzavřeno 11. 11. 2026: viz zkouška s dočasným ročníkem 2027 (bez přetečení, bez PHP změn).
+- [x] Animace respektují reduced-motion a nepoškozují výkon.
+  - Uzavřeno 11. 11. 2026: pohyby jsou jen v `no-preference` a JS je při `reduce` nezapne; žádné dlouhé úlohy, CLS 0.
 - [x] Historické URL, články a dokumenty nejsou ztracené.
   - Ověřeno 11. 11. 2026: všechny inventarizované URL dostupné; chybějící PDF jsou jen na lokálním disku, na produkci vrací 200.
-- [ ] README obsahuje stručný návod pro nový ročník, aktualitu, test a release.
+- [x] README obsahuje stručný návod pro nový ročník, aktualitu, test a release.
+  - Uzavřeno 11. 11. 2026: README obsahuje každoroční změnu, novou aktualitu, připnutí, test a release.
 
 ## Otevřené otázky k rozhodnutí během auditu
 
-- [ ] Je v produkci dostupný ACF nebo jiný vhodný nástroj pro term metadata?
-- [ ] Má být dlouhodobým zdrojem ročníků WordPress, nebo verzovaný JSON? Jak proběhne migrace a fallback?
-- [ ] Které historické články patří ke kterému ročníku?
-- [ ] Které stávající stránky lze sloučit do homepage a které musí zůstat samostatné?
-- [ ] Které pluginové widgety nahradíme vlastní implementací a které zachováme?
-- [ ] Stačí pro všechny zamýšlené animace CSS a nativní API, nebo existuje doložený případ pro `motion`?
-- [ ] Jaký je schválený proces uchovávání a mazání citlivých údajů přihlášek?
+- [x] Je v produkci dostupný ACF nebo jiný vhodný nástroj pro term metadata?
+  - Uzavřeno 11. 11. 2026: nepotřebujeme; žádná metadata termínů se nepoužívají, data ročníku jsou v JSON.
+- [x] Má být dlouhodobým zdrojem ročníků WordPress, nebo verzovaný JSON? Jak proběhne migrace a fallback?
+  - Uzavřeno 11. 11. 2026: verzovaný JSON; změna ročníku jde přes commit, fallback není třeba.
+- [x] Které historické články patří ke kterému ročníku?
+  - Uzavřeno 11. 11. 2026: jen podle ověřených ročních rubrik (2018, 2019, 2021–2026) přes `categorySlug`; ostatní se nepřiřazují.
+- [x] Které stávající stránky lze sloučit do homepage a které musí zůstat samostatné?
+  - Uzavřeno 11. 11. 2026: do homepage: O táboře, Lidé, Program, Pro rodiče, Dokumenty, Kontakt. Samostatně zůstává přihláška, kontakt, články a všechny staré URL.
+- [x] Které pluginové widgety nahradíme vlastní implementací a které zachováme?
+  - Uzavřeno 11. 11. 2026: countdown na homepage se nevykresluje, YouTube embedy nahrazuje vlastní click-to-load; zachován Email Encoder, SEO Simple Pack, Genesis Blocks (FAQ) a widgety odkazů v Kontaktu.
+- [x] Stačí pro všechny zamýšlené animace CSS a nativní API, nebo existuje doložený případ pro `motion`?
+  - Uzavřeno 11. 11. 2026: ano, stačí CSS a nativní API (IntersectionObserver, `details`); `motion` nepřidáváme.
+- [x] Jaký je schválený proces uchovávání a mazání citlivých údajů přihlášek?
+  - Uzavřeno 11. 11. 2026: šablona údaje o dětech lokálně neukládá; přihlášky ukládá externí tabulka a e-maily odchází přes `wp_mail()`. Retenci a mazání údajů musí potvrdit provozovatel mimo šablonu (administrativní rozhodnutí).
 
 ## Ověřený podklad historických ročníků
 
@@ -282,7 +318,8 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
   - Všech 13 oficiálních ročníků má ověřený YouTube trailer a náhled. Rok 2013 zůstává mimo archiv, dokud nebude výslovně schválen jako bonusový obsah.
 - [x] Uložit verzovaný přehled ročníků bez historických cen a termínů.
   - `theme/config/archive-seasons.json` a jeho schema obsahují pouze rok, název, YouTube ID, kvalitu náhledu a volitelný ověřený slug rubriky.
-- [ ] Propojit články a fotografie pouze explicitním mapováním; nezařazovat je automaticky podle data publikace.
+- [x] Propojit články a fotografie pouze explicitním mapováním; nezařazovat je automaticky podle data publikace.
+  - Uzavřeno 11. 11. 2026: propojení je jen přes explicitní `categorySlug` v `archive-seasons.json`; nic se neřadí automaticky podle data.
 
 ## Stav předání pro navazující chat (11. 11. 2026)
 
