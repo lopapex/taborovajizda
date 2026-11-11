@@ -27,9 +27,10 @@ $homeAnchor = is_front_page() ? '' : home_url('/');
 			<ul class="tj-home-nav__links">
 				<li><a href="<?php echo esc_url($homeAnchor . '#aktuality'); ?>">Aktuality</a></li>
 				<li><a href="<?php echo esc_url($homeAnchor . '#o-tabore'); ?>">O táboře</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#lide'); ?>">Lidé</a></li>
 				<li><a href="<?php echo esc_url($homeAnchor . '#program'); ?>">Program</a></li>
-				<li><a href="<?php echo esc_url($homeAnchor . '#pro-rodice'); ?>">Pro rodiče</a></li>
 				<li><a href="<?php echo esc_url($homeAnchor . '#minule-rocniky'); ?>">Minulé ročníky</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#pro-rodice'); ?>">Pro rodiče</a></li>
 				<li><a href="<?php echo esc_url($homeAnchor . '#kontakt'); ?>">Kontakt</a></li>
 			</ul>
 		</nav>
@@ -38,16 +39,17 @@ $homeAnchor = is_front_page() ? '' : home_url('/');
 			<ul id="home-mobile-menu" class="tj-home-nav-panel">
 				<li><a href="<?php echo esc_url($homeAnchor . '#aktuality'); ?>">Aktuality</a></li>
 				<li><a href="<?php echo esc_url($homeAnchor . '#o-tabore'); ?>">O táboře</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#lide'); ?>">Lidé</a></li>
 				<li><a href="<?php echo esc_url($homeAnchor . '#program'); ?>">Program</a></li>
-				<li><a href="<?php echo esc_url($homeAnchor . '#pro-rodice'); ?>">Pro rodiče</a></li>
 				<li><a href="<?php echo esc_url($homeAnchor . '#minule-rocniky'); ?>">Minulé ročníky</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#pro-rodice'); ?>">Pro rodiče</a></li>
 				<li><a href="<?php echo esc_url($homeAnchor . '#kontakt'); ?>">Kontakt</a></li>
 			</ul>
 		</div>
 		<?php if ($season->acceptsRegistrations()) : ?>
-			<a class="tj-home-header-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>">Přihláška</a>
+			<a class="tj-home-header-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>"><?php echo esc_html($season->isFull() ? 'Přihlásit náhradníka' : 'Přihlásit dítě'); ?></a>
 		<?php elseif (taborovajizda_debug_registration_cta()) : ?>
-			<a class="tj-home-header-cta tj-is-debug-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>" title="Ladicí zobrazení: jen v lokálním prostředí, ročník přihlášky nepřijímá">Přihláška</a>
+			<a class="tj-home-header-cta tj-is-debug-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>" title="Ladicí zobrazení: jen v lokálním prostředí, ročník přihlášky nepřijímá"><?php echo esc_html($season->isFull() ? 'Přihlásit náhradníka' : 'Přihlásit dítě'); ?></a>
 		<?php endif; ?>
 	</div>
 </header>

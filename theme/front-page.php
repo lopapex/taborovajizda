@@ -69,7 +69,6 @@ $activityPostsByGroup = array_filter(array_map(static function (array $posts): a
     ksort($posts);
     return array_values($posts);
 }, $activityPostsByGroup));
-$visibleArchiveSeasons = 4;
 // Official profiles, verified against the production widgets on 11. 11. 2026.
 $socialLinks = [
     'YouTube' => 'https://www.youtube.com/@taborovajizda6412',
@@ -248,8 +247,77 @@ $renderPageContent = static function (?WP_Post $page): void {
 		<?php endif; ?>
 	</section>
 
+	<section class="tj-home-section tj-home-section--people" aria-labelledby="people-heading">
+		<div class="tj-home-section__heading" id="lide"><h2 id="people-heading">Lidé, kteří tábor tvoří</h2></div>
+		<?php if ($people->have_posts()) : ?>
+			<div class="tj-home-pager" data-pager>
+			<button class="tj-home-pager__button tj-home-pager__button--prev" type="button" data-pager-prev aria-controls="people-track" aria-label="Předchozí lidé" disabled></button>
+			<div class="tj-home-pager__viewport">
+			<ul class="tj-home-people-grid tj-home-pager__track" id="people-track" data-pager-track>
+			<?php while ($people->have_posts()) : $people->the_post(); ?>
+				<?php
+				$dialogId = 'person-dialog-' . get_the_ID();
+				$personTitle = get_the_title();
+				// Titles follow "Name (role)"; show the role as a quieter second line.
+				$personName = html_entity_decode(wp_strip_all_tags($personTitle), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+				$personRole = '';
+				if (preg_match('/^(.*?)\s*\(([^)]+)\)\s*$/u', $personName, $personParts)) {
+				    $personName = $personParts[1];
+				    $personRole = $personParts[2];
+				}
+				$initials = implode('', array_map(static fn (string $part): string => mb_substr($part, 0, 1), array_slice(preg_split('/\s+/u', trim(preg_replace('/[„“"].*?[„“"]/u', '', $personName))), 0, 2)));
+				if (! preg_match('/^\p{L}/u', $personName)) {
+				    $initials = '…';
+				}
+				?>
+				<li class="tj-home-person-card">
+					<a class="tj-home-person-card__open" href="<?php the_permalink(); ?>" data-home-dialog-open="<?php echo esc_attr($dialogId); ?>">
+						<span class="tj-home-person-card__portrait">
+							<?php if (has_post_thumbnail()) : ?>
+								<?php the_post_thumbnail('medium', ['loading' => 'lazy', 'alt' => '']); ?>
+							<?php else : ?>
+								<span class="tj-home-person-card__initials" aria-hidden="true"><?php echo esc_html(mb_strtoupper($initials)); ?></span>
+							<?php endif; ?>
+						</span>
+						<span class="tj-home-person-card__name"><?php echo esc_html($personName); ?></span>
+						<?php if ($personRole) : ?><span class="tj-home-person-card__role"><?php echo esc_html($personRole); ?></span><?php endif; ?>
+					</a>
+					<dialog class="tj-home-content-dialog" id="<?php echo esc_attr($dialogId); ?>" aria-labelledby="<?php echo esc_attr($dialogId . '-title'); ?>">
+						<div class="tj-home-news-dialog__content">
+							<div class="tj-home-news-dialog__top"><p class="tj-home-meta">Náš tým</p><button class="tj-home-news-dialog__close" type="button" data-home-dialog-close aria-label="Zavřít profil">Zavřít</button></div>
+							<h2 id="<?php echo esc_attr($dialogId . '-title'); ?>"><?php the_title(); ?></h2>
+							<?php
+							// One portrait per profile: the card photo (4:5) floats top-left and the
+							// text wraps around it; the portrait embedded in the text is removed.
+							$dialogContent = apply_filters('the_content', get_the_content());
+							if (has_post_thumbnail()) {
+							    $dialogContent = preg_replace([
+							        '#<figure\b[^>]*>\s*(?:<a\b[^>]*>\s*)?<img\b[^>]*>(?:\s*</a>)?.*?</figure>#is',
+							        '#<p>\s*(?:<a\b[^>]*>\s*)?<img\b[^>]*>(?:\s*</a>)?\s*</p>#is',
+							        '#(?:<a\b[^>]*>\s*)?<img\b[^>]*>(?:\s*</a>)?#is',
+							    ], '', $dialogContent) ?? $dialogContent;
+							}
+							?>
+							<div class="tj-home-person-dialog">
+								<?php if (has_post_thumbnail()) : ?><figure class="tj-home-person-dialog__photo"><?php the_post_thumbnail('medium_large', ['alt' => get_the_title()]); ?></figure><?php endif; ?>
+								<div class="tj-home-prose tj-home-news-dialog__body"><?php echo $dialogContent; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
+							</div>
+						</div>
+					</dialog>
+				</li>
+			<?php endwhile; wp_reset_postdata(); ?>
+			</ul>
+			</div>
+			<button class="tj-home-pager__button tj-home-pager__button--next" type="button" data-pager-next aria-controls="people-track" aria-label="Další lidé"></button>
+			<p class="tj-home-pager__status" data-pager-status aria-live="polite"></p>
+			</div>
+		<?php else : ?>
+			<p class="tj-home-empty">Představení týmu brzy doplníme. Zatím se podívejte do <a class="tj-home-text-link" href="<?php echo esc_url(home_url('/category/lide/')); ?>">archivu lidí</a>.</p>
+		<?php endif; ?>
+	</section>
+
 	<section class="tj-home-section tj-home-section--program" aria-labelledby="program-heading">
-		<div class="tj-home-section__heading" id="program"><p class="tj-home-eyebrow">Co zažijeme</p><h2 id="program-heading">Program tvoří lidé, hry a příroda</h2></div>
+		<div class="tj-home-section__heading" id="program"><p class="tj-home-eyebrow">Co zažijeme</p><h2 id="program-heading">Hry, výpravy a příroda</h2></div>
 		<?php if ($activityPostsByGroup !== []) : ?>
 			<ul class="tj-home-activity-cards">
 				<?php foreach ($activityPostsByGroup as $groupKey => $groupPosts) : ?>
@@ -312,59 +380,62 @@ $renderPageContent = static function (?WP_Post $page): void {
 		<?php else : ?>
 			<p class="tj-home-empty">Program tábora brzy doplníme.</p>
 		<?php endif; ?>
-		<div class="tj-home-people-heading"><h3>Lidé, kteří tábor tvoří</h3></div>
-		<?php if ($people->have_posts()) : ?>
-			<div class="tj-home-pager" data-pager>
-			<button class="tj-home-pager__button tj-home-pager__button--prev" type="button" data-pager-prev aria-controls="people-track" aria-label="Předchozí lidé" disabled></button>
+	</section>
+
+	<?php if ($archiveSeasons !== []) : ?>
+	<section class="tj-home-section tj-home-section--archive" aria-labelledby="archive-heading" data-archive-section data-post-content-url="<?php echo esc_url(add_query_arg('action', TaborovaJizda\Theme\PostContentEndpoint::ACTION, admin_url('admin-ajax.php'))); ?>">
+		<div class="tj-home-section__heading" id="minule-rocniky"><h2 id="archive-heading">Minulé ročníky</h2></div>
+		<div class="tj-home-pager tj-home-pager--archive" data-pager>
+			<button class="tj-home-pager__button tj-home-pager__button--prev" type="button" data-pager-prev aria-controls="archive-track" aria-label="Předchozí ročníky" disabled></button>
 			<div class="tj-home-pager__viewport">
-			<ul class="tj-home-people-grid tj-home-pager__track" id="people-track" data-pager-track>
-			<?php while ($people->have_posts()) : $people->the_post(); ?>
+			<div class="tj-home-pager__track tj-home-archive-track" id="archive-track" data-pager-track aria-label="Minulé ročníky Táborové jízdy">
+			<?php foreach ($archiveSeasons as $index => $archiveSeason) : ?>
 				<?php
-				$dialogId = 'person-dialog-' . get_the_ID();
-				$personTitle = get_the_title();
-				// Titles follow "Name (role)"; show the role as a quieter second line.
-				$personName = html_entity_decode(wp_strip_all_tags($personTitle), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-				$personRole = '';
-				if (preg_match('/^(.*?)\s*\(([^)]+)\)\s*$/u', $personName, $personParts)) {
-				    $personName = $personParts[1];
-				    $personRole = $personParts[2];
-				}
-				$initials = implode('', array_map(static fn (string $part): string => mb_substr($part, 0, 1), array_slice(preg_split('/\s+/u', trim(preg_replace('/[„“"].*?[„“"]/u', '', $personName))), 0, 2)));
-				if (! preg_match('/^\p{L}/u', $personName)) {
-				    $initials = '…';
-				}
+				$seasonYear = (string) $archiveSeason['year'];
+				$dialogId = 'season-dialog-' . $seasonYear;
+				$seasonLabel = sprintf('Tábor %s: %s', $seasonYear, $archiveSeason['title']);
+				$fallbackUrl = add_query_arg('rok', $seasonYear, home_url('/minule-rocniky/'));
+				$thumbnailUrl = sprintf('https://i.ytimg.com/vi/%s/%s.jpg', rawurlencode($archiveSeason['youtubeId']), rawurlencode($archiveSeason['thumbnail']));
+				$category = $archiveSeason['categorySlug'] ? get_category_by_slug($archiveSeason['categorySlug']) : null;
+				$seasonPosts = $category instanceof WP_Term ? get_posts(['cat' => $category->term_id, 'numberposts' => -1, 'post_status' => 'publish']) : [];
 				?>
-				<li class="tj-home-person-card">
-					<a class="tj-home-person-card__open" href="<?php the_permalink(); ?>" data-home-dialog-open="<?php echo esc_attr($dialogId); ?>">
-						<span class="tj-home-person-card__portrait">
-							<?php if (has_post_thumbnail()) : ?>
-								<?php the_post_thumbnail('medium', ['loading' => 'lazy', 'alt' => '']); ?>
-							<?php else : ?>
-								<span class="tj-home-person-card__initials" aria-hidden="true"><?php echo esc_html(mb_strtoupper($initials)); ?></span>
-							<?php endif; ?>
-						</span>
-						<span class="tj-home-person-card__name"><?php echo esc_html($personName); ?></span>
-						<?php if ($personRole) : ?><span class="tj-home-person-card__role"><?php echo esc_html($personRole); ?></span><?php endif; ?>
+				<article class="tj-home-archive-card">
+					<a class="tj-home-archive-card__open" href="<?php echo esc_url($fallbackUrl); ?>" data-home-dialog-open="<?php echo esc_attr($dialogId); ?>" aria-label="<?php echo esc_attr('Otevřít ročník ' . $seasonLabel); ?>">
+						<img src="<?php echo esc_url($thumbnailUrl); ?>" alt="" loading="lazy" width="480" height="270">
+						<span class="tj-home-play" aria-hidden="true"></span>
 					</a>
+					<div><p class="tj-home-meta"><?php echo esc_html($seasonYear); ?></p><h3><a href="<?php echo esc_url($fallbackUrl); ?>" data-home-dialog-open="<?php echo esc_attr($dialogId); ?>"><?php echo esc_html($archiveSeason['title']); ?></a></h3></div>
 					<dialog class="tj-home-content-dialog" id="<?php echo esc_attr($dialogId); ?>" aria-labelledby="<?php echo esc_attr($dialogId . '-title'); ?>">
 						<div class="tj-home-news-dialog__content">
-							<div class="tj-home-news-dialog__top"><p class="tj-home-meta">Náš tým</p><button class="tj-home-news-dialog__close" type="button" data-home-dialog-close aria-label="Zavřít profil">Zavřít</button></div>
-							<h2 id="<?php echo esc_attr($dialogId . '-title'); ?>"><?php the_title(); ?></h2>
-							<?php $dialogContent = apply_filters('the_content', get_the_content()); // Featured image only when the text has no photo of its own (avoids duplicates). ?><?php if (has_post_thumbnail() && ! str_contains($dialogContent, '<img')) : ?><div class="tj-home-news-dialog__image"><?php the_post_thumbnail('large'); ?></div><?php endif; ?>
-							<div class="tj-home-prose tj-home-news-dialog__body"><?php echo $dialogContent; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
+							<div class="tj-home-news-dialog__top"><p class="tj-home-meta">Ročník <?php echo esc_html($seasonYear); ?></p><button class="tj-home-news-dialog__close" type="button" data-home-dialog-close aria-label="Zavřít ročník">Zavřít</button></div>
+							<h2 id="<?php echo esc_attr($dialogId . '-title'); ?>"><?php echo esc_html($archiveSeason['title']); ?></h2>
+							<div class="youtube-player tj-home-season-dialog__trailer" data-id="<?php echo esc_attr($archiveSeason['youtubeId']); ?>" data-title="<?php echo esc_attr('Trailer ' . $seasonLabel); ?>" data-thumbnail="<?php echo esc_url($thumbnailUrl); ?>">
+								<a class="tj-home-text-link" href="<?php echo esc_url('https://www.youtube.com/watch?v=' . rawurlencode($archiveSeason['youtubeId'])); ?>" rel="noopener noreferrer">Přehrát trailer na YouTube</a>
+							</div>
+							<?php if ($seasonPosts) : ?>
+								<h3 class="tj-home-season-dialog__heading">Články a fotografie</h3>
+								<div class="tj-home-season-articles" data-exclusive-accordion>
+									<?php foreach ($seasonPosts as $seasonPost) : ?>
+										<details class="tj-home-season-article" name="<?php echo esc_attr($dialogId . '-articles'); ?>">
+											<summary><span class="tj-home-season-article__title"><?php echo esc_html(html_entity_decode(get_the_title($seasonPost), ENT_QUOTES | ENT_HTML5, 'UTF-8')); ?></span><span class="tj-home-season-article__date"><?php echo esc_html(get_the_date('j. n. Y', $seasonPost)); ?></span></summary>
+											<div class="tj-home-prose tj-home-season-article__body" data-article-body data-post-id="<?php echo esc_attr((string) $seasonPost->ID); ?>">
+												<p class="tj-home-season-article__fallback"><a href="<?php echo esc_url(get_permalink($seasonPost)); ?>">Přečíst článek</a></p>
+											</div>
+										</details>
+									<?php endforeach; ?>
+								</div>
+							<?php endif; ?>
 						</div>
 					</dialog>
-				</li>
-			<?php endwhile; wp_reset_postdata(); ?>
-			</ul>
+				</article>
+			<?php endforeach; ?>
 			</div>
-			<button class="tj-home-pager__button tj-home-pager__button--next" type="button" data-pager-next aria-controls="people-track" aria-label="Další lidé"></button>
+			</div>
+			<button class="tj-home-pager__button tj-home-pager__button--next" type="button" data-pager-next aria-controls="archive-track" aria-label="Další ročníky"></button>
 			<p class="tj-home-pager__status" data-pager-status aria-live="polite"></p>
-			</div>
-		<?php else : ?>
-			<p class="tj-home-empty">Představení týmu brzy doplníme. Zatím se podívejte do <a class="tj-home-text-link" href="<?php echo esc_url(home_url('/category/lide/')); ?>">archivu lidí</a>.</p>
-		<?php endif; ?>
+		</div>
 	</section>
+	<?php endif; ?>
 
 	<section class="tj-home-section tj-home-section--parents" aria-labelledby="parents-heading">
 		<div class="tj-home-section__heading" id="pro-rodice"><h2 id="parents-heading">Pro rodiče</h2></div>
@@ -412,57 +483,6 @@ $renderPageContent = static function (?WP_Post $page): void {
 			</div>
 		</div>
 	</section>
-
-	<?php if ($archiveSeasons !== []) : ?>
-	<section class="tj-home-section tj-home-section--archive" aria-labelledby="archive-heading" data-archive-section data-post-content-url="<?php echo esc_url(add_query_arg('action', TaborovaJizda\Theme\PostContentEndpoint::ACTION, admin_url('admin-ajax.php'))); ?>">
-		<div class="tj-home-section__heading" id="minule-rocniky"><h2 id="archive-heading">Minulé ročníky</h2></div>
-		<div class="tj-home-archive-grid">
-			<?php foreach ($archiveSeasons as $index => $archiveSeason) : ?>
-				<?php
-				$seasonYear = (string) $archiveSeason['year'];
-				$dialogId = 'season-dialog-' . $seasonYear;
-				$seasonLabel = sprintf('Tábor %s: %s', $seasonYear, $archiveSeason['title']);
-				$fallbackUrl = add_query_arg('rok', $seasonYear, home_url('/minule-rocniky/'));
-				$thumbnailUrl = sprintf('https://i.ytimg.com/vi/%s/%s.jpg', rawurlencode($archiveSeason['youtubeId']), rawurlencode($archiveSeason['thumbnail']));
-				$category = $archiveSeason['categorySlug'] ? get_category_by_slug($archiveSeason['categorySlug']) : null;
-				$seasonPosts = $category instanceof WP_Term ? get_posts(['cat' => $category->term_id, 'numberposts' => -1, 'post_status' => 'publish']) : [];
-				?>
-				<article class="tj-home-archive-card<?php echo $index >= $visibleArchiveSeasons ? ' is-extra' : ''; ?>">
-					<a class="tj-home-archive-card__open" href="<?php echo esc_url($fallbackUrl); ?>" data-home-dialog-open="<?php echo esc_attr($dialogId); ?>" aria-label="<?php echo esc_attr('Otevřít ročník ' . $seasonLabel); ?>">
-						<img src="<?php echo esc_url($thumbnailUrl); ?>" alt="" loading="lazy" width="480" height="270">
-						<span class="tj-home-play" aria-hidden="true"></span>
-					</a>
-					<div><p class="tj-home-meta"><?php echo esc_html($seasonYear); ?></p><h3><a href="<?php echo esc_url($fallbackUrl); ?>" data-home-dialog-open="<?php echo esc_attr($dialogId); ?>"><?php echo esc_html($archiveSeason['title']); ?></a></h3></div>
-					<dialog class="tj-home-content-dialog" id="<?php echo esc_attr($dialogId); ?>" aria-labelledby="<?php echo esc_attr($dialogId . '-title'); ?>">
-						<div class="tj-home-news-dialog__content">
-							<div class="tj-home-news-dialog__top"><p class="tj-home-meta">Ročník <?php echo esc_html($seasonYear); ?></p><button class="tj-home-news-dialog__close" type="button" data-home-dialog-close aria-label="Zavřít ročník">Zavřít</button></div>
-							<h2 id="<?php echo esc_attr($dialogId . '-title'); ?>"><?php echo esc_html($archiveSeason['title']); ?></h2>
-							<div class="youtube-player tj-home-season-dialog__trailer" data-id="<?php echo esc_attr($archiveSeason['youtubeId']); ?>" data-title="<?php echo esc_attr('Trailer ' . $seasonLabel); ?>" data-thumbnail="<?php echo esc_url($thumbnailUrl); ?>">
-								<a class="tj-home-text-link" href="<?php echo esc_url('https://www.youtube.com/watch?v=' . rawurlencode($archiveSeason['youtubeId'])); ?>" rel="noopener noreferrer">Přehrát trailer na YouTube</a>
-							</div>
-							<?php if ($seasonPosts) : ?>
-								<h3 class="tj-home-season-dialog__heading">Články a fotografie</h3>
-								<div class="tj-home-season-articles" data-exclusive-accordion>
-									<?php foreach ($seasonPosts as $seasonPost) : ?>
-										<details class="tj-home-season-article" name="<?php echo esc_attr($dialogId . '-articles'); ?>">
-											<summary><span class="tj-home-season-article__title"><?php echo esc_html(html_entity_decode(get_the_title($seasonPost), ENT_QUOTES | ENT_HTML5, 'UTF-8')); ?></span><span class="tj-home-season-article__date"><?php echo esc_html(get_the_date('j. n. Y', $seasonPost)); ?></span></summary>
-											<div class="tj-home-prose tj-home-season-article__body" data-article-body data-post-id="<?php echo esc_attr((string) $seasonPost->ID); ?>">
-												<p class="tj-home-season-article__fallback"><a href="<?php echo esc_url(get_permalink($seasonPost)); ?>">Přečíst článek</a></p>
-											</div>
-										</details>
-									<?php endforeach; ?>
-								</div>
-							<?php endif; ?>
-						</div>
-					</dialog>
-				</article>
-			<?php endforeach; ?>
-		</div>
-		<?php if (count($archiveSeasons) > $visibleArchiveSeasons) : ?>
-			<button class="tj-home-show-all" type="button" data-archive-expand aria-expanded="false" data-label-more="<?php echo esc_attr(sprintf('Zobrazit všechny ročníky (%d)', count($archiveSeasons))); ?>" data-label-less="Zobrazit méně ročníků"><?php echo esc_html(sprintf('Zobrazit všechny ročníky (%d)', count($archiveSeasons))); ?></button>
-		<?php endif; ?>
-	</section>
-	<?php endif; ?>
 
 	<section class="tj-home-section tj-home-section--contact" aria-labelledby="contact-heading">
 		<div class="tj-home-section__heading" id="kontakt"><p class="tj-home-eyebrow">Spojení</p><h2 id="contact-heading">Jsme na příjmu</h2></div>

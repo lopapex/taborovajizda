@@ -93,6 +93,9 @@ function initialisePagers(): void {
     if (!track || !previous || !next) return;
     const items = Array.from(track.children) as HTMLElement[];
     let first = 0;
+    let dots: HTMLButtonElement[] = [];
+    const label = document.createElement('span');
+    label.className = 'tj-home-visually-hidden';
 
     const perView = () => Math.max(1, Math.round(Number.parseFloat(getComputedStyle(pager).getPropertyValue('--per-view')) || 1));
     const render = () => {
@@ -103,11 +106,95 @@ function initialisePagers(): void {
       items.forEach((item, index) => { item.inert = index < first || index >= first + visible; });
       previous.disabled = first === 0;
       next.disabled = first + visible >= items.length;
-      const last = Math.min(first + visible, items.length);
-      if (status) status.textContent = `${last - first === 1 ? first + 1 : `${first + 1}-${last}`} z ${items.length}`;
+      // Pagination dots: one per page; the last page may overlap the previous one.
+      const pages = Math.max(1, Math.ceil(items.length / visible));
+      const page = first >= items.length - visible ? pages - 1 : Math.floor(first / visible);
+      if (status) {
+        status.hidden = pages < 2;
+        if (dots.length !== pages) {
+          dots = Array.from({ length: pages }, (_, index) => {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'tj-home-pager__dot';
+            dot.setAttribute('aria-label', `Stránka ${index + 1} z ${pages}`);
+            dot.addEventListener('click', () => {
+              first = Math.min(index * perView(), Math.max(0, items.length - perView()));
+              render();
+            });
+            return dot;
+          });
+          status.replaceChildren(label, ...dots);
+        }
+        dots.forEach((dot, index) => {
+          if (index === page) dot.setAttribute('aria-current', 'true');
+          else dot.removeAttribute('aria-current');
+        });
+        label.textContent = `Stránka ${page + 1} z ${pages}`;
+      }
     };
     previous.addEventListener('click', () => { first = Math.max(0, first - perView()); render(); });
     next.addEventListener('click', () => { first = Math.min(items.length - perView(), first + perView()); render(); });
+    // Drag / swipe: the track follows the finger or mouse, then snaps to the next or previous page.
+    const viewport = pager.querySelector<HTMLElement>('.tj-home-pager__viewport');
+    if (viewport) {
+      let startX = 0;
+      let startY = 0;
+      let pointerId = -1;
+      let dragging = false;
+      let moved = false;
+      let baseOffset = 0;
+      const currentOffset = () => (items[first] ? items[first].offsetLeft - items[0].offsetLeft : 0);
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        startX = event.clientX;
+        startY = event.clientY;
+        pointerId = event.pointerId;
+        dragging = false;
+        moved = false;
+        baseOffset = currentOffset();
+      });
+      viewport.addEventListener('pointermove', (event) => {
+        if (event.pointerId !== pointerId) return;
+        const dx = event.clientX - startX;
+        const dy = event.clientY - startY;
+        if (!dragging) {
+          // Small or mostly vertical movement is a click or a page scroll, not a drag.
+          if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return;
+          dragging = true;
+          moved = true;
+          viewport.setPointerCapture(event.pointerId);
+          track.classList.add('is-dragging');
+          viewport.classList.add('is-dragging');
+        }
+        const resisting = (first === 0 && dx > 0) || (next.disabled && dx < 0);
+        track.style.transform = `translateX(${-baseOffset + (resisting ? dx * 0.35 : dx)}px)`;
+      });
+      const finishDrag = (event: PointerEvent) => {
+        if (event.pointerId !== pointerId) return;
+        pointerId = -1;
+        if (!dragging) return;
+        dragging = false;
+        const dx = event.clientX - startX;
+        track.classList.remove('is-dragging');
+        viewport.classList.remove('is-dragging');
+        const threshold = Math.min(90, viewport.clientWidth * 0.18);
+        if (dx < -threshold && !next.disabled) first = Math.max(0, Math.min(items.length - perView(), first + perView()));
+        else if (dx > threshold && !previous.disabled) first = Math.max(0, first - perView());
+        render();
+        window.setTimeout(() => { moved = false; }, 80);
+      };
+      viewport.addEventListener('pointerup', finishDrag);
+      viewport.addEventListener('pointercancel', finishDrag);
+      // A drag must not also click the card underneath.
+      viewport.addEventListener('click', (event) => {
+        if (!moved) return;
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+      viewport.addEventListener('dragstart', (event) => event.preventDefault());
+    }
+
     new ResizeObserver(render).observe(pager);
     render();
   });
@@ -136,6 +223,7 @@ function initialiseSeasonArticles(): void {
         delete body.dataset.error;
         body.dataset.loaded = 'true';
         body.querySelectorAll<HTMLElement>('.youtube-player').forEach(createYouTubePreview);
+        markZoomable(body);
       } catch {
         body.innerHTML = `<p class="tj-home-season-article__status">Článek se nepodařilo načíst.</p>${fallback}`;
         body.dataset.error = 'true';
@@ -192,6 +280,211 @@ function initialiseCollapsedEqualHeight(): void {
     new ResizeObserver(measure).observe(container);
     measure();
   });
+}
+
+const zoomableSelector = '.tj-home-prose img, .tj-home-person-dialog__photo img, .tj-home-intro__media img, .tj-home-news-dialog__image img';
+
+function isZoomable(img: HTMLImageElement): boolean {
+  return img.matches(zoomableSelector)
+    && !img.classList.contains('emoji')
+    && !img.closest('.youtube-player')
+    // Card thumbnails open their dialog instead; photos inside a card's dialog are zoomable.
+    && (img.closest('dialog') !== null || !img.closest('.tj-home-post-card, .tj-home-person-card, .tj-home-activity-card, .tj-home-archive-card'));
+}
+
+/** Best available source: a linked image file, the widest srcset entry, or the current source. */
+function largestSource(img: HTMLImageElement): string {
+  const link = img.closest('a');
+  if (link && /\.(?:jpe?g|png|webp|gif|avif)(?:[?#].*)?$/i.test(link.href)) return link.href;
+  const candidates = (img.getAttribute('srcset') ?? '')
+    .split(',')
+    .map((entry) => entry.trim().split(/\s+/))
+    .filter(([url, width]) => Boolean(url) && Boolean(width?.endsWith('w')))
+    .map(([url, width]) => ({ url, width: Number.parseInt(width, 10) }))
+    .sort((a, b) => b.width - a.width);
+  return candidates[0]?.url ?? (img.currentSrc || img.src);
+}
+
+/** Makes zoomable images inside root reachable and operable from the keyboard. */
+function markZoomable(root: ParentNode): void {
+  root.querySelectorAll<HTMLImageElement>(zoomableSelector).forEach((img) => {
+    if (!isZoomable(img) || img.dataset.zoomable) return;
+    img.dataset.zoomable = 'true';
+    img.tabIndex = 0;
+    img.setAttribute('role', 'button');
+    img.setAttribute('aria-label', img.alt ? `Zvětšit fotografii: ${img.alt}` : 'Zvětšit fotografii');
+  });
+}
+
+/**
+ * One photo viewer for the whole redesign: always on top (its own modal dialog,
+ * so it stacks above open dialogs), never navigates away and replaces plugin
+ * lightboxes for images in our content.
+ */
+function initialiseLightbox(): void {
+  if (!document.body.classList.contains('tj-home')) return;
+
+  const viewer = document.createElement('dialog');
+  viewer.className = 'tj-lightbox';
+  viewer.setAttribute('aria-label', 'Prohlížení fotografií');
+  viewer.innerHTML = [
+    '<figure class="tj-lightbox__stage"><img class="tj-lightbox__image" alt=""><figcaption class="tj-lightbox__caption"></figcaption></figure>',
+    '<button class="tj-lightbox__button tj-lightbox__button--close" type="button" aria-label="Zavřít prohlížení"></button>',
+    '<button class="tj-lightbox__button tj-lightbox__button--prev" type="button" aria-label="Předchozí fotografie"></button>',
+    '<button class="tj-lightbox__button tj-lightbox__button--next" type="button" aria-label="Další fotografie"></button>',
+    '<p class="tj-lightbox__counter" aria-live="polite"></p>',
+  ].join('');
+  document.body.append(viewer);
+  const image = viewer.querySelector<HTMLImageElement>('.tj-lightbox__image')!;
+  const caption = viewer.querySelector<HTMLElement>('.tj-lightbox__caption')!;
+  const counter = viewer.querySelector<HTMLElement>('.tj-lightbox__counter')!;
+  const stage = viewer.querySelector<HTMLElement>('.tj-lightbox__stage')!;
+  const previous = viewer.querySelector<HTMLButtonElement>('.tj-lightbox__button--prev')!;
+  const next = viewer.querySelector<HTMLButtonElement>('.tj-lightbox__button--next')!;
+  let items: HTMLImageElement[] = [];
+  let index = 0;
+
+  const show = (target: number) => {
+    index = (target + items.length) % items.length;
+    const current = items[index];
+    image.src = largestSource(current);
+    image.classList.remove('is-swapping');
+    void image.offsetWidth;
+    image.classList.add('is-swapping');
+    image.alt = current.alt;
+    const figcaption = current.closest('figure')?.querySelector('figcaption')?.textContent?.trim();
+    caption.textContent = figcaption || current.alt || '';
+    caption.hidden = !caption.textContent;
+    const single = items.length < 2;
+    previous.hidden = single;
+    next.hidden = single;
+    counter.textContent = single ? '' : `${index + 1} / ${items.length}`;
+    [items[index + 1], items[index - 1]].forEach((neighbour) => { if (neighbour) new Image().src = largestSource(neighbour); });
+  };
+  const open = (img: HTMLImageElement) => {
+    // Browsing scope: all team portraits for a profile photo, otherwise every photo of the
+    // surrounding dialog (e.g. all activities of a group) or section. Photos inside a
+    // collapsed article are skipped, so only what the visitor can see is browsable.
+    const scope: ParentNode = img.closest('.tj-home-person-dialog__photo')
+      ? (document.querySelector('.tj-home-section--people') ?? document)
+      : (img.closest('dialog') ?? img.closest('section') ?? document);
+    items = Array.from(scope.querySelectorAll<HTMLImageElement>(zoomableSelector))
+      .filter((candidate) => isZoomable(candidate) && !candidate.closest('details:not([open])'));
+    if (!items.includes(img)) items = [img];
+    show(items.indexOf(img));
+    viewer.showModal();
+  };
+
+  // Capture phase: runs before plugin lightboxes and before links navigate.
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element) || viewer.contains(event.target)) return;
+    const img = event.target.closest('img') ?? event.target.closest('a')?.querySelector('img');
+    if (!(img instanceof HTMLImageElement) || !isZoomable(img)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    open(img);
+  }, true);
+  document.addEventListener('keydown', (event) => {
+    if ((event.key !== 'Enter' && event.key !== ' ') || !(event.target instanceof HTMLImageElement) || !event.target.dataset.zoomable) return;
+    event.preventDefault();
+    open(event.target);
+  });
+
+  previous.addEventListener('click', () => show(index - 1));
+  next.addEventListener('click', () => show(index + 1));
+  viewer.querySelector('.tj-lightbox__button--close')?.addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', (event) => { if (event.target === viewer || event.target === stage) viewer.close(); });
+  viewer.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') show(index - 1);
+    if (event.key === 'ArrowRight') show(index + 1);
+  });
+  let startX: number | null = null;
+  viewer.addEventListener('pointerdown', (event) => { startX = event.clientX; });
+  viewer.addEventListener('pointerup', (event) => {
+    if (startX === null || items.length < 2) return;
+    const delta = event.clientX - startX;
+    startX = null;
+    if (Math.abs(delta) > 50) show(index + (delta < 0 ? 1 : -1));
+  });
+  markZoomable(document);
+}
+
+const revealSelector = [
+  '.tj-home-section__heading',
+  '.tj-home-intro__text',
+  '.tj-home-intro__media',
+  '.tj-home-activity-card',
+  '.tj-home-pager',
+  '.tj-home-panel',
+  '.tj-home-contact-form',
+  '.tj-home-contact-details',
+  '.tj-home-contact-social-row',
+  '.tj-home-map',
+].join(', ');
+
+/**
+ * Sections ease in once as they reach the viewport (hierarchy: the eye is led
+ * down the page). Uses the individual `translate` property, so it never fights
+ * the hover transforms of cards. Nothing is hidden without JavaScript or when
+ * the visitor prefers reduced motion.
+ */
+function initialiseScrollReveal(): void {
+  if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const targets = Array.from(document.querySelectorAll<HTMLElement>(revealSelector))
+    .filter((element) => !element.closest('dialog'));
+  if (targets.length === 0) return;
+
+  const siblingIndex = new Map<Element, number>();
+  targets.forEach((element) => {
+    const parent = element.parentElement;
+    if (!parent) return;
+    const index = siblingIndex.get(parent) ?? 0;
+    siblingIndex.set(parent, index + 1);
+    element.style.setProperty('--tj-reveal-delay', `${Math.min(index, 5) * 70}ms`);
+    element.classList.add('tj-reveal');
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-revealed');
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
+  targets.forEach((element) => observer.observe(element));
+}
+
+/**
+ * The link row never wraps: when logo, links and the registration button do not
+ * fit on one line, the header switches to the hamburger layout used on phones.
+ * Re-measured on every width change and once webfonts have loaded.
+ */
+function initialiseResponsiveNav(): void {
+  const header = document.querySelector<HTMLElement>('.tj-home-header');
+  const inner = header?.querySelector<HTMLElement>('.tj-home-header__inner');
+  const nav = header?.querySelector<HTMLElement>('.tj-home-nav');
+  if (!header || !inner || !nav) return;
+
+  const apply = () => {
+    header.classList.remove('is-compact');
+    // At phone widths CSS already hides the link row and shows the hamburger.
+    if (getComputedStyle(nav).display === 'none') return;
+    header.classList.toggle('is-compact', inner.scrollWidth > inner.clientWidth + 1);
+  };
+  new ResizeObserver(apply).observe(inner);
+  void document.fonts?.ready.then(apply);
+  apply();
+}
+
+/** Header gets a stronger shadow and a smaller logo once the page is scrolled (sentinel, no scroll listener). */
+function initialiseHeaderState(): void {
+  const header = document.querySelector<HTMLElement>('.tj-home-header');
+  if (!header || !('IntersectionObserver' in window)) return;
+  const sentinel = document.createElement('div');
+  sentinel.setAttribute('aria-hidden', 'true');
+  sentinel.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:64px;pointer-events:none;';
+  document.body.prepend(sentinel);
+  new IntersectionObserver(([entry]) => header.classList.toggle('is-scrolled', !entry.isIntersecting)).observe(sentinel);
 }
 
 function initialiseArchiveExpand(): void {
@@ -499,6 +792,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initialiseSeasonArticles();
   initialiseExclusiveDetails();
   initialiseCollapsedEqualHeight();
+  initialiseLightbox();
+  initialiseScrollReveal();
+  initialiseHeaderState();
+  initialiseResponsiveNav();
   initialiseActivityTabs();
   initialiseHorizontalCarousels();
   initialiseHomeDialogs();

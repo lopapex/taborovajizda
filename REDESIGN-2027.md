@@ -56,7 +56,9 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 /                       one-page prezentace
   #aktuality             nejnovější příspěvky
   #o-tabore              představení a atmosféra
-  #program               aktivity, prostředí a lidé
+  #lide                  tým (profily v oknech, listování fotkami)
+  #program               aktivity ve čtyřech skupinách
+  #minule-rocniky        carousel minulých ročníků
   #pro-rodice            praktické informace, FAQ a dokumenty
   #kontakt               kontakt a sociální sítě
 
@@ -212,8 +214,10 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 
 ## Fáze F — animace a interakce
 
-- [ ] Sepsat konkrétní seznam animací a u každé zvolit CSS / nativní API / případně `motion`.
-- [ ] Hero: krátký vstup bez blokujícího intra.
+- [x] Sepsat konkrétní seznam animací a u každé zvolit CSS / nativní API / případně `motion`.
+  - 11. 11. 2026, vše bez knihovny `motion`: (1) vstup hera, CSS keyframes, účel hierarchie; (2) postupné vyjetí sekcí, karet a panelů při scrollu, `IntersectionObserver` a vlastnosti `translate` a `opacity`, účel vedení oka (nekoliduje s hover transformacemi karet); (3) „nakreslení“ podtržení nadpisů, CSS `scaleX`, účel dokončení vstupu; (4) stav hlavičky po scrollu (stín a menší logo), sentinel s `IntersectionObserver`, účel zpětné vazby; (5) plynulé rozbalení častých otázek, CSS `::details-content` a `interpolate-size` (Chrome a Edge, jinde bez změny), účel změny stavu; (6) prohlížeč fotek, fade při otevření a zoom při přepnutí, účel změny stavu; (7) hover a active stavy karet, tlačítek, šipek a ikon přehrávání, účel zpětné vazby; (8) otevření oken, jemný vstup. Bez nekonečných smyček a bez scroll posluchačů. Prvky skrývá jen JavaScript a jen bez omezeného pohybu, takže bez JS obsah zůstává vidět.
+- [x] Hero: krátký vstup bez blokujícího intra.
+  - Texty a trailer vstupují postupně do 0,8 s a nic neblokuje; ověřeno 11. 11. 2026.
 - [ ] Sticky CTA: krátké vysunutí bez layout shiftu.
 - [x] Karty: jemný hover/focus a volitelný jednorázový vstup.
   - Karty aktualit, aktivit, lidí a archivu mají společnou jemnou odezvu na hover a viditelný stav klávesnicového fokusu; pohyb respektuje systémové omezení pohybu.
@@ -221,6 +225,7 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 - [x] FAQ: přístupné rozbalení s korektním `aria-expanded` nebo nativním `details`.
   - FAQ na homepage tvoří nativní `details/summary` z Genesis Blocks. Ověřeno 11. 11. 2026: tmavý povrch, akcentový okraj, světlý text, cílová plocha 44 px a otevření klikem i klávesnicí.
 - [ ] Všechny pohyby otestovat s `prefers-reduced-motion: reduce`.
+  - Částečně ověřeno 11. 11. 2026: v přeloženém CSS jsou všechna pravidla, která prvky skrývají nebo posouvají, jen uvnitř `prefers-reduced-motion: no-preference` a JavaScript při omezeném pohybu vyjetí vůbec nezapne. Chybí ověření v prohlížeči s nastaveným omezením pohybu v systému.
 - [ ] Přidat `motion` pouze po schválení konkrétního důvodu a ověřit dopad na bundle.
 
 ## Fáze H — kontrola kvality
@@ -282,3 +287,11 @@ Implementovaný první vertikální řez:
 
 Doporučený další krok: spustit LocalWP a vizuálně projít `/`, `/kontakt-2/`, `/minule-rocniky/` a `/minule-rocniky/?rok=2024`. Potom pokračovat sticky navigací a novým hero podle schváleného wireframu. Před commitem nejdřív oddělit a zkontrolovat všechny změny pracovního stromu; tento krok commit ani push neprovedl.
 
+
+## Stav po úpravách 11. 11. 2026 (pozdní odpoledne)
+
+- **Pořadí sekcí** (schváleno): hero, Aktuality, O táboře, Lidé, Program, Minulé ročníky, Pro rodiče, Kontakt. Menu má stejné pořadí a zvýraznění aktuální sekce podle něj funguje. Nadpis Programu je „Hry, výpravy a příroda“, popisek tlačítka přihlášky je v hlavičce i v hero stejný („Přihlásit dítě“, při obsazení „Přihlásit náhradníka“).
+- **Minulé ročníky** jsou carousel na jeden řádek jako Aktuality a Lidé (4, 3 nebo 1 karta podle šířky), bez tlačítka „Zobrazit všechny“. Všechny carousely mají místo textu „1-4 z 12“ tečky stránkování (jedna tečka na stránku, aktivní je prodloužená, tečky jsou klikací).
+- **Chyba opravena:** starý styl z původní šablony má pravidlo `.is-visible { display: block }`, které rozbíjelo mřížku šipek carouselů na mobilu. Třída pro vyjetí sekcí se proto jmenuje `is-revealed`.
+- **Odkazy v Častých otázkách** (lokální databáze): `/kontakt#menu` vede na `/#kontakt`, `/dokumenty#menu` na `/#dokumenty`, `/e-prihlaska#menu` na `/e-prihlaska/` a dva neexistující soubory `/documents/*.pdf` na skutečné soubory v `wp-content/uploads` (na produkci vrací 200). Odkaz na bezinfekčnost v Dokumentech míří rovnou na PDF. Lokálně soubory PDF na disku nejsou, v knihovně médií záznamy jsou.
+- **Texty:** viz „První kolo provedeno“ výše; titulní stránka už neopakuje údaje z hera ani obsah Častých otázek.
