@@ -54,6 +54,28 @@ function taborovajizda_debug_registration_cta(): bool
 }
 
 /**
+ * Official social profiles, verified against the production widgets on 11. 11. 2026.
+ *
+ * @return array<string, string> Label => URL.
+ */
+function taborovajizda_social_links(): array
+{
+    return [
+        'YouTube' => 'https://www.youtube.com/@taborovajizda6412',
+        'Instagram' => 'https://www.instagram.com/taborova.jizda/',
+        'Facebook' => 'https://www.facebook.com/taborovajizda.cz',
+    ];
+}
+
+/**
+ * Inline SVG icon of a social service (core Social Icons block), or an empty string.
+ */
+function taborovajizda_social_icon(string $service): string
+{
+    return function_exists('block_core_social_link_get_icon') ? block_core_social_link_get_icon(strtolower($service)) : '';
+}
+
+/**
  * Return verified historical camp seasons for archive templates.
  */
 function taborovajizda_season_archive(?int $year = null): array

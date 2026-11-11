@@ -31,7 +31,7 @@ final class YouTubeEmbeds
         $title = preg_match('/\stitle="([^"]*)"/', $html, $match) ? html_entity_decode($match[1], ENT_QUOTES) : 'YouTube video';
 
         return sprintf(
-            '<div class="youtube-player youtube-player--embed" data-id="%1$s" data-title="%2$s"><a href="%3$s" rel="noopener noreferrer">%4$s</a></div>',
+            '<div class="youtube-player youtube-player--embed" data-id="%1$s" data-title="%2$s"><a href="%3$s" target="_blank" rel="noopener noreferrer">%4$s</a></div>',
             esc_attr($id),
             esc_attr($title),
             esc_url('https://www.youtube.com/watch?v=' . rawurlencode($id)),

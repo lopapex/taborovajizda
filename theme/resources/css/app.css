@@ -74,7 +74,11 @@
   @media (max-width: 60rem) { .tj-home-hero--with-media .tj-home-hero__inner { grid-template-columns: minmax(0, 1fr); } }
   /* Text spans the full width on narrow screens, so the photo needs an even, darker scrim. */
   @media (max-width: 64rem) { .tj-home-activity-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 48rem) { .tj-home-hero__image { background: linear-gradient(180deg, rgb(244 249 255 / .78), rgb(244 249 255 / .92) 45%, rgb(244 249 255 / .98)), url('../assets/season/hero.jpg') center top / cover; } }
+  /* Phones: the top of the poster stays visible behind the eyebrow, the text sits on a calmer scrim below. */
+  @media (max-width: 48rem) {
+    .tj-home-hero__image { background: linear-gradient(180deg, rgb(244 249 255 / .5), rgb(244 249 255 / .86) 28%, rgb(244 249 255 / .96) 60%), url('../assets/season/hero.jpg') center top / auto 60% no-repeat, var(--wp--preset--color--background); }
+    .tj-home-hero__inner { padding: 2.25rem 0 3rem; gap: 2rem; }
+  }
   .tj-home-eyebrow { margin: 0 0 .7rem; color: var(--tj-tangerine-ink); font-size: .8rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
   .tj-home-hero h1 { max-width: 14ch; margin: 0; font-size: clamp(2.75rem, 6vw, 5rem); line-height: .95; letter-spacing: -.045em; }
   .tj-home-hero__lead { max-width: 34rem; margin: 1.25rem 0 0; font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.5; }
@@ -83,6 +87,8 @@
   .tj-home-facts dt { color: var(--wp--preset--color--muted); font-size: .8rem; font-weight: 700; }
   .tj-home-facts dd { margin: 0; font-weight: 800; }
   .tj-home-hero__actions { display: flex; margin-top: 1.75rem; flex-wrap: wrap; gap: .75rem; }
+  /* Between seasons: a short, friendly "what next" line under the lead. */
+  .tj-home-hero__note { max-width: 34rem; margin: 1rem 0 0; padding: .7rem 1rem; border-left: 4px solid var(--tj-tangerine); border-radius: 0 var(--tj-radius-control) var(--tj-radius-control) 0; background: rgb(255 255 255 / .72); color: var(--wp--preset--color--text); font-weight: 700; line-height: 1.45; }
   /* Local-only debug display of a registration CTA (taborovajizda_debug_registration_cta). */
   .tj-is-debug-cta { outline: 2px dashed #ff4fd8; outline-offset: 3px; }
   .tj-home-button--quiet { border: 1px solid rgb(23 50 77 / 0.39); background: rgb(244 249 255 / 0.35); color: var(--wp--preset--color--text); box-shadow: 0 4px 0 rgb(23 50 77 / .18); }
@@ -149,6 +155,8 @@
   .tj-home-post-card__title { border: 0; background: transparent; padding: 0; font: inherit; font-weight: inherit; text-align: left; cursor: pointer; }
   .tj-home-post-card__body > p:not(.tj-home-meta) { color: var(--wp--preset--color--muted); line-height: 1.5; }
   .tj-home-post-card__read { border: 0; background: transparent; padding: 0; font: inherit; cursor: pointer; }
+  /* The scrollbar keeps its space while a dialog locks scrolling: no layout jump, and view transitions are not aborted by a viewport change. */
+  html.js { scrollbar-gutter: stable; }
   html.has-home-dialog, html.has-home-dialog body { overflow: hidden; }
   .tj-home-content-dialog { width: min(100% - 2rem, 52rem); max-height: min(90dvh, 58rem); overflow-y: auto; overscroll-behavior: contain; border: 0; border-radius: var(--tj-radius-card); background: var(--wp--preset--color--surface); color: var(--wp--preset--color--text); padding: 0; box-shadow: 0 1.5rem 5rem rgb(23 50 77 / 0.25); }
   .tj-home-content-dialog::backdrop { background: rgb(23 50 77 / .55); }
@@ -208,6 +216,10 @@
   .tj-home-post-card__visual-day { font-family: themed-font, var(--wp--preset--font-family--body); font-size: clamp(3rem, 6vw, 4.25rem); line-height: .9; }
   .tj-home-post-card__visual-month { margin-top: .35rem; font-size: 1.05rem; font-weight: 800; text-transform: lowercase; }
   .tj-home-post-card--text { border-top: 6px solid var(--tj-card-colour, var(--tj-sun)); }
+  /* Text-only news: a compact date badge instead of a large empty visual. */
+  .tj-home-post-card__date { display: inline-flex; margin: 0 0 1rem; align-self: flex-start; align-items: baseline; gap: .45rem; border-radius: var(--tj-radius-control); background: var(--tj-card-tint, var(--tj-sun-tint)); color: var(--wp--preset--color--text); padding: .35rem .7rem; font-size: .95rem; font-weight: 800; text-transform: lowercase; }
+  .tj-home-post-card__date-day { font-family: themed-font, var(--wp--preset--font-family--body); font-size: 1.6rem; line-height: 1; }
+  .tj-home-post-card--text .tj-home-post-card__body > p:not(.tj-home-meta, .tj-home-post-card__date) { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 6; }
   .tj-home-people-grid > :nth-child(4n + 1) .tj-home-person-card__portrait { background: var(--tj-sun); }
   .tj-home-people-grid > :nth-child(4n + 2) .tj-home-person-card__portrait { background: var(--tj-sky); }
   .tj-home-people-grid > :nth-child(4n + 3) .tj-home-person-card__portrait { background: var(--tj-grass); }
@@ -232,7 +244,7 @@
   /* Motion layer (Fáze F): CSS only, individual transform properties, off under reduced motion. */
   @media (prefers-reduced-motion: no-preference) {
     @keyframes tj-zoom-in { from { opacity: 0; scale: .96; } to { opacity: 1; scale: 1; } }
-    .tj-reveal { opacity: 0; translate: 0 1.5rem; transition: opacity .6s ease var(--tj-reveal-delay, 0ms), translate .6s cubic-bezier(.2, .7, .2, 1) var(--tj-reveal-delay, 0ms); }
+    .tj-reveal { opacity: 0; translate: 0 .75rem; transition: opacity .35s ease-out var(--tj-reveal-delay, 0ms), translate .4s cubic-bezier(.2, .7, .2, 1) var(--tj-reveal-delay, 0ms); }
     .tj-reveal.is-revealed { opacity: 1; translate: 0 0; }
     .tj-home-section__heading.tj-reveal h2::after { transform: scaleX(0); transform-origin: left; transition: transform .55s cubic-bezier(.2, .7, .2, 1) .3s; }
     .tj-home-section__heading.tj-reveal.is-revealed h2::after { transform: none; }
@@ -245,6 +257,46 @@
     }
   }
   @media print { .tj-reveal { opacity: 1; translate: none; } }
+  /* Motion layer 2 (11. 11. 2026). Progressive: browsers without scroll timelines or view transitions keep the static look. */
+  @media (prefers-reduced-motion: no-preference) {
+    /* Hero poster settles in once, then drifts slower than the page while the hero scrolls away (parallax, no JS). */
+    @keyframes tj-hero-settle { from { scale: 1.06; } to { scale: 1; } }
+    @keyframes tj-hero-drift { to { translate: 0 16%; } }
+    .tj-home-hero__image { animation: tj-hero-settle 1.6s cubic-bezier(.2, .7, .2, 1) both; }
+    @supports (animation-timeline: view()) {
+      .tj-home-hero__image { animation: tj-hero-settle 1.6s cubic-bezier(.2, .7, .2, 1) both, tj-hero-drift linear both; animation-timeline: auto, view(); animation-range: normal, exit; }
+    }
+    /* Mobile menu slides down and its links follow one by one. */
+    .tj-home-mobile-menu.is-open .tj-home-nav-panel { transition: opacity .2s ease, translate .25s cubic-bezier(.2, .7, .2, 1); }
+    @starting-style { .tj-home-mobile-menu.is-open .tj-home-nav-panel { opacity: 0; translate: 0 -.5rem; } }
+    .tj-home-mobile-menu.is-open .tj-home-nav-panel li { animation: tj-rise .3s cubic-bezier(.2, .7, .2, 1) both; }
+    .tj-home-mobile-menu.is-open .tj-home-nav-panel li:nth-child(2) { animation-delay: 25ms; }
+    .tj-home-mobile-menu.is-open .tj-home-nav-panel li:nth-child(3) { animation-delay: 50ms; }
+    .tj-home-mobile-menu.is-open .tj-home-nav-panel li:nth-child(4) { animation-delay: 75ms; }
+    .tj-home-mobile-menu.is-open .tj-home-nav-panel li:nth-child(5) { animation-delay: 100ms; }
+    .tj-home-mobile-menu.is-open .tj-home-nav-panel li:nth-child(n + 6) { animation-delay: 125ms; }
+  }
+  /* Narrow phones: logo, registration and menu must fit; the menu button keeps only its icon (the word stays for screen readers). */
+  @media (max-width: 26rem) {
+    .tj-home-menu-button > span:first-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .tj-home-menu-button { width: 44px; justify-content: center; padding: .5rem; }
+    .tj-home-header__inner { gap: .5rem; }
+  }
+  /* Hamburger turns into a cross while the menu is open. */
+  .tj-home-menu-icon, .tj-home-menu-icon::before, .tj-home-menu-icon::after { transition: background-color .15s ease, rotate .2s ease, top .2s ease; }
+  .tj-home-mobile-menu.is-open .tj-home-menu-icon { background: transparent; }
+  .tj-home-mobile-menu.is-open .tj-home-menu-icon::before { top: 0; rotate: 45deg; }
+  .tj-home-mobile-menu.is-open .tj-home-menu-icon::after { top: 0; rotate: -45deg; }
+  /* Reading progress: the logo stripe under the header fills with colour as the homepage scrolls (scroll timeline, no JS). */
+  @supports (animation-timeline: scroll()) {
+    @keyframes tj-progress { to { scale: 0 1; } }
+    .home .tj-home-header::before { position: absolute; right: 0; bottom: -5px; left: 0; z-index: 1; height: 5px; background: rgb(244 249 255 / .62); content: ''; transform-origin: right; animation: tj-progress linear both; animation-timeline: scroll(root); }
+  }
+  /* Sliding underline in the desktop navigation (initialiseNavIndicator); replaces the per-link underline. */
+  .tj-home-nav__links { position: relative; }
+  .tj-home-nav__indicator { position: absolute; bottom: .35rem; left: 0; width: 0; height: 2px; border-radius: 2px; background: var(--wp--preset--color--primary); opacity: 0; pointer-events: none; transition: translate .3s cubic-bezier(.2, .7, .2, 1), width .3s cubic-bezier(.2, .7, .2, 1), opacity .2s ease; }
+  .tj-home-nav__indicator.is-active { opacity: 1; }
+  .has-nav-indicator .tj-home-nav__links a::after { display: none; }
   /* Photo viewer (initialiseLightbox): full-screen modal dialog above everything. */
   [data-zoomable] { cursor: zoom-in; }
   .tj-lightbox { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: rgb(10 18 28 / .94); color: #fff; overscroll-behavior: contain; }
@@ -272,10 +324,15 @@
   .tj-home-panel > h3 { margin: 0 0 1rem; color: var(--wp--preset--color--text); font-size: clamp(1.35rem, 2.4vw, 1.75rem); line-height: 1.15; }
   .tj-home-panel > p { margin: 0 0 1.25rem; color: var(--wp--preset--color--muted); line-height: 1.55; }
   .tj-home-parents__side { display: flex; min-width: 0; flex-direction: column; gap: 1.25rem; }
-  .tj-home-parents__ask { display: flex; flex: 1; flex-direction: column; align-items: flex-start; }
-  .tj-home-parents__ask .tj-home-text-link { margin-top: auto; }
-  .tj-home-parents__phone a { color: var(--wp--preset--color--text); font-size: 1.6rem; font-weight: 800; text-decoration: none; }
-  .tj-home-parents__phone a:hover { color: var(--tj-ink-accent); }
+  .tj-home-parents__ask, .tj-home-parents__documents { display: flex; flex: 1; flex-direction: column; align-items: flex-start; }
+  .tj-home-parents__ask .tj-home-text-link, .tj-home-parents__documents > .tj-home-text-link { margin-top: auto; }
+  .tj-home-parents__ask { flex: 0 0 auto; }
+  .tj-home-parents__phone { color: var(--wp--preset--color--text); font-weight: 800; white-space: nowrap; }
+  .tj-home-parents__phone:hover { color: var(--tj-ink-accent); }
+  .tj-home-parents__ask > p { margin-bottom: .5rem; }
+  .tj-home-documents--panel { display: grid; width: 100%; margin: 0 0 .75rem; padding: 0; gap: .5rem; list-style: none; }
+  .tj-home-documents--panel a.tj-home-document-link { min-height: 48px; color: var(--wp--preset--color--text); font-size: .95rem; font-weight: 700; line-height: 1.3; transition: background-color .15s ease, translate .15s ease; }
+  .tj-home-documents--panel a.tj-home-document-link:hover { translate: 3px 0; }
   .tj-home-documents ul { display: grid; margin: 0; padding: 0; gap: .6rem; list-style: none; }
   .tj-home-documents a.tj-home-document-link { display: flex; min-height: 52px; align-items: center; gap: .75rem; border: 1px solid rgb(255 183 3 / 0.4); border-radius: var(--tj-radius-control); background: rgb(255 183 3 / 0.08); padding: .65rem .9rem; text-decoration: none; }
   .tj-home-documents a.tj-home-document-link::before { flex: 0 0 auto; border-radius: .35rem; background: var(--wp--preset--color--primary); color: var(--wp--preset--color--text); padding: .15rem .4rem; content: 'PDF'; font-size: .7rem; font-weight: 800; }
@@ -350,6 +407,8 @@
   .tj-home-person-card__portrait img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .tj-home-person-card__initials { color: var(--tj-ink-accent); font-size: 2.25rem; font-weight: 800; letter-spacing: .02em; }
   .tj-home-person-card__name { font-weight: 800; line-height: 1.2; }
+  .tj-home-person-card--note { display: grid; align-content: start; }
+  .tj-home-person-card__note { display: block; padding-top: 38%; color: var(--wp--preset--color--muted); font-size: 1.15rem; font-weight: 800; line-height: 1.3; }
   .tj-home-person-card__role { color: var(--wp--preset--color--muted); font-size: .9rem; line-height: 1.3; }
   .tj-home-person-card__open:hover .tj-home-person-card__portrait, .tj-home-person-card__open:focus-visible .tj-home-person-card__portrait { transform: translateY(-.2rem); box-shadow: 0 0 0 2px var(--wp--preset--color--primary); }
   .tj-home-person-card__open:hover .tj-home-person-card__name { color: var(--tj-ink-accent); }
@@ -387,9 +446,11 @@
   .tj-home-section--parents, .tj-home-section--archive { border-top: 1px solid rgb(23 50 77 / 0.14); }
   .tj-home-parents { display: grid; max-width: 56rem; margin-top: 2rem; align-items: stretch; gap: 1.25rem; }
   .tj-home-parents--split { max-width: none; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
-  /* JS sets --tj-collapsed-height: equal columns while the FAQ is closed, fixed side column when it opens. */
-  .tj-home-parents--split[style*="--tj-collapsed-height"] { align-items: start; }
-  .tj-home-parents--split[style*="--tj-collapsed-height"] .tj-home-parents__side { position: sticky; top: 6.5rem; height: var(--tj-collapsed-height); }
+  /* The side column hugs its content and stays in view while the longer FAQ card scrolls. */
+  .tj-home-parents--split { align-items: start; }
+  .tj-home-parents--split .tj-home-parents__side { position: sticky; top: 6.5rem; }
+  /* JS sets --tj-collapsed-height: the side column matches the FAQ card while it is closed and does not grow when an item opens. */
+  .tj-home-parents--split[style*="--tj-collapsed-height"] .tj-home-parents__side { height: var(--tj-collapsed-height); }
   .tj-home-parents__content h1 { display: none; }
   .tj-home-parents__content h2 { margin-top: 2rem; font-size: clamp(1.6rem, 3vw, 2.2rem); }
   .tj-home-parents__documents .tj-home-prose { font-size: 1rem; }
@@ -444,11 +505,32 @@
   .tj-home-contact-details a { color: var(--tj-ink-accent); font-weight: 800; }
   .tj-home-contact-social { display: flex; margin: 0; padding: 0; flex-wrap: wrap; gap: .6rem; list-style: none; }
   .tj-home-contact-form > section { border-top: 4px solid var(--tj-sky); border-radius: var(--tj-radius-card); background: var(--wp--preset--color--surface); box-shadow: 0 .8rem 2.2rem rgb(23 50 77 / 0.06); }
-  .tj-home-footer { border-top: 1px solid rgb(23 50 77 / 0.14); background: var(--wp--preset--color--background); color: var(--wp--preset--color--muted); }
-  .tj-home-footer__inner { display: flex; width: min(100% - 2rem, 82rem); margin: auto; padding: 2rem 0; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
-  .tj-home-footer__inner p { margin: 0; }
-  .tj-home-footer a { color: inherit; }
-  .tj-home-footer__logo { margin-right: auto; color: var(--wp--preset--color--text) !important; font-size: 1.25rem; font-weight: 800; text-decoration: none; }
+  /* Footer: brand, quick links and contact on a warm light surface, with the logo stripe on top. */
+  .tj-home-footer { position: relative; background: linear-gradient(180deg, var(--tj-sun-tint), #fff8e1); color: var(--wp--preset--color--muted); }
+  .tj-home-footer::before { position: absolute; top: 0; right: 0; left: 0; height: 5px; background: linear-gradient(90deg, var(--tj-sun) 0 25%, var(--tj-tangerine) 25% 50%, var(--tj-sky) 50% 75%, var(--tj-grass) 75%); content: ''; }
+  .tj-home-footer__inner { display: grid; width: min(100% - 2rem, 82rem); margin: auto; padding: clamp(2.5rem, 6vw, 4rem) 0 2rem; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 2rem clamp(1.5rem, 4vw, 3rem); }
+  .tj-home-footer p { margin: 0; line-height: 1.6; }
+  .tj-home-footer p + p { margin-top: .75rem; }
+  .tj-home-footer a { color: var(--wp--preset--color--text); text-decoration-color: rgb(255 183 3 / .8); text-underline-offset: .2em; }
+  .tj-home-footer a:hover { color: var(--tj-ink-accent); }
+  .tj-home-footer h2 { margin: 0 0 1rem; color: var(--wp--preset--color--text); font-family: inherit; font-size: 1.05rem; letter-spacing: .04em; }
+  .tj-home-footer__brand { display: grid; align-content: start; gap: 1rem; }
+  .tj-home-footer__brand p { max-width: 30rem; }
+  .tj-home-footer__logo { display: block; width: 7.5rem; transition: rotate .2s ease; }
+  .tj-home-footer__logo:hover { rotate: -6deg; }
+  .tj-home-footer__logo img { display: block; width: 100%; height: auto; }
+  .tj-home-footer__social { display: flex; margin: 0; padding: 0; gap: .6rem; list-style: none; }
+  .tj-home-footer__col ul { display: grid; margin: 0; padding: 0; gap: .15rem; list-style: none; }
+  .tj-home-footer__col ul a { display: inline-flex; min-height: 36px; align-items: center; text-decoration: none; }
+  .tj-home-footer__col ul a:hover { text-decoration: underline; }
+  .tj-home-footer__bottom { display: flex; width: min(100% - 2rem, 82rem); margin: auto; padding: 1.25rem 0 1.5rem; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1.5rem; border-top: 1px solid rgb(23 50 77 / .12); padding-right: 4rem; font-size: .9rem; }
+  @media (max-width: 48rem) { .tj-home-footer__inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .tj-home-footer__brand { grid-column: 1 / -1; } }
+  /* Back to top: appears after the visitor has scrolled well past the hero (initialiseBackToTop). */
+  .tj-home-to-top { position: fixed; right: 1rem; bottom: 1rem; z-index: 15; display: grid; width: 3rem; height: 3rem; place-items: center; border-radius: 50%; background: var(--wp--preset--color--primary); color: var(--wp--preset--color--text); box-shadow: 0 4px 0 var(--tj-sun-deep), 0 .5rem 1.25rem rgb(23 50 77 / .25); opacity: 0; pointer-events: none; translate: 0 1rem; transition: opacity .2s ease, translate .2s ease, background-color .15s ease; }
+  .tj-home-to-top span { width: .75rem; height: .75rem; margin-top: .3rem; border-top: 3px solid currentColor; border-left: 3px solid currentColor; border-radius: 2px; rotate: 45deg; }
+  .tj-home-to-top.is-shown { opacity: 1; pointer-events: auto; translate: 0 0; }
+  .tj-home-to-top:hover { background: #ffc83d; translate: 0 -2px; }
+  html:not(.js) .tj-home-to-top { display: none; }
   /* Registration page (page-e-prihlaska.php) */
   .tj-registration-page { width: min(100% - 2rem, 60rem); margin: 0 auto; padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(4rem, 8vw, 6rem); }
   .tj-registration-page__header h1 { margin: 0; font-size: clamp(2.5rem, 6vw, 4.25rem); line-height: 1; }

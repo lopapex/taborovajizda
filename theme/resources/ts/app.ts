@@ -98,9 +98,21 @@ function initialisePagers(): void {
     label.className = 'tj-home-visually-hidden';
 
     const perView = () => Math.max(1, Math.round(Number.parseFloat(getComputedStyle(pager).getPropertyValue('--per-view')) || 1));
+    let shownFirst = -1;
     const render = () => {
       const visible = perView();
       first = Math.min(first, Math.max(0, items.length - visible));
+      // After a page change the newly shown cards follow the track one by one (Web Animations, transform-free `translate`).
+      if (shownFirst !== -1 && shownFirst !== first && !prefersReducedMotion()) {
+        const direction = first > shownFirst ? 1 : -1;
+        items.slice(first, first + visible).forEach((item, index) => {
+          item.animate(
+            [{ opacity: 0.35, translate: `${direction * 28}px 0` }, { opacity: 1, translate: '0 0' }],
+            { duration: 420, delay: index * 45, easing: 'cubic-bezier(.2, .7, .2, 1)', fill: 'backwards' },
+          );
+        });
+      }
+      shownFirst = first;
       const offset = items[first] ? items[first].offsetLeft - items[0].offsetLeft : 0;
       track.style.transform = `translateX(${-offset}px)`;
       items.forEach((item, index) => { item.inert = index < first || index >= first + visible; });
@@ -263,25 +275,6 @@ function initialiseExclusiveDetails(): void {
   });
 }
 
-/**
- * Pro rodiče: both columns match while every FAQ item is closed; opening an
- * item grows only the FAQ card, the side column keeps its collapsed height.
- */
-function initialiseCollapsedEqualHeight(): void {
-  document.querySelectorAll<HTMLElement>('[data-collapsed-equal]').forEach((container) => {
-    const main = container.firstElementChild as HTMLElement | null;
-    if (!main) return;
-    const measure = () => {
-      if (main.querySelector('details[open]')) return;
-      const twoColumns = getComputedStyle(container).gridTemplateColumns.split(' ').length > 1;
-      if (twoColumns) container.style.setProperty('--tj-collapsed-height', `${main.getBoundingClientRect().height}px`);
-      else container.style.removeProperty('--tj-collapsed-height');
-    };
-    new ResizeObserver(measure).observe(container);
-    measure();
-  });
-}
-
 const zoomableSelector = '.tj-home-prose img, .tj-home-person-dialog__photo img, .tj-home-intro__media img, .tj-home-news-dialog__image img';
 
 function isZoomable(img: HTMLImageElement): boolean {
@@ -409,6 +402,54 @@ function initialiseLightbox(): void {
   markZoomable(document);
 }
 
+function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/** Desktop navigation: one underline slides to the current section instead of each link drawing its own. */
+function initialiseNavIndicator(): void {
+  const list = document.querySelector<HTMLElement>('.tj-home-nav__links');
+  if (!list) return;
+  const links = Array.from(list.querySelectorAll<HTMLAnchorElement>('a'));
+  const indicator = document.createElement('span');
+  indicator.className = 'tj-home-nav__indicator';
+  indicator.setAttribute('aria-hidden', 'true');
+  list.append(indicator);
+  document.documentElement.classList.add('has-nav-indicator');
+
+  const place = () => {
+    const current = links.find((link) => link.getAttribute('aria-current') === 'true');
+    indicator.classList.toggle('is-active', Boolean(current));
+    if (!current) return;
+    // Same inset as the link padding, so the line sits under the text only.
+    const inset = Number.parseFloat(getComputedStyle(current).paddingLeft) || 0;
+    indicator.style.translate = `${current.offsetLeft + inset}px 0`;
+    indicator.style.width = `${Math.max(0, current.offsetWidth - inset * 2)}px`;
+  };
+  const observer = new MutationObserver(place);
+  links.forEach((link) => observer.observe(link, { attributes: true, attributeFilter: ['aria-current'] }));
+  new ResizeObserver(place).observe(list);
+  void document.fonts?.ready.then(place);
+  place();
+}
+
+/** "Back to top" appears once the visitor is about two screens down (sentinel, no scroll listener). */
+function initialiseBackToTop(): void {
+  const button = document.querySelector<HTMLAnchorElement>('[data-to-top]');
+  if (!button || !('IntersectionObserver' in window)) return;
+  const sentinel = document.createElement('div');
+  sentinel.setAttribute('aria-hidden', 'true');
+  sentinel.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:200vh;pointer-events:none;';
+  document.body.prepend(sentinel);
+  new IntersectionObserver(([entry]) => button.classList.toggle('is-shown', !entry.isIntersecting)).observe(sentinel);
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+    // Move focus to the content start for keyboard and screen reader users, without a second jump.
+    document.getElementById('main-content')?.focus({ preventScroll: true });
+  });
+}
+
 const revealSelector = [
   '.tj-home-section__heading',
   '.tj-home-intro__text',
@@ -436,22 +477,33 @@ function initialiseScrollReveal(): void {
 
   const siblingIndex = new Map<Element, number>();
   targets.forEach((element) => {
+    // Anything already on screen or above it (reload mid-page, anchor jump) stays visible: no flash.
+    if (element.getBoundingClientRect().top < window.innerHeight) return;
     const parent = element.parentElement;
     if (!parent) return;
     const index = siblingIndex.get(parent) ?? 0;
     siblingIndex.set(parent, index + 1);
-    element.style.setProperty('--tj-reveal-delay', `${Math.min(index, 5) * 70}ms`);
+    element.style.setProperty('--tj-reveal-delay', `${Math.min(index, 4) * 50}ms`);
     element.classList.add('tj-reveal');
   });
 
+  const revealed = (element: Element) => {
+    element.classList.add('is-revealed');
+    observer.unobserve(element);
+  };
+  // Starts slightly before the element enters, so a fast scroll never shows an empty band.
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('is-revealed');
-      observer.unobserve(entry.target);
+      if (entry.isIntersecting) revealed(entry.target);
     });
-  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.1 });
-  targets.forEach((element) => observer.observe(element));
+  }, { rootMargin: '0px 0px 10% 0px', threshold: 0 });
+  document.querySelectorAll('.tj-reveal').forEach((element) => observer.observe(element));
+  // A jump (menu link, back button) reveals everything above the landing point at once.
+  window.addEventListener('hashchange', () => {
+    document.querySelectorAll('.tj-reveal:not(.is-revealed)').forEach((element) => {
+      if (element.getBoundingClientRect().top < window.innerHeight) revealed(element);
+    });
+  });
 }
 
 /**
@@ -485,6 +537,32 @@ function initialiseHeaderState(): void {
   sentinel.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:64px;pointer-events:none;';
   document.body.prepend(sentinel);
   new IntersectionObserver(([entry]) => header.classList.toggle('is-scrolled', !entry.isIntersecting)).observe(sentinel);
+}
+
+/**
+ * Pro rodiče: the side column is exactly as tall as the FAQ card with every
+ * item closed. The collapsed height is computed from the current height minus
+ * what open items add, so it stays correct while an item is animating.
+ */
+function initialiseCollapsedEqualHeight(): void {
+  document.querySelectorAll<HTMLElement>('[data-collapsed-equal]').forEach((container) => {
+    const main = container.firstElementChild as HTMLElement | null;
+    if (!main) return;
+    const measure = () => {
+      if (getComputedStyle(container).gridTemplateColumns.split(' ').length < 2) {
+        container.style.removeProperty('--tj-collapsed-height');
+        return;
+      }
+      const extra = Array.from(main.querySelectorAll<HTMLDetailsElement>('details')).reduce((sum, item) => {
+        const summary = item.querySelector('summary');
+        return sum + (summary ? item.getBoundingClientRect().height - summary.getBoundingClientRect().height : 0);
+      }, 0);
+      container.style.setProperty('--tj-collapsed-height', `${Math.round(main.getBoundingClientRect().height - extra)}px`);
+    };
+    new ResizeObserver(measure).observe(container);
+    new ResizeObserver(measure).observe(main);
+    measure();
+  });
 }
 
 function initialiseArchiveExpand(): void {
@@ -566,6 +644,111 @@ function initialiseHorizontalCarousels(): void {
     new ResizeObserver(updateButtons).observe(carousel);
     updateButtons();
   });
+}
+
+/**
+ * Homepage: a link to another page of this site (for example the packing list
+ * inside the FAQ or a document page) opens its content in a dialog instead of
+ * leaving the page. Files, the registration form, admin and the homepage itself
+ * stay normal links; an attachment page opens its file; if the content cannot
+ * be loaded the link works as before.
+ */
+function initialiseInternalLinks(): void {
+  const dialog = document.querySelector<HTMLDialogElement>('[data-page-dialog]');
+  const title = dialog?.querySelector<HTMLElement>('[data-page-dialog-title]');
+  const body = dialog?.querySelector<HTMLElement>('[data-page-dialog-body]');
+  const endpoint = dialog?.dataset.postContentUrl;
+  if (!dialog || !title || !body || !endpoint || !document.body.classList.contains('home')) return;
+
+  const homePath = window.location.pathname;
+  const opensHere = (link: HTMLAnchorElement): URL | null => {
+    if (link.hasAttribute('data-home-dialog-open') || link.hasAttribute('download') || link.closest('.tj-lightbox')) return null;
+    let url: URL;
+    try { url = new URL(link.href); } catch { return null; }
+    if (url.origin !== window.location.origin || !/^https?:$/.test(url.protocol)) return null;
+    const path = url.pathname;
+    if (path === homePath || path === '/') return null;
+    if (/^\/(?:wp-admin|wp-content|wp-includes|wp-json|feed|e-prihlaska)(?:\/|$)/.test(path)) return null;
+    if (/\.[a-z0-9]{2,5}$/i.test(path)) return null;
+    return url;
+  };
+
+  let request = 0;
+  const show = async (url: URL, opener: HTMLAnchorElement) => {
+    const current = ++request;
+    title.textContent = opener.textContent?.trim() || 'Táborová jízda';
+    body.innerHTML = '<p class="tj-home-season-article__status">Načítám…</p>';
+    body.setAttribute('aria-busy', 'true');
+    if (!dialog.open) {
+      dialog.showModal();
+      document.documentElement.classList.add('has-home-dialog');
+    }
+    dialog.scrollTop = 0;
+    try {
+      const response = await fetch(`${endpoint}&url=${encodeURIComponent(url.href)}`, { credentials: 'same-origin' });
+      const payload = await response.json() as { success: boolean; data?: { html?: string; title?: string; file?: string } };
+      if (current !== request) return;
+      if (!response.ok || !payload.success) throw new Error('unavailable');
+      if (payload.data?.file) {
+        // An attachment page: open the document itself and leave the homepage as it is.
+        dialog.close();
+        window.open(payload.data.file, '_blank', 'noopener');
+        return;
+      }
+      if (!payload.data?.html) throw new Error('unavailable');
+      title.textContent = payload.data.title || title.textContent;
+      body.innerHTML = payload.data.html;
+      body.querySelectorAll<HTMLElement>('.youtube-player').forEach(createYouTubePreview);
+      markZoomable(body);
+    } catch {
+      if (current === request) window.location.href = url.href;
+    } finally {
+      if (current === request) body.removeAttribute('aria-busy');
+    }
+  };
+
+  let opener: HTMLAnchorElement | null = null;
+  document.addEventListener('click', (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
+    if (!link) return;
+    const url = opensHere(link);
+    if (!url) return;
+    event.preventDefault();
+    if (!dialog.open) opener = link;
+    void show(url, link);
+  });
+  dialog.addEventListener('close', () => {
+    request++;
+    if (opener?.isConnected) opener.focus();
+    opener = null;
+  });
+}
+
+/**
+ * Every link to another website opens in a new tab, wherever it comes from
+ * (templates, WordPress content, widgets or content loaded later into a
+ * dialog). Existing links are marked on load; anything added later is marked
+ * at click time, before the browser follows it.
+ */
+function initialiseExternalLinks(): void {
+  const isExternal = (link: HTMLAnchorElement): boolean => {
+    try {
+      const url = new URL(link.href);
+      return /^https?:$/.test(url.protocol) && url.origin !== window.location.origin;
+    } catch {
+      return false;
+    }
+  };
+  const mark = (link: HTMLAnchorElement) => {
+    link.target = '_blank';
+    if (!link.relList.contains('noopener')) link.relList.add('noopener');
+  };
+  document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => { if (isExternal(link)) mark(link); });
+  document.addEventListener('click', (event) => {
+    const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
+    if (link && isExternal(link)) mark(link);
+  }, true);
 }
 
 function initialiseHomeDialogs(): void {
@@ -795,10 +978,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initialiseLightbox();
   initialiseScrollReveal();
   initialiseHeaderState();
+  initialiseNavIndicator();
+  initialiseBackToTop();
   initialiseResponsiveNav();
   initialiseActivityTabs();
   initialiseHorizontalCarousels();
   initialiseHomeDialogs();
+  initialiseInternalLinks();
+  initialiseExternalLinks();
   initialiseDialogs();
   initialisePersonalIdValidation();
   initialiseCzechDateInputs();

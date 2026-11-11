@@ -42,6 +42,7 @@ final class Theme
         (new PostNotifications())->register();
         (new CountdownWidget())->register();
         (new YouTubeEmbeds())->register();
+        (new ContactLinks())->register();
         (new PostContentEndpoint())->register();
     }
 
