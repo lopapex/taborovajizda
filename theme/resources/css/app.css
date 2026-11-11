@@ -388,7 +388,6 @@
   .tj-home-pager__dot::before { position: absolute; top: 50%; left: 50%; width: min(.6rem, 70%); height: .6rem; border-radius: 999px; background: rgb(23 50 77 / .28); content: ''; translate: -50% -50%; transition: width .25s ease, background-color .2s ease; }
   /* Legacy button:hover/focus rules (white background, border, blue shadow) must not paint the dot's hit area. */
   .tj-home-pager__dot:hover, .tj-home-pager__dot:focus, .tj-home-pager__dot:active { background: transparent !important; border-color: transparent !important; box-shadow: none !important; }
-  .tj-home-pager__dot:focus { outline: none; }
   .tj-home-pager__dot:focus-visible::before { outline: 3px solid var(--wp--preset--color--accent); outline-offset: 3px; }
   .tj-home-pager__dot:hover::before { background: rgb(23 50 77 / .55); }
   .tj-home-pager__dot[aria-current="true"]::before { width: min(1.6rem, 92%); background: var(--tj-tangerine); }
@@ -682,6 +681,11 @@
   :focus-visible {
     outline: 3px solid var(--wp--preset--color--accent);
     outline-offset: 3px;
+  }
+
+  /* Pager dots draw the keyboard ring around the visible dot, not the larger hit area. */
+  .tj-home-pager__dot:focus-visible {
+    outline: none;
   }
 
   button,
