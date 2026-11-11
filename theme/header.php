@@ -1,5 +1,5 @@
 <?php
-if (is_front_page()) {
+if (is_front_page() || is_page('e-prihlaska')) {
     get_template_part('template-parts/home/header');
     return;
 }

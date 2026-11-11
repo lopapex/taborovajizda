@@ -123,6 +123,97 @@ function initialiseHomeTabs(): void {
   });
 }
 
+function initialiseActivityTabs(): void {
+  document.querySelectorAll<HTMLElement>('[data-activity-tabs]').forEach((container) => {
+    const tabs = Array.from(container.querySelectorAll<HTMLButtonElement>('[data-activity-tab]'));
+    const panels = Array.from(container.querySelectorAll<HTMLElement>('[role="tabpanel"]'));
+    if (tabs.length === 0 || panels.length === 0) return;
+
+    document.documentElement.classList.add('has-activity-tabs');
+    const activate = (tab: HTMLButtonElement) => {
+      const panelId = tab.dataset.activityTab;
+      if (!panelId) return;
+      tabs.forEach((item) => {
+        const active = item === tab;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-selected', String(active));
+        item.tabIndex = active ? 0 : -1;
+      });
+      panels.forEach((panel) => panel.classList.toggle('is-active', panel.id === panelId));
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activate(tab));
+      tab.addEventListener('keydown', (event) => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const targetIndex = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+        const target = tabs[targetIndex];
+        target.focus();
+        activate(target);
+      });
+    });
+  });
+}
+
+function initialiseHorizontalCarousels(): void {
+  document.querySelectorAll<HTMLElement>('[data-horizontal-carousel]').forEach((carousel) => {
+    const wrapper = carousel.closest<HTMLElement>('.tj-home-carousel');
+    const previous = wrapper?.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+    const next = wrapper?.querySelector<HTMLButtonElement>('[data-carousel-next]');
+    const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const step = () => {
+      const card = carousel.firstElementChild;
+      if (!(card instanceof HTMLElement)) return carousel.clientWidth;
+      const gap = Number.parseFloat(getComputedStyle(carousel).gap) || 0;
+      return card.getBoundingClientRect().width + gap;
+    };
+    const updateButtons = () => {
+      const maximum = carousel.scrollWidth - carousel.clientWidth;
+      if (previous) previous.disabled = carousel.scrollLeft <= 1;
+      if (next) next.disabled = carousel.scrollLeft >= maximum - 1;
+    };
+    const move = (direction: 1 | -1) => {
+      carousel.scrollBy({ left: direction * step(), behavior: reducedMotion() ? 'auto' : 'smooth' });
+    };
+
+    previous?.addEventListener('click', () => move(-1));
+    next?.addEventListener('click', () => move(1));
+    carousel.addEventListener('keydown', (event) => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      move(event.key === 'ArrowRight' ? 1 : -1);
+    });
+    carousel.addEventListener('scroll', updateButtons, { passive: true });
+    new ResizeObserver(updateButtons).observe(carousel);
+    updateButtons();
+  });
+}
+
+function initialiseHomeDialogs(): void {
+  const lastFocused = new WeakMap<HTMLDialogElement, HTMLElement>();
+  document.querySelectorAll<HTMLButtonElement>('[data-home-dialog-open]').forEach((opener) => {
+    opener.addEventListener('click', () => {
+      const dialogId = opener.dataset.homeDialogOpen;
+      const dialog = dialogId ? document.getElementById(dialogId) : null;
+      if (!(dialog instanceof HTMLDialogElement)) return;
+      lastFocused.set(dialog, opener);
+      dialog.showModal();
+      document.documentElement.classList.add('has-home-dialog');
+    });
+  });
+  document.querySelectorAll<HTMLDialogElement>('.tj-home-content-dialog').forEach((dialog) => {
+    dialog.querySelector<HTMLButtonElement>('[data-home-dialog-close]')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', () => {
+      if (!document.querySelector('.tj-home-content-dialog[open]')) document.documentElement.classList.remove('has-home-dialog');
+      lastFocused.get(dialog)?.focus();
+    });
+  });
+}
+
 function initialisePersonalIdValidation(): void {
   const input = document.querySelector<HTMLInputElement>('#rodne_c');
   if (!input) return;
@@ -174,12 +265,16 @@ function createYouTubePreview(container: HTMLElement): void {
     iframe.allowFullscreen = true;
     container.replaceChildren(iframe);
   }, { once: true });
-  container.append(button);
+  // Server markup may contain a no-JS fallback link; replace it with the preview.
+  container.replaceChildren(button);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   initialiseMobileMenu();
   initialiseHomeTabs();
+  initialiseActivityTabs();
+  initialiseHorizontalCarousels();
+  initialiseHomeDialogs();
   initialiseDialogs();
   initialisePersonalIdValidation();
   document.querySelectorAll<HTMLElement>('.youtube-player').forEach(createYouTubePreview);

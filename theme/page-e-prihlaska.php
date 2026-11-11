@@ -3,9 +3,14 @@ $season = taborovajizda_season();
 $remainingPlaces = $season->remainingPlaces();
 get_header();
 ?>
-<article class="blog_post">
-	<h2 class="tj-card-title">Elektronická přihláška na tábor</h2>
-	<div class="blog_content">
+<main id="main-content" class="tj-home-main">
+	<article class="tj-registration-page">
+		<header class="tj-registration-page__header">
+			<p class="tj-home-eyebrow">Táborová jízda <?php echo esc_html((string) $season->year()); ?></p>
+			<h1>Elektronická přihláška</h1>
+			<p>Vyplňte údaje o dítěti a my vám na e-mail pošleme kopii přihlášky i další pokyny.</p>
+		</header>
+		<div class="tj-registration-page__content">
 		<?php if ($season->isFull()) : ?>
 			<p class="bez_odsazeni do_bloku tj:text-[110%]"><strong><span class="zvyraznit">TÁBOR JE JIŽ OBSAZEN!</span> Vaše přihláška bude zařazena na seznam náhradníků. Pokud se uvolní místo, ozveme se.</strong></p>
 		<?php elseif ($remainingPlaces !== null && $remainingPlaces < 20) : ?>
@@ -15,7 +20,7 @@ get_header();
 		Zvýrazněná pole jsou <strong>povinná</strong> a proto je prosím řádně vyplňte.
 		Po odeslání přihlášky bude na Vámi vyplněný kontaktní e-mail odeslána kopie přihlášky s pokyny k platbě a se základními údaji k táboru.
 		Veďte prosím v patrnosti, že <strong>elektronická forma přihlášky je závazná</strong>.</p>
-		<form id="eprihlaska" class="eprihlaska tj:px-4" action="<?php echo esc_url(home_url('/odeslat-dotaz/')); ?>" method="post">
+		<form id="eprihlaska" class="eprihlaska tj-registration-form" action="<?php echo esc_url(home_url('/odeslat-dotaz/')); ?>" method="post">
 			<input type="hidden" name="action" value="tj_registration_submit">
 			<?php wp_nonce_field('tj_form_submit', 'tj_nonce'); ?>
 			<section class="sekce tj-form-section">
@@ -44,11 +49,10 @@ get_header();
 				<p class="tj:basis-full"><strong>Pokud vlastníte táborový poukaz na slevu, zde opište kód z pravého dolního rohu</strong></p>
 				<textarea class="tj-registration-control tj:h-40 tj:basis-full tj:px-2 tj:py-[.3em]" id="dotaz" name="dotaz"></textarea>
 			</section>
-			<section class="sekce tj-form-section"><input class="tj-registration-control" type="submit" value="přihlásit"></section>
+			<section class="sekce tj-form-section tj-registration-form__submit"><input class="tj-registration-control" type="submit" value="Přihlásit dítě"></section>
 			<p class="oou tj:text-[.8em] tj:italic">Přihlášením vyjadřujete svůj souhlas se zpracováním osobních udajů. Více podrobností naleznete zde: <a href="<?php echo esc_url(home_url('/ochrana-osobnich-udaju/#menu')); ?>">Prohlášení o zpracování osobních údajů</a></p>
 		</form>
-	</div>
-</article>
+		</div>
+	</article>
 </main>
-<?php get_sidebar(); ?>
 <?php get_footer(); ?>

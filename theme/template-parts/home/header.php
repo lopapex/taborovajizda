@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 $season = taborovajizda_season();
+$homeAnchor = is_front_page() ? '' : home_url('/');
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -23,25 +24,29 @@ $season = taborovajizda_season();
 		</a>
 		<nav class="tj-home-nav" aria-label="Hlavní navigace">
 			<ul class="tj-home-nav__links">
-				<li><a href="#o-tabore">O táboře</a></li>
-				<li><a href="#aktuality">Aktuality</a></li>
-				<li><a href="#pro-rodice" data-home-tab-link="panel-parents">Pro rodiče</a></li>
-				<li><a href="#dokumenty" data-home-tab-link="panel-documents">Dokumenty</a></li>
-				<li><a href="#minule-rocniky" data-home-tab-link="panel-archive">Minulé ročníky</a></li>
-				<li><a href="<?php echo esc_url(home_url('/kontakt-2/')); ?>">Kontakt</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#o-tabore'); ?>">O táboře</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#aktuality'); ?>">Aktuality</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#program'); ?>">Program</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#pro-rodice'); ?>" data-home-tab-link="panel-parents">Pro rodiče</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#dokumenty'); ?>" data-home-tab-link="panel-documents">Dokumenty</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#minule-rocniky'); ?>" data-home-tab-link="panel-archive">Minulé ročníky</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#kontakt'); ?>">Kontakt</a></li>
 			</ul>
 		</nav>
 		<div class="tj-home-mobile-menu" data-mobile-menu>
 			<button class="tj-home-menu-button" type="button" data-menu-toggle aria-expanded="false" aria-controls="home-mobile-menu"><span>Menu</span><span class="tj-home-menu-icon" aria-hidden="true"></span></button>
 			<ul id="home-mobile-menu" class="tj-home-nav-panel">
-				<li><a href="#o-tabore">O táboře</a></li>
-				<li><a href="#aktuality">Aktuality</a></li>
-				<li><a href="#pro-rodice" data-home-tab-link="panel-parents">Pro rodiče</a></li>
-				<li><a href="#dokumenty" data-home-tab-link="panel-documents">Dokumenty</a></li>
-				<li><a href="#minule-rocniky" data-home-tab-link="panel-archive">Minulé ročníky</a></li>
-				<li><a href="<?php echo esc_url(home_url('/kontakt-2/')); ?>">Kontakt</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#o-tabore'); ?>">O táboře</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#aktuality'); ?>">Aktuality</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#program'); ?>">Program</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#pro-rodice'); ?>" data-home-tab-link="panel-parents">Pro rodiče</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#dokumenty'); ?>" data-home-tab-link="panel-documents">Dokumenty</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#minule-rocniky'); ?>" data-home-tab-link="panel-archive">Minulé ročníky</a></li>
+				<li><a href="<?php echo esc_url($homeAnchor . '#kontakt'); ?>">Kontakt</a></li>
 			</ul>
 		</div>
-		<a class="tj-home-header-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>">Přihláška</a>
+		<?php if ($season->acceptsRegistrations()) : ?>
+			<a class="tj-home-header-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>">Přihláška</a>
+		<?php endif; ?>
 	</div>
 </header>

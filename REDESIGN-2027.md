@@ -120,45 +120,54 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 
 - [x] Vytvořit sticky hlavičku s kotvami a odkazy na archiv a přihlášku.
   - Homepage má sticky navigaci pro sekce O táboře, Aktuality, Pro rodiče, Dokumenty a Minulé ročníky; přihláška zůstává výrazná samostatná akce.
-- [ ] Na podstránkách směrovat kotvy na `/#sekce`.
+- [x] Na podstránkách směrovat kotvy na `/#sekce`.
+  - Nová hlavička přihlášky vede odkazy na sekce přímo na homepage.
 - [x] Implementovat přístupné mobilní menu, zavření po volbě a správný offset kotvy.
   - Mobilní menu používá `aria-expanded`, po volbě odkazu se zavře a kotvy respektují výšku sticky hlavičky.
 - [ ] Zachovat funkčnost bez JavaScriptu.
 
 ### Hero aktuálního ročníku
 
-- [ ] Vytvořit dominantní hero s plakátem, názvem, anotací, termínem, cenou, věkem a místem.
-- [ ] CTA odvodit ze stavu přihlášek; nikdy nenabízet přihlášení na skončený nebo uzavřený ročník.
-- [ ] Trailer načíst až po akci uživatele, bez autoplay se zvukem.
-- [ ] Ošetřit nepotvrzený termín, cenu, chybějící plakát a chybějící trailer.
+- [x] Vytvořit dominantní hero s plakátem, názvem, anotací, termínem, cenou, věkem a místem.
+  - Ověřeno 11. 11. 2026: hero používá roční `hero.jpg`, název, anotaci a sémantický seznam údajů `dl`. `season.json` má nová volitelná pole `location` a `ageRange` (schema, PHP validace i `validate-season.mjs`); místo „Plátěná osada, Splzov“ a věk 7–17 let odpovídají stávajícímu obsahu webu. Desktop i 360 px bez vodorovného přetečení.
+- [x] CTA odvodit ze stavu přihlášek; nikdy nenabízet přihlášení na skončený nebo uzavřený ročník.
+  - `Season::acceptsRegistrations()` nabízí přihlášku pouze ve stavu `open` (nebo `full` jako náhradník) a jen do `endDate` včetně. Jinak hero nabízí „Poznat tábor“ a „Minulé ročníky“ a v hlavičce se skryje tlačítko Přihláška. Aktuálně se zobrazuje „Ročník 2026 proběhl“, protože `endDate` 28. 8. 2026 už minul, i když `season.json` stále uvádí `open`. 12 stavových kontrol prošlo přes PHP 8.2.
+- [x] Trailer načíst až po akci uživatele, bez autoplay se zvukem.
+  - Trailer aktivního roku se bere z `archive-seasons.json`; iframe vznikne až po kliknutí na náhled. Bez JavaScriptu zůstává odkaz na YouTube.
+- [x] Ošetřit nepotvrzený termín, cenu, chybějící plakát a chybějící trailer.
+  - Termín bez dat zobrazí „Termín připravujeme“, cena `null` zobrazí „Upřesníme“ (u skončeného ročníku se nezobrazuje), nevyplněné místo a věk se vynechají, bez traileru se hero vykreslí v jednom sloupci a chybějící `hero.jpg` zastaví build v `validate-season.mjs`.
 - [ ] Odstranit možnost záporného countdownu; při skončeném termínu zobrazit neutrální stav.
 - [ ] Optimalizovat LCP plakát bez ořezu důležité grafiky.
 
 ### Sticky CTA
 
-- [ ] Použít `IntersectionObserver` nad hero, ne kontinuální scroll handler.
-- [ ] Desktop: kompaktní horní lišta; mobil: spodní bar se safe-area.
-- [ ] Skrýt sticky CTA v hero, na přihlášce a ve stavech bez platné registrační akce.
+- [ ] Sticky CTA se nyní neimplementuje: primární přihláška je už trvale dostupná v navigaci a duplicitní akce by zbytečně překrývala obsah.
 - [ ] Ověřit, že nepřekrývá obsah, menu, formulář, klávesnici ani cookie banner.
 
 ### Aktuality
 
 - [ ] Umístit aktuality bezprostředně pod hero.
 - [ ] Zobrazit připnuté oznámení pouze při existenci odpovídajícího metadata.
-- [x] Serverově vykreslit první 3–4 příspěvky s obrázkem, datem, excerptem a URL.
-  - Homepage serverově načítá tři příspěvky z rubriky Aktuality; u příspěvku bez náhledového obrázku použije logo Táborové jízdy.
-- [ ] Přidat „Načíst další“ přes REST/AJAX s loading, error a empty stavem bez duplicit.
-- [ ] Zachovat normální stránkování nebo odkazy jako fallback bez JS.
+- [x] Serverově vykreslit aktuality aktivního táborového roku s obrázkem, datem a excerptem; u každé zobrazit celý obsah v přístupném modálním okně.
+  - Homepage načítá příspěvky z rubriky Aktuality publikované v aktivním roce ze `season.json`; nyní 2026. Karty jsou v ovladatelném horizontálním carouselu a detail zůstává v modálním okně bez viditelného přesměrování na samostatnou stránku.
+- [x] Nevyžadovat další načítání ani stránkování, protože carousel obsahuje všechny aktuality aktivního roku.
 
 ### Obsahové sekce
 
 - [x] Vytvořit `#o-tabore` z existujícího obsahu bez ztráty informací.
   - Stávající obsah statické homepage je vykreslen do sekce `#o-tabore`.
-- [ ] Vytvořit `#program` pro aktivity, prostředí a lidi.
+- [x] Vytvořit `#program` pro aktivity, prostředí a lidi.
+  - Homepage serverově vykresluje všechny položky z rubriky Aktivity do přístupných záložek a lidi do carouselu s modálními profily. Galerie uvnitř aktivit jsou přehledné responsivní mřížky bez zbytečného vodorovného scrollování. Obsah zůstává na homepage.
 - [x] Vytvořit `#pro-rodice` s praktickými informacemi, dokumenty a přístupným FAQ.
-  - Homepage načítá stávající obsah stránek Pro rodiče a Dokumenty do přístupných záložek; FAQ zůstává tvořené původními tlačítky.
-- [ ] Vytvořit kompaktní video-first upoutávku 2–4 minulých ročníků.
-- [ ] Vytvořit `#kontakt` s kontakty a sociálními sítěmi.
+  - Homepage načítá stávající obsah stránek Pro rodiče a Dokumenty do přístupných záložek; FAQ zůstává tvořené původními tlačítky. Záložky neodkazují zpět na duplicitní samostatné stránky.
+- [x] Vytvořit kompaktní video-first upoutávku 2–4 minulých ročníků.
+  - První dva minulé ročníky zobrazují trailerový náhled a YouTube iframe vznikne až po kliknutí návštěvníka; další ročníky zůstanou dostupné po rozbalení archivu.
+- [x] Vytvořit `#kontakt` s kontakty a sociálními sítěmi.
+  - Homepage zobrazuje ověřené kontaktní údaje, telefon, e-mail, YouTube, Instagram a sdílený dotazový formulář.
+- [ ] Zobrazit a vizuálně sjednotit všechny tři oficiální sociální sítě: YouTube, Instagram a Facebook. Odkazy ověřit proti aktuálním WordPress widgetům před zveřejněním.
+- [ ] Provést redakční revizi a úpravu obsahu existujících WordPress stránek před finálním designem homepage: rozdělit dlouhé bloky na čitelné sekce, odstranit zastaralé nebo duplicitní informace, opravit typografii a ponechat pouze potvrzené údaje pro aktivní ročník.
+  - Redakční úpravy provádět v lokálním WordPressu až po schválení konkrétního rozsahu; současné samostatné URL a původní obsah zůstávají do té doby zachované.
+- [ ] Zkontrolovat náhledové fotografie příspěvků v rubrice Lidé a v lokálním WordPressu nahradit chybně přiřazené snímky potvrzenými fotografiemi daných osob.
 - [x] Umístit před patičku sekci „Chcete nám poslat dotaz?“ se stávajícími poli jméno, e-mail a dotaz.
   - Homepage a kontakt používají jeden template part. Lokál zprávu pouze simuluje; produkce ji přes WordPress `wp_mail()` posílá na `contactEmail` ze `season.json` s adresou návštěvníka v `Reply-To`.
 - [ ] Veřejné rozhraní redesignu nebude nabízet newsletter. Legacy validační a odhlašovací odkazy zůstanou do samostatně schváleného odstranění kompatibilní.
@@ -195,7 +204,8 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 - [ ] Sepsat konkrétní seznam animací a u každé zvolit CSS / nativní API / případně `motion`.
 - [ ] Hero: krátký vstup bez blokujícího intra.
 - [ ] Sticky CTA: krátké vysunutí bez layout shiftu.
-- [ ] Karty: jemný hover/focus a volitelný jednorázový vstup.
+- [x] Karty: jemný hover/focus a volitelný jednorázový vstup.
+  - Karty aktualit, aktivit, lidí a archivu mají společnou jemnou odezvu na hover a viditelný stav klávesnicového fokusu; pohyb respektuje systémové omezení pohybu.
 - [ ] Archiv: plynulá změna filtru bez ztráty fokusu a polohy.
 - [ ] FAQ: přístupné rozbalení s korektním `aria-expanded` nebo nativním `details`.
 - [ ] Všechny pohyby otestovat s `prefers-reduced-motion: reduce`.

@@ -37,6 +37,11 @@ if (!years.every((year, index) => index === 0 || year < years[index - 1])) {
   process.exit(1);
 }
 
+if (season.ageRange && season.ageRange.min > season.ageRange.max) {
+  console.error('ageRange.min must not be greater than ageRange.max.');
+  process.exit(1);
+}
+
 if (season.startDate && season.endDate && season.startDate > season.endDate) {
   console.error('startDate must not be after endDate.');
   process.exit(1);

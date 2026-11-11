@@ -1,4 +1,4 @@
-<?php if (is_front_page()) : ?>
+<?php if (is_front_page() || is_page('e-prihlaska')) : ?>
 	<?php get_template_part('template-parts/home/footer'); ?>
 	<?php return; ?>
 <?php endif; ?>

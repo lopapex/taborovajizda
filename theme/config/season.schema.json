@@ -13,6 +13,21 @@
     "contactEmail": { "type": "string", "format": "email" },
     "startDate": { "type": ["string", "null"], "format": "date" },
     "endDate": { "type": ["string", "null"], "format": "date" },
+    "location": { "type": ["string", "null"], "minLength": 1 },
+    "ageRange": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {
+            "min": { "type": "integer", "minimum": 1 },
+            "max": { "type": "integer", "minimum": 1 }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
     "price": {
       "type": "object",
       "additionalProperties": false,
