@@ -164,6 +164,36 @@ function initialiseSeasonArticles(): void {
   });
 }
 
+/** Accordions where only one item may be open (FAQ). */
+function initialiseExclusiveDetails(): void {
+  document.querySelectorAll<HTMLElement>('[data-exclusive-details]').forEach((group) => {
+    const items = Array.from(group.querySelectorAll<HTMLDetailsElement>('details'));
+    items.forEach((item) => item.addEventListener('toggle', () => {
+      if (!item.open) return;
+      items.forEach((other) => { if (other !== item) other.open = false; });
+    }));
+  });
+}
+
+/**
+ * Pro rodiče: both columns match while every FAQ item is closed; opening an
+ * item grows only the FAQ card, the side column keeps its collapsed height.
+ */
+function initialiseCollapsedEqualHeight(): void {
+  document.querySelectorAll<HTMLElement>('[data-collapsed-equal]').forEach((container) => {
+    const main = container.firstElementChild as HTMLElement | null;
+    if (!main) return;
+    const measure = () => {
+      if (main.querySelector('details[open]')) return;
+      const twoColumns = getComputedStyle(container).gridTemplateColumns.split(' ').length > 1;
+      if (twoColumns) container.style.setProperty('--tj-collapsed-height', `${main.getBoundingClientRect().height}px`);
+      else container.style.removeProperty('--tj-collapsed-height');
+    };
+    new ResizeObserver(measure).observe(container);
+    measure();
+  });
+}
+
 function initialiseArchiveExpand(): void {
   document.querySelectorAll<HTMLElement>('[data-archive-section]').forEach((section) => {
     const button = section.querySelector<HTMLButtonElement>('[data-archive-expand]');
@@ -467,6 +497,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initialiseNavScrollSpy();
   initialisePagers();
   initialiseSeasonArticles();
+  initialiseExclusiveDetails();
+  initialiseCollapsedEqualHeight();
   initialiseActivityTabs();
   initialiseHorizontalCarousels();
   initialiseHomeDialogs();

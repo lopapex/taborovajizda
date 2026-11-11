@@ -179,6 +179,47 @@ img.attachment-thumbnail,
   text-shadow: none;
 }
 
+/* Dialog photos (news, people, activities, seasons): one size and ratio,
+   whole photo visible, letterboxed in black. Plugin galleries keep their own grid. */
+.tj-home .tj-home-content-dialog .tj-home-news-dialog__image,
+.tj-home .tj-home-content-dialog figure.wp-block-image,
+.tj-home .tj-home-content-dialog .wp-block-image figure,
+.tj-home .tj-home-content-dialog .tj-home-prose figure:not([class*="gallery"]) {
+  float: none;
+  width: 100%;
+  max-width: none;
+  margin: 0 0 1.25rem;
+}
+.tj-home .tj-home-content-dialog .tj-home-news-dialog__image img,
+.tj-home .tj-home-content-dialog .wp-block-image img,
+.tj-home .tj-home-content-dialog .tj-home-prose > p > img:not(.emoji),
+.tj-home .tj-home-content-dialog .tj-home-prose > p > a > img:not(.emoji) {
+  display: block;
+  float: none;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  margin: 0 0 1.25rem;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  background: #0b0b0b;
+}
+
+/* News cards: every photo has the same height; a tall photo is cropped, not stretched. */
+.tj-home .tj-home-post-card__image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+}
+.tj-home .tj-home-post-card__image > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Registration form controls (page-e-prihlaska.php), unlayered for the same reason. */
 .tj-home .tj-registration-form input:not([type="hidden"]),
 .tj-home .tj-registration-form select,

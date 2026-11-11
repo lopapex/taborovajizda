@@ -198,14 +198,14 @@
   .tj-home-news-track > :nth-child(4n + 2) { --tj-card-colour: var(--tj-sky); --tj-card-tint: var(--tj-sky-tint); }
   .tj-home-news-track > :nth-child(4n + 3) { --tj-card-colour: var(--tj-grass); --tj-card-tint: var(--tj-grass-tint); }
   .tj-home-news-track > :nth-child(4n + 4) { --tj-card-colour: var(--tj-tangerine); --tj-card-tint: var(--tj-tangerine-tint); }
-  .tj-home-post-card__visual { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; padding: 1.25rem 1.4rem; background: var(--tj-card-tint, var(--tj-sun-tint)); color: var(--wp--preset--color--text); text-decoration: none; }
+  .tj-home-post-card__visual { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; padding: 1.25rem 1.4rem; background: var(--tj-card-colour, var(--tj-sun)); color: var(--wp--preset--color--text); text-decoration: none; }
   .tj-home-post-card__visual-day { font-family: themed-font, var(--wp--preset--font-family--body); font-size: clamp(3rem, 6vw, 4.25rem); line-height: .9; }
-  .tj-home-post-card__visual-month { margin-top: .35rem; font-weight: 800; text-transform: lowercase; }
+  .tj-home-post-card__visual-month { margin-top: .35rem; font-size: 1.05rem; font-weight: 800; text-transform: lowercase; }
   .tj-home-post-card--text { border-top: 6px solid var(--tj-card-colour, var(--tj-sun)); }
-  .tj-home-people-grid > :nth-child(4n + 1) .tj-home-person-card__portrait { background: var(--tj-sun-tint); }
-  .tj-home-people-grid > :nth-child(4n + 2) .tj-home-person-card__portrait { background: var(--tj-sky-tint); }
-  .tj-home-people-grid > :nth-child(4n + 3) .tj-home-person-card__portrait { background: var(--tj-grass-tint); }
-  .tj-home-people-grid > :nth-child(4n + 4) .tj-home-person-card__portrait { background: var(--tj-tangerine-tint); }
+  .tj-home-people-grid > :nth-child(4n + 1) .tj-home-person-card__portrait { background: var(--tj-sun); }
+  .tj-home-people-grid > :nth-child(4n + 2) .tj-home-person-card__portrait { background: var(--tj-sky); }
+  .tj-home-people-grid > :nth-child(4n + 3) .tj-home-person-card__portrait { background: var(--tj-grass); }
+  .tj-home-people-grid > :nth-child(4n + 4) .tj-home-person-card__portrait { background: var(--tj-tangerine); }
   .tj-home-person-card__initials { color: var(--wp--preset--color--text); }
   .tj-home-parents__documents { border-top-color: var(--tj-sky); }
   .tj-home-parents__ask { border-top-color: var(--tj-tangerine); }
@@ -329,6 +329,9 @@
   .tj-home-section--parents, .tj-home-section--archive { border-top: 1px solid rgb(23 50 77 / 0.14); }
   .tj-home-parents { display: grid; max-width: 56rem; margin-top: 2rem; align-items: stretch; gap: 1.25rem; }
   .tj-home-parents--split { max-width: none; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
+  /* JS sets --tj-collapsed-height: equal columns while the FAQ is closed, fixed side column when it opens. */
+  .tj-home-parents--split[style*="--tj-collapsed-height"] { align-items: start; }
+  .tj-home-parents--split[style*="--tj-collapsed-height"] .tj-home-parents__side { position: sticky; top: 6.5rem; height: var(--tj-collapsed-height); }
   .tj-home-parents__content h1 { display: none; }
   .tj-home-parents__content h2 { margin-top: 2rem; font-size: clamp(1.6rem, 3vw, 2.2rem); }
   .tj-home-parents__documents .tj-home-prose { font-size: 1rem; }

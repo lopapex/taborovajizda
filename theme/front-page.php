@@ -30,6 +30,7 @@ $heroTrailer = taborovajizda_season_archive($season->year())[0] ?? null;
 $news = new WP_Query([
     'posts_per_page' => -1,
     'category_name' => 'aktuality',
+    'post_status' => 'publish',
     'ignore_sticky_posts' => true,
     'date_query' => [[
         'after' => ['year' => $season->year(), 'month' => 1, 'day' => 1],
@@ -37,8 +38,11 @@ $news = new WP_Query([
         'inclusive' => true,
     ]],
 ]);
-$activities = new WP_Query(['posts_per_page' => -1, 'category_name' => 'taborove_aktivity', 'ignore_sticky_posts' => true]);
-$people = new WP_Query(['posts_per_page' => -1, 'category_name' => 'lide', 'ignore_sticky_posts' => true]);
+// Only public posts on the homepage, even for logged-in editors who can read private ones.
+$activities = new WP_Query(['posts_per_page' => -1, 'category_name' => 'taborove_aktivity', 'post_status' => 'publish', 'ignore_sticky_posts' => true]);
+$people = new WP_Query(['posts_per_page' => -1, 'category_name' => 'lide', 'post_status' => 'publish', 'ignore_sticky_posts' => true]);
+// The head leader always opens the team list.
+usort($people->posts, static fn (WP_Post $a, WP_Post $b): int => (int) str_contains($b->post_title, 'hlavní vedoucí') <=> (int) str_contains($a->post_title, 'hlavní vedoucí'));
 // Activity posts are grouped into a few tabs by slug. Posts not listed here
 // fall into "Další aktivity", so newly published activities never disappear.
 $activityGroups = [
@@ -166,8 +170,8 @@ $renderPageContent = static function (?WP_Post $page): void {
 							<div class="tj-home-news-dialog__content">
 								<div class="tj-home-news-dialog__top"><p class="tj-home-meta"><?php echo esc_html(get_the_date()); ?></p><button class="tj-home-news-dialog__close" type="button" data-home-dialog-close aria-label="Zavřít aktualitu">Zavřít</button></div>
 								<h2 id="<?php echo esc_attr($dialogId . '-title'); ?>"><?php the_title(); ?></h2>
-								<?php if (has_post_thumbnail()) : ?><div class="tj-home-news-dialog__image"><?php the_post_thumbnail('large'); ?></div><?php endif; ?>
-								<div class="tj-home-prose tj-home-news-dialog__body"><?php the_content(); ?></div>
+								<?php $dialogContent = apply_filters('the_content', get_the_content()); // Featured image only when the text has no photo of its own (avoids duplicates). ?><?php if (has_post_thumbnail() && ! str_contains($dialogContent, '<img')) : ?><div class="tj-home-news-dialog__image"><?php the_post_thumbnail('large'); ?></div><?php endif; ?>
+								<div class="tj-home-prose tj-home-news-dialog__body"><?php echo $dialogContent; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
 							</div>
 						</dialog>
 					</article>
@@ -211,7 +215,14 @@ $renderPageContent = static function (?WP_Post $page): void {
 	        $restBlocks[] = $block;
 	    }
 	    $aboutIntro = apply_filters('the_content', serialize_blocks($introBlocks));
-	    $aboutImage = $imageBlock ? apply_filters('the_content', serialize_blocks([$imageBlock])) : '';
+	    $aboutImage = '';
+	    if ($imageBlock) {
+	        // Render the intro visual large and unfloated, whatever size the editor picked.
+	        $imageId = (int) ($imageBlock['attrs']['id'] ?? 0);
+	        $aboutImage = $imageId
+	            ? '<figure class="tj-home-intro__figure">' . wp_get_attachment_image($imageId, 'large', false, ['loading' => 'lazy', 'sizes' => '(max-width: 48rem) 100vw, 40vw']) . '</figure>'
+	            : apply_filters('the_content', serialize_blocks([$imageBlock]));
+	    }
 	    $aboutRest = $restBlocks ? apply_filters('the_content', serialize_blocks($restBlocks)) : '';
 	} elseif ($aboutPost instanceof WP_Post) {
 	    $aboutIntro = apply_filters('the_content', $aboutPost->post_content);
@@ -339,8 +350,8 @@ $renderPageContent = static function (?WP_Post $page): void {
 						<div class="tj-home-news-dialog__content">
 							<div class="tj-home-news-dialog__top"><p class="tj-home-meta">Náš tým</p><button class="tj-home-news-dialog__close" type="button" data-home-dialog-close aria-label="Zavřít profil">Zavřít</button></div>
 							<h2 id="<?php echo esc_attr($dialogId . '-title'); ?>"><?php the_title(); ?></h2>
-							<?php if (has_post_thumbnail()) : ?><div class="tj-home-news-dialog__image"><?php the_post_thumbnail('large'); ?></div><?php endif; ?>
-							<div class="tj-home-prose tj-home-news-dialog__body"><?php the_content(); ?></div>
+							<?php $dialogContent = apply_filters('the_content', get_the_content()); // Featured image only when the text has no photo of its own (avoids duplicates). ?><?php if (has_post_thumbnail() && ! str_contains($dialogContent, '<img')) : ?><div class="tj-home-news-dialog__image"><?php the_post_thumbnail('large'); ?></div><?php endif; ?>
+							<div class="tj-home-prose tj-home-news-dialog__body"><?php echo $dialogContent; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
 						</div>
 					</dialog>
 				</li>
@@ -372,8 +383,8 @@ $renderPageContent = static function (?WP_Post $page): void {
 		    }, $documentsHtml) ?? $documentsHtml;
 		}
 		?>
-		<div class="tj-home-parents tj-home-parents--split">
-			<div class="tj-home-panel tj-home-parents__faq">
+		<div class="tj-home-parents tj-home-parents--split" data-collapsed-equal>
+			<div class="tj-home-panel tj-home-parents__faq" data-exclusive-details>
 				<h3>Časté otázky</h3>
 				<div class="tj-home-prose tj-home-parents__content"><?php $renderPageContent($parentPage); ?></div>
 			</div>
@@ -473,7 +484,7 @@ $renderPageContent = static function (?WP_Post $page): void {
 			</div>
 			<div class="tj-home-contact-side">
 				<div class="tj-home-contact-details">
-					<p><strong>Martin Vojtěch</strong><br>hlavní vedoucí</p>
+					<p><strong>Matěj Vašek</strong><br>hlavní vedoucí</p>
 					<p><a href="tel:+420605947103">605 947 103</a><br><a href="mailto:<?php echo esc_attr($season->contactEmail()); ?>"><?php echo esc_html($season->contactEmail()); ?></a></p>
 					<p>Pionýrů 1332<br>564 01 Žamberk</p>
 					<p>Tábor Plátěná osada<br>Splzov, Železný Brod</p>
