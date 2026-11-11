@@ -1,4 +1,9 @@
 <?php
+if (is_front_page()) {
+    get_template_part('template-parts/home/header');
+    return;
+}
+
 $season = taborovajizda_season();
 $locations = get_nav_menu_locations();
 $mobileMenu = isset($locations['menu_main_mobile']) ? wp_get_nav_menu_object($locations['menu_main_mobile']) : null;

@@ -37,3 +37,11 @@ function taborovajizda_season(): TaborovaJizda\Theme\Season\Season
 {
     return TaborovaJizda\Theme\Season\Season::current();
 }
+
+/**
+ * Return verified historical camp seasons for archive templates.
+ */
+function taborovajizda_season_archive(?int $year = null): array
+{
+    return TaborovaJizda\Theme\Season\SeasonArchive::forYear($year);
+}

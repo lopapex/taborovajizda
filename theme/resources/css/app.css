@@ -17,6 +17,101 @@
 }
 
 @layer components {
+  .tj-home-header, .tj-home-main, .tj-home-footer { font-family: var(--wp--preset--font-family--body); }
+  .tj-home-skip-link { position: fixed; top: .75rem; left: .75rem; z-index: 200; transform: translateY(-200%); padding: .75rem 1rem; border-radius: .5rem; background: var(--wp--preset--color--primary); color: var(--wp--preset--color--background); font-weight: 700; }
+  .tj-home-skip-link:focus { transform: translateY(0); }
+  .tj-home-header { position: sticky; top: 0; z-index: 20; background: var(--wp--preset--color--background); color: var(--wp--preset--color--text); box-shadow: 0 .5rem 1rem rgb(0 0 0 / .12); }
+  .tj-home-header__inner { display: flex; width: min(100% - 2rem, 82rem); min-height: 5.5rem; margin: auto; align-items: center; gap: 1rem; }
+  .tj-home-logo { display: block; flex: 0 0 auto; width: 7rem; }
+  .tj-home-logo img { display: block; width: 100%; height: auto; }
+  .tj-home-nav { margin-left: auto; }
+  .tj-home-nav__links { display: flex; margin: 0; padding: 0; list-style: none; gap: clamp(.75rem, 1.8vw, 1.8rem); }
+  .tj-home-nav__links a, .tj-home-nav-panel a { color: inherit; text-decoration: none; font-size: .95rem; font-weight: 700; }
+  .tj-home-nav__links a:hover, .tj-home-nav__links .current-menu-item a { color: var(--wp--preset--color--primary); }
+  .tj-home-nav__links .sub-menu { display: none; }
+  .tj-home-header-cta, .tj-home-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; border-radius: .5rem; background: var(--wp--preset--color--primary); color: var(--wp--preset--color--background); padding: .7rem 1.05rem; font-weight: 800; text-decoration: none; }
+  .tj-home-mobile-menu { display: none; margin-left: auto; }
+  .tj-home-menu-button { display: inline-flex; min-height: 44px; align-items: center; gap: .55rem; border: 0; background: transparent; color: inherit; font: inherit; font-weight: 800; }
+  .tj-home-menu-icon, .tj-home-menu-icon::before, .tj-home-menu-icon::after { display: block; width: 1.25rem; height: 2px; background: currentColor; content: ''; }
+  .tj-home-menu-icon { position: relative; }
+  .tj-home-menu-icon::before { position: absolute; top: -.4rem; }
+  .tj-home-menu-icon::after { position: absolute; top: .4rem; }
+  .tj-home-nav-panel { display: none; position: absolute; top: 100%; right: 0; left: 0; margin: 0; padding: 1rem; list-style: none; background: var(--wp--preset--color--surface); box-shadow: 0 1rem 2rem rgb(0 0 0 / .25); }
+  .tj-home-mobile-menu.is-open .tj-home-nav-panel { display: block; }
+  .tj-home-nav-panel li + li { margin-top: .75rem; }
+  .tj-home-hero { position: relative; display: grid; min-height: min(46rem, calc(100dvh - 5.5rem)); overflow: hidden; background: var(--wp--preset--color--background); color: var(--wp--preset--color--text); }
+  .tj-home-hero__image { position: absolute; inset: 0; background: linear-gradient(90deg, rgb(11 19 32 / .94) 10%, rgb(11 19 32 / .56) 58%, rgb(11 19 32 / .25)), url('../assets/season/hero.jpg') center / cover; }
+  .tj-home-hero__content { position: relative; z-index: 1; display: flex; width: min(100% - 2rem, 82rem); margin: auto; padding: clamp(4rem, 10vw, 8rem) 0; flex-direction: column; align-items: flex-start; }
+  .tj-home-eyebrow { margin: 0 0 .7rem; color: var(--wp--preset--color--primary); font-size: .8rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+  .tj-home-hero h1 { max-width: 13ch; margin: 0; font-size: clamp(3rem, 8vw, 7rem); line-height: .92; letter-spacing: -.055em; }
+  .tj-home-hero__lead { max-width: 40rem; margin: 1.5rem 0 0; font-size: clamp(1.1rem, 2vw, 1.45rem); line-height: 1.45; }
+  .tj-home-facts { display: flex; margin: 2rem 0 0; flex-wrap: wrap; gap: .75rem; }
+  .tj-home-facts p { display: grid; margin: 0; padding: .7rem .9rem; border-left: 3px solid var(--wp--preset--color--primary); background: rgb(19 34 56 / .85); gap: .15rem; }
+  .tj-home-facts strong { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+  .tj-home-hero__actions { display: flex; margin-top: 2rem; flex-wrap: wrap; gap: .75rem; }
+  .tj-home-button--quiet { border: 1px solid rgb(243 247 251 / .55); background: transparent; color: var(--wp--preset--color--text); }
+  .tj-home-section { width: min(100% - 2rem, 82rem); margin: 0 auto; padding: clamp(4rem, 8vw, 7rem) 0; }
+  .tj-home-section__heading { scroll-margin-top: 6.5rem; }
+  .tj-home-section__heading { max-width: 42rem; }
+  .tj-home-section h2 { margin: 0; color: var(--wp--preset--color--text); font-size: clamp(2.2rem, 5vw, 4.4rem); line-height: .98; letter-spacing: -.045em; }
+  .tj-home-section--intro { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(2rem, 8vw, 8rem); }
+  .tj-home-prose { color: var(--wp--preset--color--muted); font-size: 1.1rem; line-height: 1.7; }
+  .tj-home-prose > :first-child { margin-top: 0; }
+  .tj-home-prose a, .tj-home-text-link { color: var(--wp--preset--color--primary); font-weight: 800; text-underline-offset: .2em; }
+  .tj-home-section--news { border-top: 1px solid rgb(191 208 223 / .24); }
+  .tj-home-section__heading--row { display: flex; max-width: none; align-items: end; justify-content: space-between; gap: 1rem; }
+  .tj-home-post-grid, .tj-home-link-grid { display: grid; margin-top: 2.5rem; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+  .tj-home-post-card { overflow: hidden; background: var(--wp--preset--color--surface); box-shadow: 0 .8rem 2.2rem rgb(0 0 0 / .14); }
+  .tj-home-post-card__image { display: block; aspect-ratio: 16 / 10; background: var(--wp--preset--color--primary); }
+  .tj-home-post-card__image img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .tj-home-post-card__placeholder { display: grid; width: 100%; height: 100%; place-items: center; padding: 2rem; background: var(--wp--preset--color--background); }
+  .tj-home-post-card__image .tj-home-post-card__placeholder img { width: min(72%, 12rem); height: auto; object-fit: contain; }
+  .tj-home-post-card__body { padding: 1.4rem; }
+  .tj-home-post-card h3 { margin: 0; font-size: 1.45rem; line-height: 1.05; }
+  .tj-home-post-card h3 a { color: var(--wp--preset--color--text); text-decoration: none; }
+  .tj-home-post-card__body > p:not(.tj-home-eyebrow) { color: var(--wp--preset--color--muted); line-height: 1.5; }
+  .tj-home-link-grid { gap: 1px; background: rgb(191 208 223 / .3); }
+  .tj-home-link-grid a { display: grid; min-height: 11rem; padding: 1.5rem; align-content: end; background: var(--wp--preset--color--surface); color: var(--wp--preset--color--text); text-decoration: none; gap: .55rem; }
+  .tj-home-link-grid a:hover { background: var(--wp--preset--color--primary); color: var(--wp--preset--color--background); }
+  .tj-home-link-grid strong { font-size: 1.35rem; }
+  .tj-home-link-grid span { color: var(--wp--preset--color--muted); }
+  .tj-home-link-grid a:hover span { color: inherit; }
+  .tj-home-section--tabs { border-top: 1px solid rgb(191 208 223 / .24); }
+  .tj-home-tab-list { display: flex; margin-top: 2.5rem; overflow-x: auto; border-bottom: 1px solid rgb(191 208 223 / .3); gap: .25rem; }
+  .tj-home-tab { min-height: 44px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--wp--preset--color--muted); padding: .75rem 1rem; font: inherit; font-weight: 800; white-space: nowrap; }
+  .tj-home-tab:hover, .tj-home-tab.is-active { border-bottom-color: var(--wp--preset--color--primary); color: var(--wp--preset--color--text); }
+  .tj-home-tab-panel { padding: 2rem 0 0; }
+  .has-home-tabs .tj-home-tab-panel:not(.is-active) { display: none; }
+  .tj-home-tab-panel__intro { display: flex; margin-bottom: 1.75rem; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .tj-home-tab-panel__intro p { margin: 0; color: var(--wp--preset--color--muted); font-size: 1.1rem; }
+  .tj-home-tab-content { max-width: 56rem; }
+  .tj-home-tab-content h1 { display: none; }
+  .tj-home-tab-content h2 { margin-top: 2rem; font-size: clamp(1.8rem, 3vw, 2.6rem); }
+  .tj-home-archive-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+  .tj-home-archive-card { overflow: hidden; background: var(--wp--preset--color--surface); }
+  .tj-home-archive-card img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+  .tj-home-archive-card > div { padding: 1.25rem; }
+  .tj-home-archive-card h3 { margin: 0; font-size: 1.35rem; line-height: 1.1; }
+  .tj-home-archive-card h3 a { color: var(--wp--preset--color--text); text-decoration: none; }
+  .has-home-tabs .tj-home-archive-card.is-extra { display: none; }
+  .has-home-tabs [data-home-tabs].archive-expanded .tj-home-archive-card.is-extra { display: block; }
+  .tj-home-show-all { min-height: 44px; margin-top: 1.5rem; border: 1px solid var(--wp--preset--color--primary); border-radius: .5rem; background: transparent; color: var(--wp--preset--color--primary); padding: .7rem 1rem; font: inherit; font-weight: 800; }
+  .tj-home-footer { border-top: 1px solid rgb(191 208 223 / .24); background: var(--wp--preset--color--background); color: var(--wp--preset--color--muted); }
+  .tj-home-footer__inner { display: flex; width: min(100% - 2rem, 82rem); margin: auto; padding: 2rem 0; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
+  .tj-home-footer__inner p { margin: 0; }
+  .tj-home-footer a { color: inherit; }
+  .tj-home-footer__logo { margin-right: auto; color: var(--wp--preset--color--text) !important; font-size: 1.25rem; font-weight: 800; text-decoration: none; }
+  @media (max-width: 48rem) {
+    .tj-home-header__inner { min-height: 4.5rem; }
+    .tj-home-logo { width: 5.5rem; }
+    .tj-home-nav, .tj-home-header-cta { display: none; }
+    .tj-home-mobile-menu { display: block; }
+    .tj-home-section--intro, .tj-home-post-grid, .tj-home-link-grid, .tj-home-archive-grid { grid-template-columns: 1fr; }
+    .tj-home-section__heading--row, .tj-home-footer__inner { align-items: start; flex-direction: column; }
+    .tj-home-tab-panel__intro { align-items: start; flex-direction: column; }
+    .tj-home-footer__logo { margin-right: 0; }
+  }
+
   .blog_post {
     margin-bottom: 1rem;
     padding-bottom: 1rem;
@@ -104,5 +199,26 @@
   :focus-visible {
     outline: 3px solid var(--wp--preset--color--accent);
     outline-offset: 3px;
+  }
+
+  button,
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  [data-menu-toggle],
+  .button > a,
+  #call-to-action {
+    min-height: 44px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

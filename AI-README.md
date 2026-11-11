@@ -70,6 +70,7 @@ Ověř existenci `theme/public/build/manifest.json`. Build je ignorovaný; `pack
 
 - `app/`: malé namespaced moduly pro theme, roční data a oddělené formulářové handlery;
 - `config/season.json`: aktivní roční provozní data;
+- `config/archive-seasons.json`: ověřené historické ročníky, trailery a explicitní vazby na rubriky; bez historických cen a termínů;
 - `resources/css/app.css`: Tailwind vstup; vlastní markup používá přímo `tj:` utility bez `@apply`;
 - `resources/css/compat.css`: pouze dynamický WordPress/plugin markup;
 - `resources/css/season.css`: pouze aktivní roční vzhled a efekty;
@@ -89,6 +90,8 @@ Spusť LocalWP a `npm run dev` v `theme/`. Po změně spusť `npm run check` a P
 Zachovej URL, slugy, navigaci, názvy a pořadí formulářových polí, logo a obsahový hlas, pokud uživatel výslovně neschválí změnu.
 
 Lokální formulářové testy nesmí zapisovat do externí produkční databáze ani posílat skutečné e-maily.
+
+Veřejný redesign nepřidává newsletter. Homepage a kontakt používají sdílený dotazový formulář. Jeho příjemce je `contactEmail` ze `season.json`; starý newsletterový backend se zatím zachovává jen kvůli kompatibilitě dříve odeslaných validačních a odhlašovacích odkazů.
 
 ## Roční změna
 

@@ -6,6 +6,7 @@ namespace TaborovaJizda\Theme;
 
 use TaborovaJizda\Theme\Forms\Forms;
 use TaborovaJizda\Theme\Season\Season;
+use TaborovaJizda\Theme\Season\SeasonArchive;
 
 final class Theme
 {
@@ -21,8 +22,10 @@ final class Theme
         self::$booted = true;
         self::$root = $root;
         Season::configure($root . '/config/season.json');
+        SeasonArchive::configure($root . '/config/archive-seasons.json');
 
         add_action('after_setup_theme', [self::class, 'setup']);
+        add_action('init', [self::class, 'registerSeasonTaxonomy']);
         add_action('widgets_init', [self::class, 'registerWidgets']);
         add_action('wp_enqueue_scripts', [self::class, 'enqueueAssets']);
         add_filter('nav_menu_link_attributes', [self::class, 'menuLinkAttributes'], 10, 4);
@@ -57,6 +60,21 @@ final class Theme
             'after_widget' => '</section>',
             'before_title' => '<h2 class="widget_title tj:mb-3 tj:text-2xl">',
             'after_title' => '</h2>',
+        ]);
+    }
+
+    public static function registerSeasonTaxonomy(): void
+    {
+        register_taxonomy('rocnik', ['post'], [
+            'labels' => [
+                'name' => 'Ročníky',
+                'singular_name' => 'Ročník',
+            ],
+            'public' => true,
+            'hierarchical' => false,
+            'show_admin_column' => true,
+            'show_in_rest' => true,
+            'rewrite' => ['slug' => 'rocnik'],
         ]);
     }
 

@@ -1,0 +1,18 @@
+{
+  "$schema": "./archive-seasons.schema.json",
+  "seasons": [
+    { "year": 2026, "title": "Zombie Land - Splzov", "youtubeId": "Vh5K3hDIH-c", "thumbnail": "sddefault", "categorySlug": "tabor-2026" },
+    { "year": 2025, "title": "Zlatá horečka na Klondiku", "youtubeId": "23snoAqV99I", "thumbnail": "maxresdefault", "categorySlug": "tabor-2025" },
+    { "year": 2024, "title": "Tajemství stínového ostrova", "youtubeId": "IVrPjns0dk0", "thumbnail": "maxresdefault", "categorySlug": "tabor-2024" },
+    { "year": 2023, "title": "Mayský kalendář", "youtubeId": "Yuq4a3R5lRM", "thumbnail": "maxresdefault", "categorySlug": "tabor-2023" },
+    { "year": 2022, "title": "Strážci Galaxie", "youtubeId": "A0lDf2WPyhA", "thumbnail": "maxresdefault", "categorySlug": "tabor-2022" },
+    { "year": 2021, "title": "Egypt", "youtubeId": "yi2rMZxpDDs", "thumbnail": "maxresdefault", "categorySlug": "tabor-2021" },
+    { "year": 2020, "title": "Vikingové: Cesta do Nového světa", "youtubeId": "ztcZ9xW3rUY", "thumbnail": "maxresdefault", "categorySlug": null },
+    { "year": 2019, "title": "Mafie: Rodinné dědictví", "youtubeId": "U4KxRnQlhUU", "thumbnail": "maxresdefault", "categorySlug": "tabor-2019" },
+    { "year": 2018, "title": "Avengers", "youtubeId": "5rQEguSitjs", "thumbnail": "maxresdefault", "categorySlug": "tabor2018" },
+    { "year": 2017, "title": "Star Wars: Anakinova akademie", "youtubeId": "szelZJZ6RaE", "thumbnail": "maxresdefault", "categorySlug": null },
+    { "year": 2016, "title": "Pán Prstenů: Zrození prstenů", "youtubeId": "Myex5jQNnm0", "thumbnail": "maxresdefault", "categorySlug": null },
+    { "year": 2015, "title": "Kolaloka: Po stopách Limonádového Joe", "youtubeId": "QgwiaUGJk00", "thumbnail": "hqdefault", "categorySlug": null },
+    { "year": 2014, "title": "Piráti z Karibiku: Jackův poklad", "youtubeId": "qERlpE-NnsI", "thumbnail": "maxresdefault", "categorySlug": null }
+  ]
+}

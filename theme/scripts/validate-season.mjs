@@ -8,11 +8,32 @@ import addFormats from 'ajv-formats';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const season = JSON.parse(await readFile(path.join(root, 'config/season.json'), 'utf8'));
 const schema = JSON.parse(await readFile(path.join(root, 'config/season.schema.json'), 'utf8'));
+const archive = JSON.parse(await readFile(path.join(root, 'config/archive-seasons.json'), 'utf8'));
+const archiveSchema = JSON.parse(await readFile(path.join(root, 'config/archive-seasons.schema.json'), 'utf8'));
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 addFormats(ajv);
 
-if (!ajv.validate(schema, season)) {
-  console.error(ajv.errorsText(ajv.errors, { separator: '\n' }));
+const validateSeason = ajv.compile(schema);
+const validateArchive = ajv.compile(archiveSchema);
+
+if (!validateSeason(season)) {
+  console.error(ajv.errorsText(validateSeason.errors, { separator: '\n' }));
+  process.exit(1);
+}
+
+if (!validateArchive(archive)) {
+  console.error(ajv.errorsText(validateArchive.errors, { separator: '\n' }));
+  process.exit(1);
+}
+
+const years = archive.seasons.map(({ year }) => year);
+const youtubeIds = archive.seasons.map(({ youtubeId }) => youtubeId);
+if (new Set(years).size !== years.length || new Set(youtubeIds).size !== youtubeIds.length) {
+  console.error('Archive years and YouTube IDs must be unique.');
+  process.exit(1);
+}
+if (!years.every((year, index) => index === 0 || year < years[index - 1])) {
+  console.error('Archive seasons must be ordered newest first.');
   process.exit(1);
 }
 
@@ -33,4 +54,4 @@ for (const [name, asset] of Object.entries({
   }
 }
 
-console.log(`Season ${season.year} (${season.slug}) is valid.`);
+console.log(`Season ${season.year} (${season.slug}) and ${archive.seasons.length} archive seasons are valid.`);

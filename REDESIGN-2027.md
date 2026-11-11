@@ -101,12 +101,16 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 
 ## Fáze B — design systém
 
-- [ ] Připravit schválený mobilní a desktopový wireframe homepage.
-- [ ] Připravit schválený mobilní a desktopový wireframe archivu ročníků.
-- [ ] Připravit schválený mobilní a desktopový wireframe přihlášky bez změny jejího datového toku.
-- [ ] Definovat dlouhodobé tokeny v `theme.json`: barvy, typografie, spacing, radius, stíny a šířky obsahu.
-- [ ] Definovat jeden volitelný roční akcent s ověřeným kontrastem.
-- [ ] Navrhnout komponenty: Button, SectionHeading, InfoChip, PostCard, Poster, Trailer, YearFilter, Accordion, StickyCTA a NewsletterForm.
+- [x] Připravit schválený mobilní a desktopový wireframe homepage.
+  - Wireframe a interakční pravidla jsou ve `WIREFRAME-2027.md`; návrh byl schválen 10. 11. 2026.
+- [x] Připravit schválený mobilní a desktopový wireframe archivu ročníků.
+  - Wireframe archivu popisuje samostatnou URL, responsivní filtr a odložené načítání médií; návrh byl schválen 10. 11. 2026.
+- [x] Definovat dlouhodobé tokeny v `theme.json`: barvy, typografie, spacing, radius, stíny a šířky obsahu.
+  - Implementováno 10. 11. 2026: noční modrá paleta a jantarový akcent vycházející z plamene v logu, doplněné škály písma a rozestupů, radius, stín a obsahové šířky. `npm run check` prošel.
+- [x] Definovat jeden volitelný roční akcent s ověřeným kontrastem.
+  - Rok 2026 používá v `season.css` oranžový `--tj-season-accent` pouze pro sezónní kontext; tmavý text na něm má ověřený kontrast WCAG AA.
+- [x] Navrhnout komponenty: Button, SectionHeading, InfoChip, PostCard, TrailerPreview, YearFilter, Accordion, StickyCTA a QuestionForm.
+  - Rozhraní, prahy opakovaného použití a pravidla implementace jsou ve `WIREFRAME-2027.md`.
 - [ ] Implementovat pouze vzory použité alespoň třikrát jako sdílenou komponentní třídu; jednorázové layouty ponechat v Tailwind utilitách.
 - [ ] Zajistit viditelný focus, touch targety, sémantické nadpisy a reduced-motion základ.
 
@@ -114,9 +118,11 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 
 ### Navigace
 
-- [ ] Vytvořit sticky hlavičku s kotvami a odkazy na archiv a přihlášku.
+- [x] Vytvořit sticky hlavičku s kotvami a odkazy na archiv a přihlášku.
+  - Homepage má sticky navigaci pro sekce O táboře, Aktuality, Pro rodiče, Dokumenty a Minulé ročníky; přihláška zůstává výrazná samostatná akce.
 - [ ] Na podstránkách směrovat kotvy na `/#sekce`.
-- [ ] Implementovat přístupné mobilní menu, zavření po volbě a správný offset kotvy.
+- [x] Implementovat přístupné mobilní menu, zavření po volbě a správný offset kotvy.
+  - Mobilní menu používá `aria-expanded`, po volbě odkazu se zavře a kotvy respektují výšku sticky hlavičky.
 - [ ] Zachovat funkčnost bez JavaScriptu.
 
 ### Hero aktuálního ročníku
@@ -139,24 +145,31 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 
 - [ ] Umístit aktuality bezprostředně pod hero.
 - [ ] Zobrazit připnuté oznámení pouze při existenci odpovídajícího metadata.
-- [ ] Serverově vykreslit první 3–4 příspěvky s obrázkem, datem, excerptem a URL.
+- [x] Serverově vykreslit první 3–4 příspěvky s obrázkem, datem, excerptem a URL.
+  - Homepage serverově načítá tři příspěvky z rubriky Aktuality; u příspěvku bez náhledového obrázku použije logo Táborové jízdy.
 - [ ] Přidat „Načíst další“ přes REST/AJAX s loading, error a empty stavem bez duplicit.
 - [ ] Zachovat normální stránkování nebo odkazy jako fallback bez JS.
 
 ### Obsahové sekce
 
-- [ ] Vytvořit `#o-tabore` z existujícího obsahu bez ztráty informací.
+- [x] Vytvořit `#o-tabore` z existujícího obsahu bez ztráty informací.
+  - Stávající obsah statické homepage je vykreslen do sekce `#o-tabore`.
 - [ ] Vytvořit `#program` pro aktivity, prostředí a lidi.
-- [ ] Vytvořit `#pro-rodice` s praktickými informacemi, dokumenty a přístupným FAQ.
-- [ ] Vytvořit kompaktní upoutávku 2–4 minulých ročníků.
+- [x] Vytvořit `#pro-rodice` s praktickými informacemi, dokumenty a přístupným FAQ.
+  - Homepage načítá stávající obsah stránek Pro rodiče a Dokumenty do přístupných záložek; FAQ zůstává tvořené původními tlačítky.
+- [ ] Vytvořit kompaktní video-first upoutávku 2–4 minulých ročníků.
 - [ ] Vytvořit `#kontakt` s kontakty a sociálními sítěmi.
-- [ ] Umístit newsletter před patičku a zachovat double opt-in/odhlášení.
+- [x] Umístit před patičku sekci „Chcete nám poslat dotaz?“ se stávajícími poli jméno, e-mail a dotaz.
+  - Homepage a kontakt používají jeden template part. Lokál zprávu pouze simuluje; produkce ji přes WordPress `wp_mail()` posílá na `contactEmail` ze `season.json` s adresou návštěvníka v `Reply-To`.
+- [ ] Veřejné rozhraní redesignu nebude nabízet newsletter. Legacy validační a odhlašovací odkazy zůstanou do samostatně schváleného odstranění kompatibilní.
 
 ## Fáze D — datový model ročníků
 
 - [ ] Na základě auditu schválit finální model; nevytvářet paralelně `season.json` a CMS data bez pravidla priority.
-- [ ] Pokud bude schválen CMS model, přidat taxonomii `rocnik` ke standardním příspěvkům.
-- [ ] Navrhnout a validovat metadata: rok, název, popis, plakát, trailer, termín, cena, sourozenecká cena, věk, místo, stav a registrační URL.
+- [x] Přidat taxonomii `rocnik` ke standardním příspěvkům bez automatického vytváření termů nebo změny obsahu.
+  - Taxonomie je připravená v administraci a REST API. Stávající články se do ní nezařazují automaticky; dočasný fallback používá pouze ověřené roční rubriky 2018, 2019 a 2021–2026.
+- [ ] Navrhnout a validovat aktivní ročník: rok, název, popis, hlavní obraz, trailer, termín, cena, věk, místo, stav a registrační URL.
+- [ ] Historický ročník eviduje pouze rok, název, trailer/náhled a vazby na ověřené články či fotografie; historické ceny, termíny a registrační CTA se nezobrazují.
 - [ ] Přidat explicitní administrátorskou volbu aktuálního ročníku.
 - [ ] Přidat volitelné metadata připnutého oznámení.
 - [ ] Migrovat historické články pouze podle ověřeného mapování a se zálohou.
@@ -165,11 +178,14 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 
 ## Fáze E — archiv `/minule-rocniky/`
 
-- [ ] Vykreslit ročníky chronologicky, nejnovější první.
-- [ ] Generovat filtr roků z existujících dat.
-- [ ] Stav filtru ukládat do `?rok=YYYY` a podporovat refresh, sdílení a back/forward.
-- [ ] Zajistit klávesnicové ovládání a viditelný aktivní stav.
-- [ ] U ročníku zobrazit dostupný plakát, trailer, popis a související články.
+- [x] Vykreslit ročníky chronologicky, nejnovější první.
+- [x] Generovat filtr roků z existujících dat.
+- [x] Stav filtru ukládat do `?rok=YYYY` a podporovat refresh, sdílení a back/forward.
+- [x] Zajistit klávesnicové ovládání a viditelný aktivní stav.
+- [x] Použít trailer a jeho náhled jako hlavní médium každého ročníku; samostatný plakát není povinný.
+- [x] U ročníku zobrazit rok, název, trailer a ověřené související články či fotografie.
+  - První implementace používá 13 ověřených trailerů. Články se zobrazují jen tam, kde existuje explicitně ověřená roční rubrika; ostatní roky čekají na ruční mapování.
+- [x] Nezobrazovat u historických ročníků cenu, starý termín ani registrační CTA.
 - [ ] Ošetřit chybějící média bez vymyšlených náhrad.
 - [ ] Netahat všechny obrázky, iframe a články při prvním načtení.
 - [ ] Zachovat historické URL a doplnit pouze schválené 301 redirecty.
@@ -205,7 +221,7 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 - [ ] Sticky CTA funguje bez překrytí a klamavých stavů.
 - [ ] Homepage obsahuje přístupné kotvové sekce pro prezentaci, rodiče a kontakt.
 - [ ] Archiv ročníků má data, média, články a sdílitelný filtr.
-- [ ] Přihláška a newsletter zůstávají funkční a bezpečně oddělené od lokálu/stage.
+- [ ] Přihláška a dotazový formulář zůstávají funkční a bezpečně oddělené od lokálu/stage.
 - [ ] Změna ročníku nevyžaduje změnu layoutu.
 - [ ] Animace respektují reduced-motion a nepoškozují výkon.
 - [ ] Historické URL, články a dokumenty nejsou ztracené.
@@ -220,4 +236,27 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 - [ ] Které pluginové widgety nahradíme vlastní implementací a které zachováme?
 - [ ] Stačí pro všechny zamýšlené animace CSS a nativní API, nebo existuje doložený případ pro `motion`?
 - [ ] Jaký je schválený proces uchovávání a mazání citlivých údajů přihlášek?
+
+## Ověřený podklad historických ročníků
+
+- [x] Převzít ověřený přehled ročníků 2014–2026 z `taborova-jizda-rocniky-research-v5.md`.
+  - Všech 13 oficiálních ročníků má ověřený YouTube trailer a náhled. Rok 2013 zůstává mimo archiv, dokud nebude výslovně schválen jako bonusový obsah.
+- [x] Uložit verzovaný přehled ročníků bez historických cen a termínů.
+  - `theme/config/archive-seasons.json` a jeho schema obsahují pouze rok, název, YouTube ID, kvalitu náhledu a volitelný ověřený slug rubriky.
+- [ ] Propojit články a fotografie pouze explicitním mapováním; nezařazovat je automaticky podle data publikace.
+
+## Stav předání pro navazující chat (11. 11. 2026)
+
+Implementovaný první vertikální řez:
+
+- `archive-seasons.json` obsahuje 13 ověřených ročníků 2014–2026, bez cen a historických termínů;
+- `/minule-rocniky/` má video-first výpis, serverový filtr `?rok=YYYY`, lazy YouTube iframe a články z explicitně ověřených ročních rubrik;
+- archiv bez filtru ukáže u rubrik s více než čtyřmi články odkaz „Zobrazit dalších N článků“ na standardní WordPress archiv dané rubriky; výběr konkrétního roku v `?rok=YYYY` zobrazí všechny jeho články přímo na stránce;
+- taxonomie `rocnik` je registrovaná, ale žádné termy ani příspěvky nebyly automaticky zapsány do databáze;
+- homepage a kontakt používají společný dotazový formulář, newsletter se v novém UI nenabízí;
+- lokál dotaz pouze simuluje, produkce jej přes `wp_mail()` odešle na `contactEmail` ze `season.json`;
+- `npm run check`, TypeScript, validace obou JSON konfigurací a PHP syntax prošly;
+- HTTP a vizuální kontrola čeká na spuštěný LocalWP, protože hostname `taborovajizda-local.local` nebyl při předání dostupný.
+
+Doporučený další krok: spustit LocalWP a vizuálně projít `/`, `/kontakt-2/`, `/minule-rocniky/` a `/minule-rocniky/?rok=2024`. Potom pokračovat sticky navigací a novým hero podle schváleného wireframu. Před commitem nejdřív oddělit a zkontrolovat všechny změny pracovního stromu; tento krok commit ani push neprovedl.
 
