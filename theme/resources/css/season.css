@@ -348,3 +348,61 @@ img.attachment-thumbnail,
     transparent
   );
 }
+
+/* Redesign homepage atmosphere (body.tj-home): the season illustration on <html>
+   shows through translucent full-bleed section bands instead of a flat colour. */
+html:has(body.tj-home) {
+  background-size: cover;
+}
+body.tj-home {
+  background: transparent;
+}
+.tj-home-main > .tj-home-section {
+  --tj-band: rgb(244 249 255 / 0.94);
+  background: var(--tj-band);
+  box-shadow: 0 0 0 100vmax var(--tj-band);
+  clip-path: inset(0 -100vmax);
+}
+/* Cheerful alternating bands (palette A): sky, sun and grass tints between white. */
+.tj-home-main > .tj-home-section--news,
+.tj-home-main > .tj-home-section--archive {
+  --tj-band: rgb(223 242 251 / 0.95);
+}
+.tj-home-main > .tj-home-section--program {
+  --tj-band: rgb(255 240 191 / 0.95);
+}
+.tj-home-main > .tj-home-section--parents {
+  --tj-band: rgb(226 246 235 / 0.95);
+}
+
+/* Season display font for the season title and section headings only. */
+.tj-home-hero h1,
+.tj-home-section .tj-home-section__heading h2,
+.tj-home-people-heading h3 {
+  font-family: themed-font, var(--wp--preset--font-family--body);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+.tj-home-section .tj-home-section__heading h2::after {
+  display: block;
+  width: 3.5rem;
+  height: 4px;
+  margin-top: 0.85rem;
+  border-radius: 2px;
+  background: var(--tj-season-accent, var(--wp--preset--color--primary));
+  content: "";
+}
+
+/* Registration page: readable band over the season illustration. */
+.tj-home-main > .tj-registration-page {
+  --tj-band: rgb(244 249 255 / 0.86);
+  background: var(--tj-band);
+  box-shadow: 0 0 0 100vmax var(--tj-band);
+  clip-path: inset(0 -100vmax);
+}
+.tj-registration-page__header h1 {
+  font-family: themed-font, var(--wp--preset--font-family--body);
+  font-weight: 400;
+  text-transform: uppercase;
+}

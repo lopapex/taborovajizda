@@ -110,6 +110,11 @@ final class Season implements JsonSerializable
             throw new \UnexpectedValueException('Season age range must contain integers min <= max or be null.');
         }
 
+        $map = $data['mapCoordinates'] ?? null;
+        if ($map !== null && (! is_array($map) || ! is_numeric($map['lat'] ?? null) || ! is_numeric($map['lon'] ?? null) || abs((float) $map['lat']) > 90 || abs((float) $map['lon']) > 180)) {
+            throw new \UnexpectedValueException('Season map coordinates must contain numeric lat and lon or be null.');
+        }
+
         $amount = $data['price']['amount'] ?? null;
         if ($amount !== null && (! is_int($amount) || $amount < 0)) {
             throw new \UnexpectedValueException('Season price amount must be a non-negative integer or null.');
@@ -129,6 +134,7 @@ final class Season implements JsonSerializable
             'endDate' => null,
             'location' => null,
             'ageRange' => null,
+            'mapCoordinates' => null,
             'price' =>['amount' => null, 'currency' => 'CZK'],
             'registration' => ['status' => 'hidden', 'remainingPlaces' => null, 'externalSeasonKey' => null],
         ]);
@@ -188,10 +194,19 @@ final class Season implements JsonSerializable
         return is_string($value) ? $value : null;
     }
 
+    /**
+     * @return array{lat: float, lon: float}|null
+     */
+    public function mapCoordinates(): ?array
+    {
+        $map = $this->data['mapCoordinates'] ?? null;
+        return is_array($map) ? ['lat' => (float) $map['lat'], 'lon' => (float) $map['lon']] : null;
+    }
+
     public function formattedAgeRange(): ?string
     {
         $range = $this->data['ageRange'] ?? null;
-        return is_array($range) ? sprintf('%d–%d let', $range['min'], $range['max']) : null;
+        return is_array($range) ? sprintf('%d-%d let', $range['min'], $range['max']) : null;
     }
 
     public function hasEnded(?DateTimeImmutable $today = null): bool

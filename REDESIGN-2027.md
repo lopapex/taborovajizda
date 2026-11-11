@@ -112,19 +112,22 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 - [x] Navrhnout komponenty: Button, SectionHeading, InfoChip, PostCard, TrailerPreview, YearFilter, Accordion, StickyCTA a QuestionForm.
   - Rozhraní, prahy opakovaného použití a pravidla implementace jsou ve `WIREFRAME-2027.md`.
 - [ ] Implementovat pouze vzory použité alespoň třikrát jako sdílenou komponentní třídu; jednorázové layouty ponechat v Tailwind utilitách.
-- [ ] Zajistit viditelný focus, touch targety, sémantické nadpisy a reduced-motion základ.
+  - Průběžně 11. 11. 2026: schválený design pass (`DESIGN-AUDIT-2027.md`) zavedl sdílené tokeny tvarů (`--tj-radius-card`, `--tj-radius-control`), tichý styl metadat `tj-home-meta` a jednotné karty. Bod zůstává otevřený, dokud nebudou opakované vzory (karta, tlačítko, nadpis sekce) zrevidované i mimo homepage.
+- [x] Zajistit viditelný focus, touch targety, sémantické nadpisy a reduced-motion základ.
+  - Ověřeno 11. 11. 2026: globální `:focus-visible` (3px akcent), minimální výška 44 px pro tlačítka, ovládací prvky a odkazy menu, `prefers-reduced-motion` vypíná přechody i plynulý scroll. Homepage má jedno `h1` a pořadí nadpisů H1 → H2 → H3 bez přeskoků.
 
 ## Fáze C — homepage
 
 ### Navigace
 
 - [x] Vytvořit sticky hlavičku s kotvami a odkazy na archiv a přihlášku.
-  - Homepage má sticky navigaci pro sekce O táboře, Aktuality, Pro rodiče, Dokumenty a Minulé ročníky; přihláška zůstává výrazná samostatná akce.
+  - Homepage má sticky navigaci pro sekce O táboře, Aktuality, Program, Pro rodiče, Minulé ročníky a Kontakt; přihláška zůstává výrazná samostatná akce, pokud ročník přijímá přihlášky. Položka Dokumenty zmizela 11. 11. 2026 po sloučení s Pro rodiče; kotva `#dokumenty` dál vede na podsekci dokumentů.
 - [x] Na podstránkách směrovat kotvy na `/#sekce`.
   - Nová hlavička přihlášky vede odkazy na sekce přímo na homepage.
 - [x] Implementovat přístupné mobilní menu, zavření po volbě a správný offset kotvy.
   - Mobilní menu používá `aria-expanded`, po volbě odkazu se zavře a kotvy respektují výšku sticky hlavičky.
-- [ ] Zachovat funkčnost bez JavaScriptu.
+- [x] Zachovat funkčnost bez JavaScriptu.
+  - Ověřeno 11. 11. 2026 (360 px, simulace bez třídy `js`): `<head>` přidá třídu `js` inline skriptem. Bez ní se mobilní menu zobrazí jako seznam odkazů a skryjí se tlačítka carouselu a „Zobrazit všechny ročníky“. Záložky ukazují všechny panely. Otevírače aktualit a profilů jsou odkazy na permalink článku; s JS otevřou dialog a stránka zůstane na `/`. Bez vodorovného přetečení.
 
 ### Hero aktuálního ročníku
 
@@ -133,7 +136,7 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 - [x] CTA odvodit ze stavu přihlášek; nikdy nenabízet přihlášení na skončený nebo uzavřený ročník.
   - `Season::acceptsRegistrations()` nabízí přihlášku pouze ve stavu `open` (nebo `full` jako náhradník) a jen do `endDate` včetně. Jinak hero nabízí „Poznat tábor“ a „Minulé ročníky“ a v hlavičce se skryje tlačítko Přihláška. Aktuálně se zobrazuje „Ročník 2026 proběhl“, protože `endDate` 28. 8. 2026 už minul, i když `season.json` stále uvádí `open`. 12 stavových kontrol prošlo přes PHP 8.2.
 - [x] Trailer načíst až po akci uživatele, bez autoplay se zvukem.
-  - Trailer aktivního roku se bere z `archive-seasons.json`; iframe vznikne až po kliknutí na náhled. Bez JavaScriptu zůstává odkaz na YouTube.
+  - Místo v hero je odkaz na Google Mapy (nové okno, hover a focus v akcentové barvě, čtečkám oznámí otevření map). Trailer aktivního roku se bere z `archive-seasons.json`; iframe vznikne až po kliknutí na náhled. Bez JavaScriptu zůstává odkaz na YouTube.
 - [x] Ošetřit nepotvrzený termín, cenu, chybějící plakát a chybějící trailer.
   - Termín bez dat zobrazí „Termín připravujeme“, cena `null` zobrazí „Upřesníme“ (u skončeného ročníku se nezobrazuje), nevyplněné místo a věk se vynechají, bez traileru se hero vykreslí v jednom sloupci a chybějící `hero.jpg` zastaví build v `validate-season.mjs`.
 - [x] Odstranit možnost záporného countdownu; při skončeném termínu zobrazit neutrální stav.
@@ -148,7 +151,8 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 
 ### Aktuality
 
-- [ ] Umístit aktuality bezprostředně pod hero.
+- [x] Umístit aktuality bezprostředně pod hero.
+  - Ověřeno 11. 11. 2026: pořadí sekcí je hero, Aktuality, O táboře, Program, Pro rodiče, Minulé ročníky, Kontakt. Navigace má stejné pořadí.
 - [ ] Zobrazit připnuté oznámení pouze při existenci odpovídajícího metadata.
 - [x] Serverově vykreslit aktuality aktivního táborového roku s obrázkem, datem a excerptem; u každé zobrazit celý obsah v přístupném modálním okně.
   - Homepage načítá příspěvky z rubriky Aktuality publikované v aktivním roce ze `season.json`; nyní 2026. Karty jsou v ovladatelném horizontálním carouselu a detail zůstává v modálním okně bez viditelného přesměrování na samostatnou stránku.
@@ -159,14 +163,15 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 - [x] Vytvořit `#o-tabore` z existujícího obsahu bez ztráty informací.
   - Stávající obsah statické homepage je vykreslen do sekce `#o-tabore`.
 - [x] Vytvořit `#program` pro aktivity, prostředí a lidi.
-  - Homepage serverově vykresluje všechny položky z rubriky Aktivity do přístupných záložek a lidi do carouselu s modálními profily. Galerie uvnitř aktivit jsou přehledné responsivní mřížky bez zbytečného vodorovného scrollování. Obsah zůstává na homepage.
+  - Homepage serverově vykresluje všechny položky z rubriky Aktivity do přístupných záložek a lidi do carouselu s modálními profily. Od 11. 11. 2026 je 14 aktivit sloučeno podle slugu do 4 schválených záložek: Program a hra, Výpravy a sport, Tábornictví a Večery a tvoření. Každá aktivita má v záložce mezititulek `h3`. Nezařazené nové aktivity spadnou automaticky do záložky „Další aktivity“. Galerie uvnitř aktivit jsou přehledné responsivní mřížky bez zbytečného vodorovného scrollování. Obsah zůstává na homepage.
 - [x] Vytvořit `#pro-rodice` s praktickými informacemi, dokumenty a přístupným FAQ.
-  - Homepage načítá stávající obsah stránek Pro rodiče a Dokumenty do přístupných záložek; FAQ zůstává tvořené původními tlačítky. Záložky neodkazují zpět na duplicitní samostatné stránky.
+  - Od 11. 11. 2026 bez záložek: sekce Pro rodiče zobrazuje přímo obsah stránky Pro rodiče a pod ním podsekci „Dokumenty ke stažení“ (`#dokumenty`). FAQ jsou nativní `details/summary` z Genesis Blocks s opraveným kontrastem. Samostatné URL `/informace-pro-rodice/` a `/dokumenty/` zůstávají.
 - [x] Vytvořit kompaktní video-first upoutávku 2–4 minulých ročníků.
-  - První dva minulé ročníky zobrazují trailerový náhled a YouTube iframe vznikne až po kliknutí návštěvníka; další ročníky zůstanou dostupné po rozbalení archivu.
+  - Od 11. 11. 2026 je to samostatná sekce `#minule-rocniky`: 4 karty s náhledem a tlačítko „Zobrazit všechny ročníky (12) / Zobrazit méně“. Karta otevře modal ročníku s trailerem (iframe až po kliknutí, po zavření se zastaví) a až 6 odkazy na ověřené články. Bez JS vede karta na `/minule-rocniky/?rok=YYYY`; URL archivu zůstává, homepage na ni ale už primárně neodkazuje.
 - [x] Vytvořit `#kontakt` s kontakty a sociálními sítěmi.
   - Homepage zobrazuje ověřené kontaktní údaje, telefon, e-mail, YouTube, Instagram a sdílený dotazový formulář.
-- [ ] Zobrazit a vizuálně sjednotit všechny tři oficiální sociální sítě: YouTube, Instagram a Facebook. Odkazy ověřit proti aktuálním WordPress widgetům před zveřejněním.
+- [x] Zobrazit a vizuálně sjednotit všechny tři oficiální sociální sítě: YouTube, Instagram a Facebook. Odkazy ověřit proti aktuálním WordPress widgetům před zveřejněním.
+  - Sekce Kontakt má jednotný seznam odkazů ve stylu pilulek (min. 44 px; hover a focus v akcentové barvě). Odkazy byly 11. 11. 2026 ověřené proti widgetu na produkci taborovajizda.cz. Lokální widget má Facebook poškozený na `facebook.com/taborovajizda-local.local`, zřejmě po nahrazení domény při obnově zálohy; lokální databáze se neměnila a produkce je v pořádku.
 - [ ] Provést redakční revizi a úpravu obsahu existujících WordPress stránek před finálním designem homepage: rozdělit dlouhé bloky na čitelné sekce, odstranit zastaralé nebo duplicitní informace, opravit typografii a ponechat pouze potvrzené údaje pro aktivní ročník.
   - Redakční úpravy provádět v lokálním WordPressu až po schválení konkrétního rozsahu; současné samostatné URL a původní obsah zůstávají do té doby zachované.
 - [ ] Zkontrolovat náhledové fotografie příspěvků v rubrice Lidé a v lokálním WordPressu nahradit chybně přiřazené snímky potvrzenými fotografiemi daných osob.
@@ -197,8 +202,10 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 - [x] U ročníku zobrazit rok, název, trailer a ověřené související články či fotografie.
   - První implementace používá 13 ověřených trailerů. Články se zobrazují jen tam, kde existuje explicitně ověřená roční rubrika; ostatní roky čekají na ruční mapování.
 - [x] Nezobrazovat u historických ročníků cenu, starý termín ani registrační CTA.
-- [ ] Ošetřit chybějící média bez vymyšlených náhrad.
-- [ ] Netahat všechny obrázky, iframe a články při prvním načtení.
+- [x] Ošetřit chybějící média bez vymyšlených náhrad.
+  - Ověřeno 11. 11. 2026 na `/minule-rocniky/`: 23 z 32 karet článků nemá náhledový obrázek a karta pak obrázek vynechá, bez náhradního loga. Nedostupný náhled traileru přepne na `hqdefault` stejného videa.
+- [x] Netahat všechny obrázky, iframe a články při prvním načtení.
+  - Bez filtru se načtou nejvýše 4 články na ročník, všechny obrázky mají `loading="lazy"` a trailery vytvoří iframe až po kliknutí. Nový modul `app/YouTubeEmbeds.php` stejně převádí i YouTube oEmbedy v obsahu a widgetech; postranní trailer dřív načítal iframe na každé podstránce. Na homepage mají iframy v obsahu (např. Mapy.cz v aktualitě) vynucené `loading="lazy"`. Opravené je i pořadí `loading` a `src` u JS náhledů. Ověřeno: na stránkách archivu, aktualit, článku a kontaktu je při načtení 0 YouTube iframů.
 - [ ] Zachovat historické URL a doplnit pouze schválené 301 redirecty.
 
 ## Fáze F — animace a interakce
@@ -209,7 +216,8 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 - [x] Karty: jemný hover/focus a volitelný jednorázový vstup.
   - Karty aktualit, aktivit, lidí a archivu mají společnou jemnou odezvu na hover a viditelný stav klávesnicového fokusu; pohyb respektuje systémové omezení pohybu.
 - [ ] Archiv: plynulá změna filtru bez ztráty fokusu a polohy.
-- [ ] FAQ: přístupné rozbalení s korektním `aria-expanded` nebo nativním `details`.
+- [x] FAQ: přístupné rozbalení s korektním `aria-expanded` nebo nativním `details`.
+  - FAQ na homepage tvoří nativní `details/summary` z Genesis Blocks. Ověřeno 11. 11. 2026: tmavý povrch, akcentový okraj, světlý text, cílová plocha 44 px a otevření klikem i klávesnicí.
 - [ ] Všechny pohyby otestovat s `prefers-reduced-motion: reduce`.
 - [ ] Přidat `motion` pouze po schválení konkrétního důvodu a ověřit dopad na bundle.
 

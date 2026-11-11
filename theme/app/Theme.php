@@ -29,6 +29,9 @@ final class Theme
         add_action('widgets_init', [self::class, 'registerWidgets']);
         add_action('wp_enqueue_scripts', [self::class, 'enqueueAssets']);
         add_action('wp_head', [self::class, 'preloadHeroImage'], 1);
+        // Homepage content iframes (maps etc.) live in closed dialogs and tabs;
+        // never let WordPress treat them as above-the-fold and load them eagerly.
+        add_filter('wp_iframe_tag_add_loading_attr', static fn ($value) => is_front_page() ? 'lazy' : $value);
         add_filter('nav_menu_link_attributes', [self::class, 'menuLinkAttributes'], 10, 4);
 
         if (wp_get_environment_type() !== 'production') {
@@ -38,6 +41,8 @@ final class Theme
         (new Forms())->register();
         (new PostNotifications())->register();
         (new CountdownWidget())->register();
+        (new YouTubeEmbeds())->register();
+        (new PostContentEndpoint())->register();
     }
 
     public static function setup(): void

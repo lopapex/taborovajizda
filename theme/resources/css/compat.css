@@ -3,6 +3,21 @@ html {
   font-size: 16pt;
   line-height: 1.3;
 }
+/* Legacy templates (not yet redesigned) keep the original night palette while
+   theme.json carries the 2027 "Slunečné léto" palette for redesign pages. */
+#taborovajizda_body {
+  --wp--preset--color--background: #0b1320;
+  --wp--preset--color--surface: #132238;
+  --wp--preset--color--text: #f3f7fb;
+  --wp--preset--color--muted: #bfd0df;
+  --wp--preset--color--primary: #f5b942;
+  --wp--preset--color--accent: #c7831e;
+  color: var(--wp--preset--color--text);
+}
+/* Redesign pages (body.tj-home) use an 18px base; legacy templates keep 16pt. */
+html:has(body.tj-home) {
+  font-size: 112.5%;
+}
 
 img {
   max-width: 100%;
@@ -94,9 +109,129 @@ img.attachment-thumbnail,
   clip: initial !important;
 }
 
+/* Shared question form on redesign pages: dark fields and a primary submit. Unlayered
+   on purpose, so it wins over the legacy form look below. */
+.tj-home .tj-home-contact-form input:not([type="hidden"]),
+.tj-home .tj-home-contact-form textarea {
+  width: 100%;
+  border: 1px solid rgb(23 50 77 / 0.32);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--wp--preset--color--text);
+  padding: 0.7rem 0.8rem;
+}
+.tj-home .tj-home-contact-form button[type="submit"] {
+  min-height: 44px;
+  border: 0;
+  border-radius: 0.5rem;
+  background: var(--wp--preset--color--primary);
+  color: var(--wp--preset--color--text);
+  padding: 0.7rem 1.1rem;
+  font-weight: 800;
+  box-shadow: 0 4px 0 #d99a00;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.tj-home .tj-home-contact-form button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #d99a00;
+}
+.tj-home .tj-home-contact-form button[type="submit"]:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #d99a00;
+}
+
+/* WordPress gives every <figure> a bottom margin; the contact map must end flush
+   with the form card next to it. */
+.tj-home .tj-home-map {
+  margin: 0;
+}
+
+/* Past season dialog: clear separation between trailer, heading and articles
+   (unlayered because WordPress resets heading margins). */
+.tj-home .tj-home-season-dialog__trailer {
+  margin: 1.5rem 0 0;
+}
+.tj-home .tj-home-season-dialog__heading {
+  margin: 2.5rem 0 1.25rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgb(23 50 77 / 0.12);
+  color: var(--wp--preset--color--text);
+  font-size: 1.4rem;
+}
+.tj-home .tj-home-season-articles {
+  gap: 0.75rem;
+}
+.tj-home .tj-home-season-article > summary {
+  min-height: 56px;
+  padding: 0.9rem 1.15rem;
+}
+.tj-home .tj-home-season-article__body {
+  padding: 0.5rem 1.15rem 1.5rem;
+}
+.tj-home .tj-home-season-article {
+  scroll-margin-top: 1rem;
+}
+
+/* Legacy content highlight (.zvyraznit) uses the sun colour, unreadable on white. */
+.tj-home .zvyraznit {
+  color: #b54306;
+  text-shadow: none;
+}
+
+/* Registration form controls (page-e-prihlaska.php), unlayered for the same reason. */
+.tj-home .tj-registration-form input:not([type="hidden"]),
+.tj-home .tj-registration-form select,
+.tj-home .tj-registration-form textarea {
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  border: 1px solid rgb(23 50 77 / 0.32);
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--wp--preset--color--text);
+  padding: 0.7rem 0.85rem;
+  font: inherit;
+}
+.tj-home .tj-registration-form select {
+  color-scheme: light;
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 2.6rem;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--wp--preset--color--text) 50%),
+    linear-gradient(135deg, var(--wp--preset--color--text) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.3rem) 55%,
+    calc(100% - 0.95rem) 55%;
+  background-size: 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+.tj-home .tj-registration-form .tj-date-group select {
+  padding-right: 1.5rem;
+  padding-left: 0.55rem;
+  background-position:
+    calc(100% - 0.95rem) 55%,
+    calc(100% - 0.6rem) 55%;
+}
+.tj-home .tj-registration-form textarea {
+  min-height: 9rem;
+  resize: vertical;
+}
+.tj-home .tj-registration-form :is(input, select, textarea):focus {
+  border-color: var(--wp--preset--color--primary);
+  outline: 3px solid rgb(255 183 3 / 0.55);
+  outline-offset: 1px;
+}
+.tj-home .tj-registration-form :is(input, select, textarea):user-invalid {
+  border-color: #c0392b;
+}
+
+/* Legacy form look; redesign components (tj-home-*) style their own controls. */
 input,
 select,
-button,
+button:where(:not([class*="tj-home-"])),
 textarea,
 #taborovajizda_body input.photonic-show-gallery-button {
   padding: 0.3em 0.5em;
@@ -249,6 +384,29 @@ select:user-invalid {
 .youtube-player iframe {
   border: 0;
 }
+/* Click-to-load replacement for YouTube oEmbeds (app/YouTubeEmbeds.php). */
+.youtube-player--embed {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+.youtube-player--embed,
+.youtube-player--embed img,
+.youtube-player--embed iframe {
+  min-height: 0;
+}
+.youtube-player--embed > a {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: #fff;
+  text-align: center;
+}
+.wp-block-embed__wrapper:has(> .youtube-player--embed)::before {
+  display: none;
+}
 .play {
   position: absolute;
   inset: 50% auto auto 50%;
@@ -309,6 +467,25 @@ select:user-invalid {
 }
 #taborovajizda_body .gb-block-accordion details summary {
   background: var(--wp--preset--color--surface);
+}
+.tj-home .gb-block-accordion {
+  margin-bottom: 0.5rem;
+}
+.tj-home .gb-block-accordion details summary {
+  min-height: 44px;
+  border-left: 3px solid var(--wp--preset--color--primary);
+  background: var(--wp--preset--color--background);
+  color: var(--wp--preset--color--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.tj-home .gb-block-accordion details[open] summary,
+.tj-home .gb-block-accordion details summary:hover {
+  color: var(--wp--preset--color--link);
+  background: rgb(255 183 3 / 0.14);
+}
+.tj-home .gb-block-accordion .gb-accordion-text {
+  padding: 0.75rem 1rem 0.25rem;
 }
 
 .carbonlite-dash .carbonlite-dash_title,

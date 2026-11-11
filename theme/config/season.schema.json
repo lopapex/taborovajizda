@@ -14,6 +14,20 @@
     "startDate": { "type": ["string", "null"], "format": "date" },
     "endDate": { "type": ["string", "null"], "format": "date" },
     "location": { "type": ["string", "null"], "minLength": 1 },
+    "mapCoordinates": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["lat", "lon"],
+          "properties": {
+            "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+            "lon": { "type": "number", "minimum": -180, "maximum": 180 }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
     "ageRange": {
       "anyOf": [
         {

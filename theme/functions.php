@@ -39,6 +39,21 @@ function taborovajizda_season(): TaborovaJizda\Theme\Season\Season
 }
 
 /**
+ * Local debugging aid: show the registration CTA even when the season does not
+ * accept registrations, so its placement can be reviewed. Never active outside
+ * the `local` environment; disable locally with
+ * `define('TJ_DEBUG_REGISTRATION_CTA', false);` in wp-config.php.
+ */
+function taborovajizda_debug_registration_cta(): bool
+{
+    if (wp_get_environment_type() !== 'local') {
+        return false;
+    }
+
+    return ! defined('TJ_DEBUG_REGISTRATION_CTA') || TJ_DEBUG_REGISTRATION_CTA !== false;
+}
+
+/**
  * Return verified historical camp seasons for archive templates.
  */
 function taborovajizda_season_archive(?int $year = null): array

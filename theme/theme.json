@@ -6,12 +6,46 @@
     "color": {
       "custom": false,
       "palette": [
-        { "slug": "background", "name": "Noční pozadí", "color": "#0b1320" },
-        { "slug": "surface", "name": "Plocha", "color": "#132238" },
-        { "slug": "text", "name": "Text", "color": "#f3f7fb" },
-        { "slug": "muted", "name": "Vedlejší text", "color": "#bfd0df" },
-        { "slug": "primary", "name": "Jantar", "color": "#f5b942" },
-        { "slug": "accent", "name": "Tmavý jantar", "color": "#c7831e" }
+        {
+          "slug": "background",
+          "name": "Nebeské pozadí",
+          "color": "#f4f9ff"
+        },
+        {
+          "slug": "surface",
+          "name": "Bílá plocha",
+          "color": "#ffffff"
+        },
+        {
+          "slug": "text",
+          "name": "Text (námořnická modř)",
+          "color": "#17324d"
+        },
+        {
+          "slug": "muted",
+          "name": "Vedlejší text",
+          "color": "#4a6378"
+        },
+        {
+          "slug": "primary",
+          "name": "Slunce",
+          "color": "#ffb703"
+        },
+        {
+          "slug": "accent",
+          "name": "Mandarinka",
+          "color": "#fb5607"
+        },
+        {
+          "slug": "secondary",
+          "name": "Nebe",
+          "color": "#219ebc"
+        },
+        {
+          "slug": "link",
+          "name": "Odkaz",
+          "color": "#0f6f94"
+        }
       ]
     },
     "layout": {
