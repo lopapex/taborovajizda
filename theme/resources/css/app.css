@@ -386,6 +386,10 @@
   .tj-home-pager__status[hidden] { display: none; }
   .tj-home-pager__dot { position: relative; min-width: 0; width: 1.75rem; height: 2.5rem; padding: 0; flex: 0 1 auto; border: 0; background: transparent; cursor: pointer; }
   .tj-home-pager__dot::before { position: absolute; top: 50%; left: 50%; width: min(.6rem, 70%); height: .6rem; border-radius: 999px; background: rgb(23 50 77 / .28); content: ''; translate: -50% -50%; transition: width .25s ease, background-color .2s ease; }
+  /* Legacy button:hover/focus rules (white background, border, blue shadow) must not paint the dot's hit area. */
+  .tj-home-pager__dot:hover, .tj-home-pager__dot:focus, .tj-home-pager__dot:active { background: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+  .tj-home-pager__dot:focus { outline: none; }
+  .tj-home-pager__dot:focus-visible::before { outline: 3px solid var(--wp--preset--color--accent); outline-offset: 3px; }
   .tj-home-pager__dot:hover::before { background: rgb(23 50 77 / .55); }
   .tj-home-pager__dot[aria-current="true"]::before { width: min(1.6rem, 92%); background: var(--tj-tangerine); }
   @media (max-width: 64rem) { .tj-home-pager { --per-view: 4; } .tj-home-pager.tj-home-pager--news { --per-view: 2; } }
