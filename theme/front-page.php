@@ -38,6 +38,14 @@ $news = new WP_Query([
         'inclusive' => true,
     ]],
 ]);
+// Pinned announcement: a post marked "Stick to the top of the blog" in WordPress comes first and gets a badge.
+$pinnedIds = array_map('intval', (array) get_option('sticky_posts', []));
+if ($pinnedIds !== [] && $news->posts !== []) {
+    $news->posts = array_merge(
+        array_values(array_filter($news->posts, static fn ($p) => in_array($p->ID, $pinnedIds, true))),
+        array_values(array_filter($news->posts, static fn ($p) => ! in_array($p->ID, $pinnedIds, true)))
+    );
+}
 // Only public posts on the homepage, even for logged-in editors who can read private ones.
 $activities = new WP_Query(['posts_per_page' => -1, 'category_name' => 'taborove_aktivity', 'post_status' => 'publish', 'ignore_sticky_posts' => true]);
 $people = new WP_Query(['posts_per_page' => -1, 'category_name' => 'lide', 'post_status' => 'publish', 'ignore_sticky_posts' => true]);
@@ -161,6 +169,7 @@ $archiveSeasons = array_values(array_filter(
 							</a>
 						<?php endif; ?>
 						<div class="tj-home-post-card__body">
+							<?php if (in_array(get_the_ID(), $pinnedIds, true)) : ?><p class="tj-home-pinned">Důležité oznámení</p><?php endif; ?>
 							<?php if ($hasCardImage) : ?>
 								<p class="tj-home-meta"><?php echo esc_html(get_the_date()); ?></p>
 							<?php else : ?>

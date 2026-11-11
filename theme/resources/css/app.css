@@ -97,6 +97,7 @@
   .tj-home-section__heading { scroll-margin-top: 6.5rem; }
   .tj-home-section__heading { max-width: 42rem; }
   .tj-home-section h2 { margin: 0; color: var(--wp--preset--color--text); font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1.02; letter-spacing: -.035em; }
+  .tj-home-pinned { margin: 0 0 .5rem; color: var(--wp--preset--color--accent, #c2410c); font-size: .8rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
   .tj-home-meta { margin: 0 0 .5rem; color: var(--wp--preset--color--muted); font-size: .9rem; font-weight: 700; }
   .tj-home-section--intro { display: grid; align-items: center; gap: clamp(2rem, 6vw, 5rem); }
   .tj-home-section--intro-media { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); }

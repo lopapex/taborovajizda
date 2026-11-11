@@ -140,7 +140,7 @@ Provozní údaje jsou pouze v `theme/config/season.json`. V templates se rok, n�
 
 Každý ročník se připraví ve čtyřech oddělených krocích:
 
-1. Aktualizuj data v `config/season.json`, včetně `contactEmail` a ručně spravovaného `registration.remainingPlaces`; `null` znamená, že počet nezobrazujeme.
+1. Aktualizuj data v `config/season.json` (název, termín, cena, `location`, `ageRange`, `mapCoordinates`), včetně `contactEmail` a ručně spravovaného `registration.remainingPlaces`; `null` znamená, že počet nezobrazujeme.
 2. Nahraď přesně dva soubory: `resources/assets/season/hero.jpg` a `resources/assets/season/background.jpg`.
 3. Uprav potvrzené barvy v `theme.json` a pouze roční efekty v `season.css`.
 4. Po potvrzení termínu nastav countdown widget ve WordPress administraci; šablona jej sama zobrazí, dokud cílový čas neuplyne.
@@ -154,6 +154,12 @@ Pro nový ročník použij skill `$tj-new-season` nebo náhled skriptu:
 Skript bez `-Apply` nic nemění. Nevymýšlej nepotvrzené datum, cenu, databázový klíč ani vizuální brief. Názvy ročních obrázků jsou pevné a nejsou součástí JSON konfigurace. Staré ročníky jsou archivované v Git historii; nevytvářej další kopii celého ročního CSS.
 
 Odpočet není součástí šablony: vytváří jej plugin `jquery-t-countdown-widget` z konfigurace uložené ve WordPress databázi. Šablona (`app/CountdownWidget.php`) widget nevykreslí, jakmile jeho cílový čas uplyne nebo nejde přečíst, takže se nikdy nezobrazí záporný odpočet. Pro nový ročník stačí nastavit nové datum widgetu ve WordPressu.
+
+## Nová aktualita, připnutí a test
+
+- **Aktualita:** ve WordPressu vytvoř standardní příspěvek v rubrice `Aktuality` s datem v aktivním roce (`year` v `season.json`). Homepage ji zobrazí sama, včetně dialogu s plným textem; bez náhledového obrázku použije první fotografii z textu.
+- **Připnuté oznámení:** v příspěvku zapni „Připnout na začátek blogu“ (Stick to the top). Aktualita se zobrazí první se štítkem „Důležité oznámení“; po odepnutí se vrátí na své místo podle data.
+- **Test před release:** z `theme/` spusť `npm run check` (validace `season.json`, TypeScript, build), PHP lint (`php -l`) a projdi homepage a `/e-prihlaska/` v LocalWP na šířkách 360, 768 a 1280 px. Mimo produkci formuláře pouze simulují odeslání.
 
 ## Formuláře a lokální prostředí
 

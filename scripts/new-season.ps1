@@ -24,6 +24,21 @@ param(
     [AllowNull()]
     [Nullable[int]]$Price,
 
+    [AllowNull()]
+    [string]$Location,
+
+    [AllowNull()]
+    [Nullable[int]]$AgeMin,
+
+    [AllowNull()]
+    [Nullable[int]]$AgeMax,
+
+    [AllowNull()]
+    [Nullable[double]]$Latitude,
+
+    [AllowNull()]
+    [Nullable[double]]$Longitude,
+
     [ValidateSet('hidden', 'coming-soon', 'open', 'full', 'closed')]
     [string]$RegistrationStatus = 'coming-soon',
 
@@ -63,11 +78,21 @@ if ($normalisedStart -and $normalisedEnd -and $normalisedStart -gt $normalisedEn
     throw 'StartDate must not be after EndDate.'
 }
 
-$previous = Get-Content -Raw -LiteralPath $seasonPath | ConvertFrom-Json
+$previous = Get-Content -Raw -Encoding UTF8 -LiteralPath $seasonPath | ConvertFrom-Json
 $resolvedContactEmail = if ([string]::IsNullOrWhiteSpace($ContactEmail)) { [string]$previous.contactEmail } else { $ContactEmail }
 if ($resolvedContactEmail -notmatch '^[^@\s]+@[^@\s]+\.[^@\s]+$') {
     throw 'ContactEmail must contain a valid e-mail address.'
 }
+
+# Place, age range and map point carry over from the previous season unless given explicitly.
+$resolvedLocation = if ([string]::IsNullOrWhiteSpace($Location)) { $previous.location } else { $Location }
+$resolvedAgeMin = if ($null -ne $AgeMin) { [int]$AgeMin } elseif ($previous.ageRange) { [int]$previous.ageRange.min } else { $null }
+$resolvedAgeMax = if ($null -ne $AgeMax) { [int]$AgeMax } elseif ($previous.ageRange) { [int]$previous.ageRange.max } else { $null }
+if ($null -ne $resolvedAgeMin -and $null -ne $resolvedAgeMax -and $resolvedAgeMin -gt $resolvedAgeMax) {
+    throw 'AgeMin must not be greater than AgeMax.'
+}
+$resolvedLat = if ($null -ne $Latitude) { [double]$Latitude } elseif ($previous.mapCoordinates) { [double]$previous.mapCoordinates.lat } else { $null }
+$resolvedLon = if ($null -ne $Longitude) { [double]$Longitude } elseif ($previous.mapCoordinates) { [double]$previous.mapCoordinates.lon } else { $null }
 
 $configuration = [ordered]@{
     '$schema' = './season.schema.json'
@@ -77,6 +102,9 @@ $configuration = [ordered]@{
     contactEmail = $resolvedContactEmail
     startDate = $normalisedStart
     endDate = $normalisedEnd
+    location = $resolvedLocation
+    ageRange = if ($null -ne $resolvedAgeMin -and $null -ne $resolvedAgeMax) { [ordered]@{ min = $resolvedAgeMin; max = $resolvedAgeMax } } else { $null }
+    mapCoordinates = if ($null -ne $resolvedLat -and $null -ne $resolvedLon) { [ordered]@{ lat = $resolvedLat; lon = $resolvedLon } } else { $null }
     price = [ordered]@{
         amount = if ($null -eq $Price) { $null } else { [int]$Price }
         currency = 'CZK'
