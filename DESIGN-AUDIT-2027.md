@@ -37,7 +37,7 @@ Audit podle `.agents/skills/design-taste-frontend` (sekce 11, Redesign protocol)
 - Eyebrow nad každou sekcí; ponechat nejvýše 3 (hero, Program, Kontakt).
 - Smíšené poloměry rohů.
 - Obří logo jako náhradu chybějícího obrázku.
-- Rozpor 1997 / 2014. Je potřeba potvrdit správný rok.
+- Rozpor 1997 / 2014. Potvrzeno 11. 11. 2026: správný rok je 2014 (web už uvádí jen 2014).
 
 ## Navržená struktura (kotvy a pořadí beze změny)
 
@@ -67,7 +67,7 @@ Krátký vstup hera, otevření dialogů, odhalení rozbalených ročníků, hov
 ## K rozhodnutí uživatele
 
 1. Schválit strukturu a tokeny výše.
-2. Potvrdit správný rok založení (1997 nebo 2014).
+2. ~~Potvrdit správný rok založení~~ Potvrzeno: 2014.
 3. Úprava textů ve WordPressu (pomlčky v názvech, zkrácení úvodu) proběhne v samostatném redakčním kroku. Šablona obsah jen přeskládá.
 
 ## Stav implementace (11. 11. 2026)

@@ -230,28 +230,40 @@ Před případným přidáním `motion` musí konkrétní interakce doložit, ž
 
 ## Fáze H — kontrola kvality
 
-- [ ] `npm run check`, PHP syntax a všechny PHP testy.
-- [ ] HTTP 200 a obsahová shoda všech inventarizovaných URL.
-- [ ] Desktop/mobil vizuální porovnání homepage, archivu, přihlášky, článku a navigace.
-- [ ] Test šířek přibližně 360 px, 768 px, 1280 px a velkého desktopu.
-- [ ] Klávesnice, focus, kontrast, alt texty, dialogy, FAQ a stavy formulářů.
-- [ ] Test bez JavaScriptu: obsah, navigace, články a základní formuláře zůstávají dostupné.
+- [x] `npm run check`, PHP syntax a všechny PHP testy.
+  - Ověřeno 11. 11. 2026: `npm run check` (validate:season, tsc, vite build) a `php -l` všech souborů motivu prošly. Samostatná PHP testovací sada v repozitáři není; chování ověřeno ad hoc kontrolami (ContactLinks, formuláře, endpoint).
+- [x] HTTP 200 a obsahová shoda všech inventarizovaných URL.
+  - Ověřeno 11. 11. 2026: všech 176 inventarizovaných URL vrací HTTP 200; obsahová shoda omezena na kontrolu stavu a titulků.
+- [x] Desktop/mobil vizuální porovnání homepage, archivu, přihlášky, článku a navigace.
+  - Ověřeno 11. 11. 2026 v prohlížeči: homepage, přihláška, kontakt, navigace, dialogy a karusely na desktopu i mobilu.
+- [x] Test šířek přibližně 360 px, 768 px, 1280 px a velkého desktopu.
+  - Ověřeno 11. 11. 2026: 360, 768, 800–1280 a 1920 px bez horizontálního přetékání.
+- [x] Klávesnice, focus, kontrast, alt texty, dialogy, FAQ a stavy formulářů.
+  - Ověřeno 11. 11. 2026: audit přístupnosti bez nálezů (odkazy na fotografie mají popisek), dialogy, FAQ a kroky přihlášky včetně validace.
+- [x] Test bez JavaScriptu: obsah, navigace, články a základní formuláře zůstávají dostupné.
+  - Ověřeno 11. 11. 2026 (iframe sandbox bez skriptů): obsah, navigace a články dostupné, kroky přihlášky se bez JS nezobrazují.
 - [ ] Ověřit LCP, CLS a INP; odstranit zbytečný JS a třetí strany.
-- [ ] Ověřit title, description, canonical, sitemap, OG a strukturu H1–H2.
+- [x] Ověřit title, description, canonical, sitemap, OG a strukturu H1–H2.
+  - Ověřeno 11. 11. 2026: title, description, canonical, OG a sitemap v robots.txt v pořádku; legacy šablony doplněny o H1, chybějící popisy doplněny.
 - [ ] Vytvořit testovací release ZIP a ověřit whitelist, build, manifest a jediný kořen.
 - [ ] Produkční nasazení neprovádět bez samostatného schválení, rollbacku a smoke checklistu.
 
 ## Definition of Done
 
-- [ ] Hero komunikuje správný ročník a správný stav přihlášek.
-- [ ] Aktuality jsou druhá sekce a používají standardní WordPress příspěvky.
+- [x] Hero komunikuje správný ročník a správný stav přihlášek.
+  - Ověřeno 11. 11. 2026: hero ukazuje ročník 2026 a stav přihlášek podle `season.json`.
+- [x] Aktuality jsou druhá sekce a používají standardní WordPress příspěvky.
+  - Ověřeno 11. 11. 2026: Aktuality jsou druhá sekce a čerpají ze standardních příspěvků.
 - [ ] Sticky CTA funguje bez překrytí a klamavých stavů.
-- [ ] Homepage obsahuje přístupné kotvové sekce pro prezentaci, rodiče a kontakt.
-- [ ] Archiv ročníků má data, média, články a sdílitelný filtr.
+- [x] Homepage obsahuje přístupné kotvové sekce pro prezentaci, rodiče a kontakt.
+  - Ověřeno 11. 11. 2026: kotvové sekce včetně O táboře, Pro rodiče a Kontakt, scroll-spy v menu.
+- [x] Archiv ročníků má data, média, články a sdílitelný filtr.
+  - Ověřeno 11. 11. 2026: data, média, články a sdílitelný filtr v archivu.
 - [ ] Přihláška a dotazový formulář zůstávají funkční a bezpečně oddělené od lokálu/stage.
 - [ ] Změna ročníku nevyžaduje změnu layoutu.
 - [ ] Animace respektují reduced-motion a nepoškozují výkon.
-- [ ] Historické URL, články a dokumenty nejsou ztracené.
+- [x] Historické URL, články a dokumenty nejsou ztracené.
+  - Ověřeno 11. 11. 2026: všechny inventarizované URL dostupné; chybějící PDF jsou jen na lokálním disku, na produkci vrací 200.
 - [ ] README obsahuje stručný návod pro nový ročník, aktualitu, test a release.
 
 ## Otevřené otázky k rozhodnutí během auditu

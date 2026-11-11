@@ -29,6 +29,8 @@ final class Theme
         add_action('widgets_init', [self::class, 'registerWidgets']);
         add_action('wp_enqueue_scripts', [self::class, 'enqueueAssets']);
         add_action('wp_head', [self::class, 'preloadHeroImage'], 1);
+        add_action('init', [self::class, 'trimFrontend']);
+        add_action('wp_enqueue_scripts', [self::class, 'dequeueUnusedFrontPageAssets'], 100);
         // Homepage content iframes (maps etc.) live in closed dialogs and tabs;
         // never let WordPress treat them as above-the-fold and load them eagerly.
         add_filter('wp_iframe_tag_add_loading_attr', static fn ($value) => is_front_page() ? 'lazy' : $value);
@@ -129,6 +131,28 @@ final class Theme
         }
 
         return $manifest;
+    }
+
+    /**
+     * Frontend weight: the WordPress emoji loader (and its s.w.org requests) is
+     * not needed, modern systems render emoji natively.
+     */
+    public static function trimFrontend(): void
+    {
+        remove_action('wp_head', 'print_emoji_detection_script', 7);
+        remove_action('wp_print_styles', 'print_emoji_styles');
+        add_filter('emoji_svg_url', '__return_false');
+    }
+
+    /** The countdown widget is not part of the redesigned homepage, so its script and styles are skipped there. */
+    public static function dequeueUnusedFrontPageAssets(): void
+    {
+        if (! is_front_page()) {
+            return;
+        }
+
+        wp_dequeue_script('countdown-script');
+        wp_dequeue_style('countdown-carbonlite-css');
     }
 
     public static function enqueueAssets(): void

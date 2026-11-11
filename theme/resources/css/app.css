@@ -542,6 +542,7 @@
   .tj-registration-notice p + p { margin-top: .5rem; }
   .tj-registration-notice a { color: var(--tj-ink-accent); font-weight: 800; }
   .tj-registration-steps { display: grid; margin: 0 0 1.5rem; padding: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; list-style: none; scroll-margin-top: 6rem; }
+  .tj-registration-steps[hidden] { display: none; }
   .tj-registration-steps button { display: flex; width: 100%; min-height: 52px; align-items: center; gap: .6rem; border: 1px solid rgb(23 50 77 / 0.15); border-radius: var(--tj-radius-control); background: rgb(255 255 255 / 0.8); color: var(--wp--preset--color--muted); padding: .55rem .8rem; font: inherit; font-weight: 800; text-align: left; cursor: pointer; }
   .tj-registration-steps button span { display: grid; width: 1.9rem; height: 1.9rem; flex: 0 0 auto; place-items: center; border-radius: 50%; background: rgb(23 50 77 / 0.08); color: var(--wp--preset--color--text); }
   .tj-registration-steps button[aria-current="step"] { border-color: var(--tj-ink-accent); color: var(--wp--preset--color--text); }

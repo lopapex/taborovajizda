@@ -303,9 +303,17 @@ function markZoomable(root: ParentNode): void {
   root.querySelectorAll<HTMLImageElement>(zoomableSelector).forEach((img) => {
     if (!isZoomable(img) || img.dataset.zoomable) return;
     img.dataset.zoomable = 'true';
+    const label = img.alt ? `Zvětšit fotografii: ${img.alt}` : 'Zvětšit fotografii';
+    const link = img.closest('a');
+    if (link) {
+      // The surrounding link is the control: name it and avoid a button nested in a link.
+      if (!link.hasAttribute('aria-label')) link.setAttribute('aria-label', label);
+      link.setAttribute('aria-haspopup', 'dialog');
+      return;
+    }
     img.tabIndex = 0;
     img.setAttribute('role', 'button');
-    img.setAttribute('aria-label', img.alt ? `Zvětšit fotografii: ${img.alt}` : 'Zvětšit fotografii');
+    img.setAttribute('aria-label', label);
   });
 }
 
