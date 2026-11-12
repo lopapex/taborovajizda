@@ -674,15 +674,18 @@ function initialiseInternalLinks(): void {
   const endpoint = dialog?.dataset.postContentUrl;
   if (!dialog || !title || !body || !endpoint || !document.body.classList.contains('home')) return;
 
-  const homePath = window.location.pathname;
+  // The homepage path is the site root ("/" in production, "/test/" on stage).
+  const homePath = window.location.pathname.replace(/\/?$/, '/');
   const opensHere = (link: HTMLAnchorElement): URL | null => {
     if (link.hasAttribute('data-home-dialog-open') || link.hasAttribute('download') || link.closest('.tj-lightbox')) return null;
     let url: URL;
     try { url = new URL(link.href); } catch { return null; }
     if (url.origin !== window.location.origin || !/^https?:$/.test(url.protocol)) return null;
-    const path = url.pathname;
-    if (path === homePath || path === '/') return null;
-    if (/^\/(?:wp-admin|wp-content|wp-includes|wp-json|feed|e-prihlaska)(?:\/|$)/.test(path)) return null;
+    if (!url.pathname.startsWith(homePath)) return null;
+    // Path relative to the site root, without the "index.php/" of stage permalinks.
+    const path = '/' + url.pathname.slice(homePath.length).replace(/^index\.php(?:\/|$)/, '');
+    if (path === '/') return null;
+    if (/^\/(?:wp-admin|wp-content|wp-includes|wp-json|feed|e-prihlaska|odeslat-dotaz)(?:\/|$)/.test(path)) return null;
     if (/\.[a-z0-9]{2,5}$/i.test(path)) return null;
     return url;
   };
