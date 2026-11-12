@@ -47,6 +47,7 @@ final class Theme
         (new ContactLinks())->register();
         (new PostContentEndpoint())->register();
         (new IndexPermalinks())->register();
+        (new GoogleGalleries())->register();
     }
 
     public static function setup(): void
