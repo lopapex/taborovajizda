@@ -141,4 +141,10 @@ The theme no longer has the legacy layout (sidebar, menus, widgets, countdown, n
 - options of removed plugins (Yoast, W3 Total Cache, UpdraftPlus, Smush, TinyPNG, EWWW, XCloner, Fluent Forms, …) and all transients;
 - plugins Query Monitor and WP Crontrol.
 
-Stage and production are untouched. Do the same there only on a separate request, after a backup, together with the theme release that removes the legacy templates. Check every table and option prefix against the installed plugins of that environment first; `wp-staging` stays on stage.
+Stage (12. 11. 2026, after a Backup Migration backup of the database and plugins and with release `taborovajizda-theme-stage-2026-11-12-91f39278.zip` installed) got the same cleanup through the REST API: all 11 widgets, menu 2 "Hlavní menu", navigation 4892, the trash (26 posts, pages 43, 803, 2123, 2459, 2473, 2589, 4917, 5606) and the plugins Query Monitor, WP Crontrol and the inactive WPvivid Backup. A crawl of all 146 public stage URLs afterwards found no link leaving `/test/index.php/` and no PHP error.
+
+Not possible without database access, so still on stage: 575 revisions (REST answers `rest_cannot_delete`, nginx refuses a real `DELETE`), the old `tj_*` tables and the options of removed plugins.
+
+The only path from stage to production left is the login: All In One Login keeps the production slug `65e43gerg534e`, which nginx sends to production, and the WP Staging login screen links to it. Sign in at `/test/wp-login.php` instead.
+
+Production is untouched. Do the same there only on a separate request, after a backup, together with the production theme release. Check every table and option prefix against the installed plugins of that environment first.
