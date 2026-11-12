@@ -37,6 +37,8 @@
   .tj-home-nav__links .sub-menu { display: none; }
   .tj-home-header-cta, .tj-home-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; border-radius: var(--tj-radius-control); white-space: nowrap; transition: transform .15s ease, background-color .15s ease; background: var(--wp--preset--color--primary); color: var(--wp--preset--color--text); padding: .7rem 1.05rem; font-weight: 800; text-decoration: none; }
   .tj-home-header-cta, .tj-home-button { box-shadow: 0 4px 0 var(--tj-sun-deep); }
+  /* <button> elements get no browser border; variants below may still set their own. */
+  :where(button).tj-home-button { border: 0; cursor: pointer; font-family: inherit; font-size: inherit; }
   .tj-home-header-cta:hover, .tj-home-button:hover { background: #ffc83d; transform: translateY(-2px); box-shadow: 0 6px 0 var(--tj-sun-deep); }
   .tj-home-header-cta:active, .tj-home-button:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--tj-sun-deep); }
   .tj-home-mobile-menu { display: none; margin-left: auto; }
@@ -91,8 +93,8 @@
   .tj-home-hero__note { max-width: 34rem; margin: 1rem 0 0; padding: .7rem 1rem; border-left: 4px solid var(--tj-tangerine); border-radius: 0 var(--tj-radius-control) var(--tj-radius-control) 0; background: rgb(255 255 255 / .72); color: var(--wp--preset--color--text); font-weight: 700; line-height: 1.45; }
   /* Local-only debug display of a registration CTA (taborovajizda_debug_registration_cta). */
   .tj-is-debug-cta { outline: 2px dashed #ff4fd8; outline-offset: 3px; }
-  .tj-home-button--quiet { border: 1px solid rgb(23 50 77 / 0.39); background: rgb(244 249 255 / 0.35); color: var(--wp--preset--color--text); box-shadow: 0 4px 0 rgb(23 50 77 / .18); }
-  .tj-home-button--quiet:hover { border-color: var(--tj-ink-accent); background: rgb(255 183 3 / 0.14); color: var(--tj-ink-accent); box-shadow: 0 6px 0 rgb(23 50 77 / .18); }
+  .tj-home-button--quiet { border: 1px solid rgb(23 50 77 / 0.3); background: #fff; color: var(--wp--preset--color--text); box-shadow: 0 4px 0 rgb(23 50 77 / .14); }
+  .tj-home-button--quiet:hover { border-color: var(--tj-sun-deep); background: var(--tj-sun-tint); color: var(--wp--preset--color--text); box-shadow: 0 6px 0 rgb(23 50 77 / .14); }
   .tj-home-section { width: min(100% - 2rem, 82rem); margin: 0 auto; padding: clamp(4rem, 8vw, 6.5rem) 0; }
   .tj-home-section__heading { scroll-margin-top: 6.5rem; }
   .tj-home-section__heading { max-width: 42rem; }
@@ -555,11 +557,11 @@
   .tj-registration-steps[hidden] { display: none; }
   .tj-registration-steps button { display: flex; width: 100%; min-height: 52px; align-items: center; gap: .6rem; border: 1px solid rgb(23 50 77 / 0.15); border-radius: var(--tj-radius-control); background: rgb(255 255 255 / 0.8); color: var(--wp--preset--color--muted); padding: .55rem .8rem; font: inherit; font-weight: 800; text-align: left; cursor: pointer; }
   .tj-registration-steps button span { display: grid; width: 1.9rem; height: 1.9rem; flex: 0 0 auto; place-items: center; border-radius: 50%; background: rgb(23 50 77 / 0.08); color: var(--wp--preset--color--text); }
-  .tj-registration-steps button[aria-current="step"] { border-color: var(--tj-ink-accent); color: var(--wp--preset--color--text); }
+  .tj-registration-steps button[aria-current="step"] { border-color: var(--tj-sun-deep); background: var(--tj-sun-tint); color: var(--wp--preset--color--text); box-shadow: inset 0 0 0 1px var(--tj-sun-deep); }
   .tj-registration-steps button[aria-current="step"] span, .tj-registration-steps button.is-done span { background: var(--wp--preset--color--primary); color: var(--wp--preset--color--text); }
   .tj-registration-steps button.is-done { color: var(--wp--preset--color--text); }
   .tj-registration-steps button:disabled { cursor: default; opacity: .6; }
-  .tj-registration-steps button:not(:disabled):hover { border-color: var(--tj-ink-accent); }
+  .tj-registration-steps button:not(:disabled):hover { border-color: var(--tj-sun-deep); }
   .tj-registration-form { display: grid; gap: 1.25rem; }
   .tj-registration-form__legend { margin: 0; color: var(--wp--preset--color--muted); line-height: 1.5; }
   .tj-form-step { min-width: 0; margin: 0; padding: clamp(1.25rem, 4vw, 2.25rem); border: 1px solid rgb(23 50 77 / 0.07); border-top: 4px solid var(--wp--preset--color--primary); border-radius: var(--tj-radius-card); background: rgb(255 255 255 / 0.92); box-shadow: 0 1rem 2.5rem rgb(23 50 77 / 0.14); }

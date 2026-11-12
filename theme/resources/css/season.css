@@ -543,12 +543,49 @@ body.tj-home {
   content: "";
 }
 
-/* Registration page: readable band over the season illustration. */
+/* No season illustration behind the redesigned pages: every band is a solid colour. */
+html:has(body.tj-home) {
+  background-color: #f7f1e6;
+  background-image: none;
+}
+
+/*
+ * Registration page: the header (title, intro, facts) sits on the afternoon
+ * apricot band with the seam stripe under it; the form below stays on paper
+ * for comfortable reading and filling in.
+ */
 .tj-home-main > .tj-registration-page {
-  --tj-band: rgb(247 241 230 / 0.95);
+  --tj-band: #f7f1e6;
   background: var(--tj-band);
   box-shadow: 0 0 0 100vmax var(--tj-band);
   clip-path: inset(0 -100vmax);
+}
+.tj-registration-page__header {
+  --tj-page-pad: clamp(2.5rem, 6vw, 4.5rem);
+  position: relative;
+  margin-top: calc(-1 * var(--tj-page-pad));
+  padding: var(--tj-page-pad) 0 2.5rem;
+  background: #ffc68a;
+  box-shadow: 0 0 0 100vmax #ffc68a;
+  clip-path: inset(0 -100vmax);
+}
+.tj-registration-page__header::after {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  height: 5px;
+  background: linear-gradient(90deg, #ffb703 0 25%, #fb5607 25% 50%, #219ebc 50% 75%, #2db37a 75%);
+  content: "";
+}
+.tj-registration-page__header .tj-home-eyebrow {
+  color: #7a2c02;
+}
+.tj-registration-page__header > p:not(.tj-home-eyebrow) {
+  color: #3d5366;
+}
+.tj-registration-page__content {
+  margin-top: 2.5rem;
 }
 .tj-registration-page__header h1 {
   font-family: themed-font, var(--wp--preset--font-family--body);
