@@ -142,7 +142,8 @@
     .tj-home-post-card:hover, .tj-home-program-card:hover, .tj-home-archive-card:hover { border-color: rgb(255 183 3 / 0.55); transform: translateY(-4px); box-shadow: 0 1.15rem 2.5rem rgb(23 50 77 / 0.16); }
     .tj-home-post-card:hover h3 a, .tj-home-archive-card:hover h3 a { color: var(--tj-ink-accent); }
   }
-  .tj-home-post-card:focus-within, .tj-home-program-card:focus-within, .tj-home-person-card:focus-within, .tj-home-archive-card:focus-within { transform: translateY(-.2rem); box-shadow: 0 0 0 2px var(--wp--preset--color--primary), 0 1.15rem 2.5rem rgb(23 50 77 / 0.11); }
+  /* Keyboard focus only (:focus-visible), so focus returned to a card after a mouse-closed dialog draws no ring. */
+  .tj-home-post-card:has(:focus-visible), .tj-home-program-card:has(:focus-visible), .tj-home-person-card:has(:focus-visible), .tj-home-archive-card:has(:focus-visible) { border-radius: var(--tj-radius-card); transform: translateY(-.2rem); box-shadow: 0 0 0 2px var(--wp--preset--color--primary), 0 1.15rem 2.5rem rgb(23 50 77 / 0.11); }
   .tj-home-post-card__image { display: block; aspect-ratio: 16 / 10; background: var(--wp--preset--color--primary); }
   .tj-home-post-card__open { width: 100%; border: 0; padding: 0; cursor: pointer; }
   .tj-home-post-card__image img { display: block; width: 100%; height: 100%; object-fit: cover; }
