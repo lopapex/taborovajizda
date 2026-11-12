@@ -3,7 +3,7 @@
 	<h1 class="tj-card-title">Kontakt (informace a přihlášky)</h1>
 	<div class="blog_content">
 		<?php $contactEmail = \TaborovaJizda\Theme\Season\Season::current()->contactEmail(); ?>
-		<p><b>Matěj Vašek</b> (hlavní vedoucí)<br>adresa: Pionýrů 1332, 56401 Žamberk<br>telefon: <a href="tel:+420605947103">605 947 103</a><br>e-mail: <a href="mailto:<?php echo esc_attr($contactEmail); ?>"><?php echo esc_html($contactEmail); ?></a><br>číslo účtu: 27-3094190207/0100<br>ič: 08063991<br></p>
+		<p><b>Matěj Vašek</b> (hlavní vedoucí)<br>adresa: Pionýrů 1332, 564 01 Žamberk<br>telefon: <a href="tel:+420605947103">605 947 103</a><br>e-mail: <a href="mailto:<?php echo esc_attr($contactEmail); ?>"><?php echo esc_html($contactEmail); ?></a><br>číslo účtu: 27-3094190207/0100<br>IČ: 08063991<br></p>
 	</div>
 </article>
 <article class="blog_post">

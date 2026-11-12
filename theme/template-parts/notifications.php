@@ -11,9 +11,9 @@ $errorMessages = [
 	4 => 'Selhalo vložení nové přihlášky do databáze.', 5 => 'Selhalo vložení nové přihlášky, protože dítě s uvedeným rodným číslem je již na tábor přihlášeno.',
 	6 => 'Byla zadána neplatná e-mailová adresa.', 7 => 'Nebyly vyplněny povinné položky.', 8 => 'Byla zadána neplatná e-mailová adresa.',
 	9 => 'Selhalo vložení e-mailové adresy do databáze.', 10 => 'Chybí některý z povinných údajů (e-mailová adresa).',
-	11 => 'Selhalo vložení e-mailové adresy - adresa je již v databázi.', 12 => 'Selhalo vložení e-mailové adresy - adresa je již v databázi, ale nebyla ověřena.',
+	11 => 'Selhalo vložení e-mailové adresy – adresa je již v databázi.', 12 => 'Selhalo vložení e-mailové adresy – adresa je již v databázi, ale nebyla ověřena.',
 	13 => 'Znovuověření není možné. Byla zadána neplatná e-mailová adresa.', 14 => 'Znovuověření není možné. Adresa není v databázi nebo je již ověřena.',
-	15 => 'Bylo zadáno neplatné rodné číslo.', 100 => 'Chybí udaje ke zpracování.', 101 => 'Chyba při spojení s databází.', 102 => 'Chybné použití skriptu - nezpracovatelný požadavek.',
+	15 => 'Bylo zadáno neplatné rodné číslo.', 100 => 'Chybí údaje ke zpracování.', 101 => 'Chyba při spojení s databází.', 102 => 'Chybné použití skriptu – nezpracovatelný požadavek.',
 ];
 $success = isset($_GET['success']) ? absint($_GET['success']) : 0;
 $error = isset($_GET['error']) ? absint($_GET['error']) : 0;

@@ -108,4 +108,6 @@ The 11. 11. 2026 editorial round in LocalWP (baseline `pre-content-redesign-2026
 | Post 219 Martin Vojtěch | hidden (local draft) | already private on stage |
 | Posts 2309, 5325, 5708 | local restore artefacts only | not needed |
 
+A Czech proofreading round on 12. 11. 2026 (baseline `pre-proofread-20261112-071008.sql`) then fixed spelling, punctuation and typography in pages 3, 20, 43, 289, 432, 4372, 4917, the people posts (239, 345, 368, 419, 421, 442, 829, 2261, 3616, 3629, 3643, 3660, 4138, 4396, 5064, 5086, 5106; quotes „…“ and lowercase role in six titles), the activity posts (311, 313, 317, 324, 331, 334, 336) and the 2026 posts (5572, 5603, 5613, 5701, 5708). The homepage line "A baví nás to (snad je to vidět)" became "A baví nás to. Přesvědčte se sami na fotkách z minulých ročníků." with a link to `#minule-rocniky`. Stage got the same changes as exact old → new replacements applied to its own content; do the same on production and report any replacement that is not found instead of overwriting the post. Historical posts (before 2026) are not proofread yet.
+
 For production, run steps 2–7 for this set against production: compare with the production state, map URLs to `https://taborovajizda.cz`, then apply after confirmation.

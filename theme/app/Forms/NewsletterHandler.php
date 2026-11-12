@@ -62,14 +62,14 @@ final class NewsletterHandler
     {
         $token = $this->request('unsubscribe');
         if ($token === '') {
-            $this->response->plain('Nepodařilo provést odhlášení. Zkontrolujte prosím adresu odkazu. Nebo kontaktujte správce.');
+            $this->response->plain('Nepodařilo se provést odhlášení. Zkontrolujte prosím adresu odkazu, nebo kontaktujte správce.');
         }
         $this->response->simulateLocally('unsubscribe');
         $database = new ExternalDatabase();
         $statement = $database->connection()->prepare('DELETE FROM newsletter WHERE validate_id = ?');
         $statement->bind_param('s', $token);
         $statement->execute();
-        $this->response->plain($statement->affected_rows === 1 ? 'Váš e-mail byl odstraněn z databáze.' : 'Nepodařilo provést odhlášení. Zkontrolujte prosím adresu odkazu. Nebo kontaktujte správce.');
+        $this->response->plain($statement->affected_rows === 1 ? 'Váš e-mail byl odstraněn z databáze.' : 'Nepodařilo se provést odhlášení. Zkontrolujte prosím adresu odkazu, nebo kontaktujte správce.');
     }
 
     public function resend(): never
@@ -97,7 +97,7 @@ final class NewsletterHandler
         $validateUrl = add_query_arg(['action' => 'tj_newsletter_validate', 'token' => $token], home_url('/odeslat-dotaz/'));
         $unsubscribeUrl = add_query_arg(['action' => 'tj_newsletter_unsubscribe', 'token' => $token], home_url('/odeslat-dotaz/'));
         $message = "Právě jste se registrovali k odběru novinek na webové stránce www.taborovajizda.cz.\n\n" .
-            "Pro dokončení je nutné ověřit váš e-mail na následujícím odkaze: \n$validateUrl \n\n" .
+            "Pro dokončení je nutné ověřit váš e-mail na následujícím odkazu: \n$validateUrl \n\n" .
             "Pokud si již nebudete přát dostávat upozornění nebo si myslíte, že byl Váš e-mail použit neoprávněně, použijte následující odkaz k odhlášení odběru: \n$unsubscribeUrl \n\n" .
             "Díky za zájem.\nVaše Táborová jízda\n\nNa tento e-mail prosím neodpovídejte.";
         $contactEmail = Season::current()->contactEmail();
