@@ -27,7 +27,8 @@ final class GoogleGalleries
         return (string) preg_replace(
             [
                 // Lazy "Zobrazit galerii" button of a Google Photos gallery.
-                '#<input\b[^>]*\bphotonic-show-gallery-button\b[^>]*\bdata-photonic-shortcode="[^"]*\btype=google\b[^"]*"[^>]*>#i',
+                // Photonic writes the attributes with single or double quotes.
+                '#<input\b[^>]*\bphotonic-show-gallery-button\b[^>]*\bdata-photonic-shortcode=(["\'])(?:(?!\1).)*\btype=google\b(?:(?!\1).)*\1[^>]*>#is',
                 // Directly rendered Google Photos stream that only holds the deprecation comment.
                 '#<div\b[^>]*\bphotonic-google-stream\b[^>]*>\s*(?:<!--(?:(?!-->).)*-->\s*)?</div>#is',
             ],
