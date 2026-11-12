@@ -90,7 +90,7 @@ theme/
 └── style.css                    pouze povinná hlavička šablony
 ```
 
-Povinné WordPress soubory jako `header.php`, `page-kontakt-2.php` a `category.php` obsahují svůj skutečný markup. Nevytvářej pro jednorázový markup další přeposílací template-part. Název kontaktní šablony odpovídá veřejnému slugu `/kontakt-2/`.
+Povinné WordPress soubory jako `header.php`, `page-e-prihlaska.php` a `category.php` obsahují svůj skutečný markup. Nevytvářej pro jednorázový markup další přeposílací template-part. Název šablony stránky odpovídá jejímu veřejnému slugu (`/e-prihlaska/`).
 
 ## Běžný vývoj
 

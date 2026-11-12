@@ -412,7 +412,7 @@ $archiveSeasons = array_values(array_filter(
 				$seasonYear = (string) $archiveSeason['year'];
 				$dialogId = 'season-dialog-' . $seasonYear;
 				$seasonLabel = sprintf('Tábor %s: %s', $seasonYear, $archiveSeason['title']);
-				$fallbackUrl = add_query_arg('rok', $seasonYear, home_url('/minule-rocniky/'));
+				$fallbackUrl = '#minule-rocniky';
 				$thumbnailUrl = sprintf('https://i.ytimg.com/vi/%s/%s.jpg', rawurlencode($archiveSeason['youtubeId']), rawurlencode($archiveSeason['thumbnail']));
 				$category = $archiveSeason['categorySlug'] ? get_category_by_slug($archiveSeason['categorySlug']) : null;
 				$seasonPosts = $category instanceof WP_Term ? get_posts(['cat' => $category->term_id, 'numberposts' => -1, 'post_status' => 'publish']) : [];

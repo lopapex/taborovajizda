@@ -22,8 +22,8 @@ $homeAnchor = is_front_page() ? '' : home_url('/');
 				<?php if ($season->acceptsRegistrations()) : ?><li><a href="<?php echo esc_url(home_url('/e-prihlaska/')); ?>">Přihláška</a></li><?php endif; ?>
 				<li><a href="<?php echo esc_url($homeAnchor . '#pro-rodice'); ?>">Pro rodiče</a></li>
 				<li><a href="<?php echo esc_url($homeAnchor . '#dokumenty'); ?>">Dokumenty ke stažení</a></li>
-				<li><a href="<?php echo esc_url(is_front_page() ? '#minule-rocniky' : home_url('/minule-rocniky/')); ?>">Minulé ročníky</a></li>
-				<li><a href="<?php echo esc_url(is_front_page() ? '#aktuality' : home_url('/category/aktuality/')); ?>">Aktuality</a></li>
+				<li><a href="<?php echo esc_url(is_front_page() ? '#minule-rocniky' : home_url('/#minule-rocniky')); ?>">Minulé ročníky</a></li>
+				<li><a href="<?php echo esc_url(is_front_page() ? '#aktuality' : home_url('/#aktuality')); ?>">Aktuality</a></li>
 			</ul>
 		</nav>
 		<div class="tj-home-footer__col">
