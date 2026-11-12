@@ -335,7 +335,7 @@ $archiveSeasons = array_values(array_filter(
 	</section>
 
 	<section class="tj-home-section tj-home-section--program" aria-labelledby="program-heading">
-		<div class="tj-home-section__heading" id="program"><p class="tj-home-eyebrow">Co zažijeme</p><h2 id="program-heading">Hry, výpravy a příroda</h2></div>
+		<div class="tj-home-section__heading" id="program"><p class="tj-home-eyebrow">Co zažijeme</p><h2 id="program-heading">Hry, výpravy a přírodu</h2></div>
 		<?php if ($activityPostsByGroup !== []) : ?>
 			<ul class="tj-home-activity-cards">
 				<?php foreach ($activityPostsByGroup as $groupKey => $groupPosts) : ?>
