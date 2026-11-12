@@ -26,23 +26,18 @@ final class Theme
 
         add_action('after_setup_theme', [self::class, 'setup']);
         add_action('init', [self::class, 'registerSeasonTaxonomy']);
-        add_action('widgets_init', [self::class, 'registerWidgets']);
         add_action('wp_enqueue_scripts', [self::class, 'enqueueAssets']);
         add_action('wp_head', [self::class, 'preloadHeroImage'], 1);
         add_action('init', [self::class, 'trimFrontend']);
-        add_action('wp_enqueue_scripts', [self::class, 'dequeueUnusedFrontPageAssets'], 100);
         // Homepage content iframes (maps etc.) live in closed dialogs and tabs;
         // never let WordPress treat them as above-the-fold and load them eagerly.
         add_filter('wp_iframe_tag_add_loading_attr', static fn ($value) => is_front_page() ? 'lazy' : $value);
-        add_filter('nav_menu_link_attributes', [self::class, 'menuLinkAttributes'], 10, 4);
 
         if (wp_get_environment_type() !== 'production') {
             add_filter('pre_wp_mail', static fn ($return) => $return ?? true);
         }
 
         (new Forms())->register();
-        (new PostNotifications())->register();
-        (new CountdownWidget())->register();
         (new YouTubeEmbeds())->register();
         (new ContactLinks())->register();
         (new PostContentEndpoint())->register();
@@ -57,22 +52,6 @@ final class Theme
         add_theme_support('align-wide');
         add_theme_support('editor-styles');
         add_theme_support('title-tag');
-        register_nav_menus([
-            'menu_main' => 'Primary Menu',
-            'menu_main_mobile' => 'Primary Menu Mobile',
-        ]);
-    }
-
-    public static function registerWidgets(): void
-    {
-        register_sidebar([
-            'name' => 'Boční panel',
-            'id' => 'sidebar-widget-area',
-            'before_widget' => '<section id="%1$s" class="widget %2$s tj:mb-6">',
-            'after_widget' => '</section>',
-            'before_title' => '<h2 class="widget_title tj:mb-3 tj:text-2xl">',
-            'after_title' => '</h2>',
-        ]);
     }
 
     public static function registerSeasonTaxonomy(): void
@@ -146,17 +125,6 @@ final class Theme
         add_filter('emoji_svg_url', '__return_false');
     }
 
-    /** The countdown widget is not part of the redesigned homepage, so its script and styles are skipped there. */
-    public static function dequeueUnusedFrontPageAssets(): void
-    {
-        if (! is_front_page()) {
-            return;
-        }
-
-        wp_dequeue_script('countdown-script');
-        wp_dequeue_style('countdown-carbonlite-css');
-    }
-
     public static function enqueueAssets(): void
     {
         $manifest = self::manifest();
@@ -179,16 +147,5 @@ final class Theme
         } catch (\Throwable $error) {
             error_log('[taborovajizda] Unable to load build manifest: ' . $error->getMessage());
         }
-    }
-
-    public static function menuLinkAttributes(array $attributes, object $item, object $args, int $depth): array
-    {
-        $fragments = ['menu_main' => '#menu', 'menu_main_mobile' => '#menu_mobile'];
-        $location = $args->theme_location ?? '';
-        $href = $attributes['href'] ?? '';
-        if (isset($fragments[$location]) && is_string($href) && $href !== '' && $href !== '#') {
-            $attributes['href'] = preg_replace('/#.*$/', '', $href) . $fragments[$location];
-        }
-        return $attributes;
     }
 }

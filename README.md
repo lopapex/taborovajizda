@@ -26,7 +26,7 @@ Composer není potřeba.
 
 Přístupové údaje, hesla ani obnovovací kódy se nikdy necommitují. Přehled WordPress stránek, příspěvků, rubrik a jejich vazby na PHP šablony je v [mapě WordPress obsahu](WORDPRESS-CONTENT.md).
 
-Datový tok elektronické přihlášky, newsletteru a formulářových e-mailů popisuje [dokumentace formulářů a e-mailů](FORMS-AND-EMAILS.md).
+Datový tok elektronické přihlášky a formulářových e-mailů popisuje [dokumentace formulářů a e-mailů](FORMS-AND-EMAILS.md).
 
 ## První zprovoznění
 
@@ -80,17 +80,17 @@ theme/
 ├── config/season.json           aktivní ročník
 ├── resources/
 │   ├── css/app.css              Tailwind vstup, barevné a stínové tokeny, sdílené komponenty
-│   ├── css/content.css          jen WordPress/plugin obsah a legacy šablony
+│   ├── css/content.css          jen WordPress/plugin obsah
 │   ├── css/season.css           pouze aktuální roční vzhled
 │   ├── ts/                      TypeScript
 │   └── assets/season/           grafika aktivního ročníku
-├── template-parts/              sdílené části: hlavička/patička, dialog, pager, nadpis sekce, fakta, sítě, formulář
+├── template-parts/              sdílené části: dialog, pager, nadpis sekce, fakta, sítě, formulář, notifikace
 ├── public/build/                generovaný a ignorovaný build
 ├── theme.json                   WordPress design tokeny
 └── style.css                    pouze povinná hlavička šablony
 ```
 
-Povinné WordPress soubory jako `header.php`, `page-e-prihlaska.php` a `category.php` obsahují svůj skutečný markup. Nevytvářej pro jednorázový markup další přeposílací template-part. Název šablony stránky odpovídá jejímu veřejnému slugu (`/e-prihlaska/`).
+Šablona má jen čtyři vstupní soubory: `front-page.php` (homepage), `page-e-prihlaska.php` (přihláška), `index.php` (všechny ostatní příspěvky, stránky, rubriky a 404) a společné `header.php` s `footer.php`. Starý noční layout, sidebar, menu a widgety už neexistují. Nevytvářej pro jednorázový markup další přeposílací template-part. Název šablony stránky odpovídá jejímu veřejnému slugu (`/e-prihlaska/`).
 
 ## Běžný vývoj
 
@@ -130,7 +130,7 @@ Repozitářový adresář `theme/` je s LocalWP propojený přímo pomocí junct
 
 Po zavření terminálu se vývojový build zastaví. Při příští práci stačí v `theme/` znovu spustit `npm run dev`; `npm install` se neopakuje, pokud se nezměnily závislosti nebo nebyl odstraněn `node_modules`.
 
-Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup styluj přímo prefixovanými `tj:` utilitami; `@apply` nepoužívej. Sémantickou komponentní třídu přidej pouze pro stejný vzor použitý alespoň třikrát. Barvy a stíny se zapisují pouze jako tokeny (`tj:bg-sun`, `tj:border-ink/11`, `tj:shadow-card`; v CSS `var(--tj-color-…)` a `--alpha()`), hex hodnoty jen v jejich definici. Vlastní CSS proměnné mají prefix `--tj-`. Do `content.css` patří jen selektory WordPress/plugin obsahu, který nelze opatřit třídami, a legacy šablony; do `season.css` pouze roční fonty, grafika a efekty. Třídy se v PHP nesmí skládat za běhu (Tailwind je musí najít ve zdrojáku celé). React se nepoužívá.
+Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup styluj přímo prefixovanými `tj:` utilitami; `@apply` nepoužívej. Sémantickou komponentní třídu přidej pouze pro stejný vzor použitý alespoň třikrát. Barvy a stíny se zapisují pouze jako tokeny (`tj:bg-sun`, `tj:border-ink/11`, `tj:shadow-card`; v CSS `var(--tj-color-…)` a `--alpha()`), hex hodnoty jen v jejich definici. Vlastní CSS proměnné mají prefix `--tj-`. Do `content.css` patří jen selektory WordPress/plugin obsahu, který nelze opatřit třídami; do `season.css` pouze roční fonty, grafika a efekty. Třídy se v PHP nesmí skládat za běhu (Tailwind je musí najít ve zdrojáku celé). React se nepoužívá.
 
 `npm run dev` zůstává spuštěný a při každém uložení CSS nebo TypeScriptu automaticky obnoví `public/build/`. Potom stačí refresh prohlížeče. Změny PHP a `template-parts` build nepotřebují a projeví se hned po refreshi. Samostatné `npm run build` je potřeba až pro finální kontrolu, CI a release.
 
@@ -138,12 +138,11 @@ Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup st
 
 Provozní údaje jsou pouze v `theme/config/season.json`. V templates se rok, název, termín ani kontaktní e-mail nepíšou natvrdo. Vizuální tokeny jsou v `theme/theme.json` a aktuální roční CSS v `theme/resources/css/season.css`.
 
-Každý ročník se připraví ve čtyřech oddělených krocích:
+Každý ročník se připraví ve třech oddělených krocích:
 
 1. Aktualizuj data v `config/season.json` (název, termín, cena, `location`, `ageRange`, `mapCoordinates`), včetně `contactEmail` a ručně spravovaného `registration.remainingPlaces`; `null` znamená, že počet nezobrazujeme.
-2. Nahraď přesně dva soubory: `resources/assets/season/hero.jpg` a `resources/assets/season/background.jpg`.
-3. Uprav potvrzené barvy v `theme.json` a pouze roční efekty v `season.css`.
-4. Po potvrzení termínu nastav countdown widget ve WordPress administraci; šablona jej sama zobrazí, dokud cílový čas neuplyne.
+2. Nahraď ilustraci `resources/assets/season/hero.jpg`.
+3. Uprav potvrzené barvy v `theme.json` a pouze roční efekty v `season.css` (včetně třídy `.season-<rok>` s akcentem).
 
 Pro nový ročník použij skill `$tj-new-season` nebo náhled skriptu:
 
@@ -153,7 +152,6 @@ Pro nový ročník použij skill `$tj-new-season` nebo náhled skriptu:
 
 Skript bez `-Apply` nic nemění. Nevymýšlej nepotvrzené datum, cenu, databázový klíč ani vizuální brief. Názvy ročních obrázků jsou pevné a nejsou součástí JSON konfigurace. Staré ročníky jsou archivované v Git historii; nevytvářej další kopii celého ročního CSS.
 
-Odpočet není součástí šablony: vytváří jej plugin `jquery-t-countdown-widget` z konfigurace uložené ve WordPress databázi. Šablona (`app/CountdownWidget.php`) widget nevykreslí, jakmile jeho cílový čas uplyne nebo nejde přečíst, takže se nikdy nezobrazí záporný odpočet. Pro nový ročník stačí nastavit nové datum widgetu ve WordPressu.
 
 ## Nová aktualita, připnutí a test
 
@@ -163,7 +161,7 @@ Odpočet není součástí šablony: vytváří jej plugin `jquery-t-countdown-w
 
 ## Formuláře a lokální prostředí
 
-Přihláška a kontakt používají stejné namespaced WordPress handlery a nonce jako `admin-post.php`, ale formuláře odesílají na `/odeslat-dotaz/`. Produkční bezpečnostní plugin blokuje anonymní přístup do `/wp-admin/`; kompatibilní veřejný endpoint proto požadavek předá stejnému handleru. Staré newsletter odkazy pod touto URL zůstávají funkční.
+Přihláška a kontakt používají stejné namespaced WordPress handlery a nonce jako `admin-post.php`, ale formuláře odesílají na `/odeslat-dotaz/`. Produkční bezpečnostní plugin blokuje anonymní přístup do `/wp-admin/`; kompatibilní veřejný endpoint proto požadavek předá stejnému handleru.
 
 Mimo prostředí `production` šablona neposílá skutečné formulářové e-maily ani nezapisuje formuláře do externí databáze. Po úspěšné validaci lokální výsledek zapíše do PHP logu a vrátí simulovaný úspěch; chybné vstupy vrací stejné chybové kódy jako produkce.
 

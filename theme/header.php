@@ -1,57 +1,48 @@
 <?php
-if (is_front_page() || is_page('e-prihlaska')) {
-    get_template_part('template-parts/home/header');
-    return;
-}
+declare(strict_types=1);
+
+use TaborovaJizda\Theme\Home;
 
 $season = taborovajizda_season();
-$locations = get_nav_menu_locations();
-$mobileMenu = isset($locations['menu_main_mobile']) ? wp_get_nav_menu_object($locations['menu_main_mobile']) : null;
-$mobileItems = $mobileMenu ? wp_get_nav_menu_items($mobileMenu) : [];
-$currentItem = current(wp_filter_object_list($mobileItems ?: [], ['object_id' => get_queried_object_id()]));
-$currentTitle = $currentItem ? $currentItem->title : 'domů';
+$nav = ['aktuality' => 'Aktuality', 'o-tabore' => 'O táboře', 'lide' => 'Lidé', 'program' => 'Program', 'minule-rocniky' => 'Minulé ročníky', 'pro-rodice' => 'Pro rodiče', 'kontakt' => 'Kontakt'];
+$navLink = 'tj:relative tj:inline-flex tj:min-h-[44px] tj:items-center tj:rounded-lg tj:px-[.8rem] tj:py-2 tj:text-[1rem] tj:font-extrabold tj:whitespace-nowrap tj:text-inherit tj:no-underline tj:transition-colors tj:hover:bg-sun/14 tj:hover:text-link tj:aria-current:text-link';
+$cta = $season->acceptsRegistrations() || taborovajizda_debug_registration_cta();
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
 	<meta charset="<?php bloginfo('charset'); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script>document.documentElement.classList.add('js');</script>
 	<meta name="author" content="https://www.martin-web.cz">
 	<meta name="facebook-domain-verification" content="k0jm5er9z71c32gqyg6hmjom8pm93r">
 	<?php wp_head(); ?>
 </head>
-<body id="taborovajizda_body" <?php body_class(['taborovajizda', 'season-' . $season->year(), 'tj:m-0', 'tj:min-h-screen']); ?>>
+<body <?php body_class(['taborovajizda', 'season-' . $season->year()]); ?>>
 <?php wp_body_open(); ?>
 <?php get_template_part('template-parts/notifications'); ?>
-<div id="page-background" class="page-background tj:fixed tj:inset-0 tj:-z-10 tj:h-screen tj:w-screen tj:bg-cover tj:bg-center"></div>
-<div class="main-page tj:mx-auto tj:mt-8 tj:flex tj:w-screen tj:flex-col tj:sm:w-[90vw]">
-	<header class="zahlavi tj:relative tj:flex tj:h-80">
-		<div id="logo"><img class="tj:absolute tj:left-[.3em] tj:top-[.3em] tj:h-12 tj:md:h-[8vw]" src="<?php echo esc_url(get_theme_file_uri('/web_images/logo_color.png')); ?>" alt="Logo Táborové jízdy"></div>
-		<a id="call-to-action" class="tj:absolute tj:left-1/2 tj:top-[40%] tj:w-4/5 tj:-translate-x-1/2 tj:-translate-y-1/2 tj:cursor-pointer tj:rounded-[5px] tj:px-0 tj:py-[.4em] tj:text-center tj:text-[1.2rem] tj:font-bold tj:no-underline tj:md:top-1/2 tj:md:w-[12em] tj:md:text-2xl" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>">Chci se přihlásit</a>
-		<div class="camp-date tj:absolute tj:right-0 tj:top-0 tj:px-8 tj:py-4 tj:text-[2rem] tj:text-white tj:md:text-[2.5rem]">
-			<?php echo esc_html($season->formattedDateRange()); ?>
+<a class="tj:fixed tj:top-3 tj:left-3 tj:z-200 tj:translate-y-[-200%] tj:rounded-lg tj:bg-sun tj:px-4 tj:py-3 tj:font-bold tj:text-ink tj:focus:translate-y-0" href="#main-content">Přeskočit na obsah</a>
+<header class="tj:sticky tj:top-0 tj:z-20 tj:bg-white/92 tj:text-ink tj:shadow-header tj:backdrop-blur-md tj:transition-shadow tj:duration-250 tj:[&.is-scrolled]:shadow-header-scrolled tj:after:absolute tj:after:inset-x-0 tj:after:bottom-[-5px] tj:after:h-[5px] tj:after:bg-(image:--tj-stripe-1)" data-site-header>
+	<div class="tj-container tj:flex tj:min-h-18 tj:items-center tj:gap-4 tj:max-[26rem]:gap-2">
+		<a class="tj:my-[.35rem] tj:block tj:w-25 tj:flex-none tj:[transition:transform_.2s_ease,scale_.25s_ease] tj:hover:transform-[rotate(-4deg)_scale(1.04)] tj:max-md:w-22 tj:scrolled:scale-[.86]" href="<?php echo esc_url(home_url('/')); ?>" aria-label="Táborová jízda, domů">
+			<img class="tj:block tj:h-auto tj:w-full" src="<?php echo esc_url(get_theme_file_uri('/web_images/logo_color.png')); ?>" alt="Táborová jízda">
+		</a>
+		<nav class="tj:ml-auto tj:min-w-0 tj:max-md:hidden tj:compact:hidden" aria-label="Hlavní navigace">
+			<ul class="tj:relative tj:m-0 tj:flex tj:list-none tj:flex-nowrap tj:gap-1 tj:p-0" data-nav="desktop">
+				<?php foreach ($nav as $id => $label) : ?><li><a class="<?php echo $navLink; ?>" href="<?php echo esc_url(Home::anchor($id)); ?>"><?php echo esc_html($label); ?></a></li><?php endforeach; ?>
+			</ul>
+		</nav>
+		<div class="tj:ml-auto tj:hidden tj:max-md:order-3 tj:max-md:block tj:compact:order-3 tj:compact:block <?php echo $cta ? 'tj:max-md:ml-2 tj:compact:ml-2' : ''; ?>" data-mobile-menu>
+			<button class="tj:inline-flex tj:min-h-[44px] tj:cursor-pointer tj:items-center tj:gap-[.55rem] tj:rounded-lg tj:border tj:border-ink/24 tj:bg-transparent tj:px-[.85rem] tj:py-2 tj:font-extrabold tj:text-inherit tj:nojs:hidden tj:max-[26rem]:w-[44px] tj:max-[26rem]:justify-center tj:max-[26rem]:p-2" type="button" data-menu-toggle aria-expanded="false" aria-controls="home-mobile-menu">
+				<span class="tj:max-[26rem]:sr-only">Menu</span>
+				<span class="tj:relative tj:block tj:h-[2px] tj:w-5 tj:bg-current tj:transition-all tj:before:absolute tj:before:left-0 tj:before:top-[-0.4rem] tj:before:h-[2px] tj:before:w-5 tj:before:bg-current tj:before:transition-all tj:after:absolute tj:after:left-0 tj:after:top-[.4rem] tj:after:h-[2px] tj:after:w-5 tj:after:bg-current tj:after:transition-all tj:menu-open:bg-transparent tj:menu-open:before:top-0 tj:menu-open:before:rotate-45 tj:menu-open:after:top-0 tj:menu-open:after:-rotate-45" aria-hidden="true"></span>
+			</button>
+			<ul id="home-mobile-menu" class="tj-stagger tj:absolute tj:inset-x-0 tj:top-full tj:m-0 tj:hidden tj:list-none tj:flex-col tj:border-b tj:border-sun/28 tj:bg-surface tj:px-4 tj:pt-3 tj:pb-4 tj:shadow-menu tj:transition-[opacity,translate] tj:duration-200 tj:starting:-translate-y-2 tj:starting:opacity-0 tj:menu-open:block tj:[&>li+li]:mt-[.15rem] tj:nojs:static tj:nojs:flex tj:nojs:flex-row tj:nojs:flex-wrap tj:nojs:justify-end tj:nojs:gap-x-4 tj:nojs:gap-y-1 tj:nojs:bg-transparent tj:nojs:p-0 tj:nojs:shadow-none tj:nojs:[&>li+li]:mt-0" data-nav="mobile">
+				<?php foreach ($nav as $id => $label) : ?><li><a class="<?php echo $navLink; ?> tj:w-full tj:text-[1.1rem]" href="<?php echo esc_url(Home::anchor($id)); ?>"><?php echo esc_html($label); ?></a></li><?php endforeach; ?>
+			</ul>
 		</div>
-		<div class="camp-name tj:absolute tj:bottom-0 tj:right-0 tj:px-8 tj:py-4 tj:text-[2.5rem] tj:font-bold tj:text-white tj:md:text-5xl">
-			<?php echo esc_html($season->title()); ?>
-		</div>
-	</header>
-	<nav id="menu" class="desktop-menu ribbon tj:sticky tj:top-0 tj:z-[100] tj:mt-8 tj:hidden tj:h-[1em] tj:w-[90%] tj:overflow-visible tj:md:block">
-		<?php wp_nav_menu([
-			'theme_location' => 'menu_main',
-			'container' => false,
-			'menu_class' => 'tj:m-0 tj:flex tj:list-none tj:justify-evenly tj:p-0',
-		]); ?>
-	</nav>
-	<nav id="menu_mobile" class="mobile-menu tj:relative tj:z-[100] tj:mt-8 tj:block tj:md:hidden">
-		<div id="mobile_menu_container" class="tj:absolute tj:-top-4 tj:w-full" data-mobile-menu>
-			<button class="tj:cursor-pointer tj:px-2 tj:pb-[.4em] tj:pt-[.2em] tj:text-2xl tj:menu-open:rotate-90" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-primary-menu">&equiv;<span class="tj:menu-open:hidden"> <?php echo esc_html($currentTitle); ?></span></button>
-			<?php wp_nav_menu([
-				'theme_location' => 'menu_main_mobile',
-				'container' => false,
-				'menu_id' => 'mobile-primary-menu',
-				'menu_class' => 'tj:hidden tj:menu-open:flex tj:list-none tj:flex-wrap tj:m-0 tj:p-[.5vw] tj:text-center',
-			]); ?>
-		</div>
-	</nav>
-	<div class="main-content tj:flex tj:flex-row tj:flex-wrap tj:pt-[5vw]">
-		<main class="obsah tj:block tj:w-[70vw] tj:grow tj:px-[3vw] tj:pb-4 tj:pt-4 tj:md:w-[60vw] tj:md:px-4 tj:md:pt-0">
+		<?php if ($cta) : ?>
+			<a class="tj-btn tj:max-md:order-2 tj:max-md:ml-auto tj:max-md:px-[.85rem] tj:max-md:py-[.55rem] tj:max-md:text-[.95rem] tj:compact:order-2 tj:compact:ml-auto tj:compact:px-[.85rem] tj:compact:py-[.55rem] tj:compact:text-[.95rem] <?php echo $season->acceptsRegistrations() ? '' : 'tj-debug'; ?>" href="<?php echo esc_url(Home::registrationUrl()); ?>"<?php echo $season->acceptsRegistrations() ? '' : ' title="Ladicí zobrazení: jen mimo produkci, ročník přihlášky nepřijímá"'; ?>><?php echo esc_html(Home::registrationCta($season)); ?></a>
+		<?php endif; ?>
+	</div>
+</header>

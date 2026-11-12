@@ -24,9 +24,9 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 			<div class="tj-stagger tj:flex tj:min-w-0 tj:flex-col tj:items-start tj:rounded-xl tj:bg-paper/94 tj:p-[clamp(1.5rem,3vw,2.25rem)] tj:shadow-hero tj:max-[60rem]:p-5">
 				<p class="tj-eyebrow"><?php echo esc_html(sprintf($ended ? 'Ohlédnutí za létem %d' : 'Táborová jízda %d', $year)); ?></p>
 				<h1 id="season-title" class="tj:m-0 tj:max-w-[14ch] tj:font-display tj:text-[clamp(2.75rem,6vw,5rem)] tj:leading-[.95] tj:font-normal tj:tracking-[.01em] tj:uppercase"><?php echo esc_html($season->title()); ?></h1>
-				<p class="tj:mt-5 tj:mb-0 tj:max-w-[34rem] tj:text-[clamp(1.05rem,1.6vw,1.25rem)] tj:leading-[1.5]">Dva týdny her, výprav a přátelství v přírodě pro děti, které chtějí zažít léto naplno.</p>
+				<p class="tj:mt-5 tj:mb-0 tj:max-w-136 tj:text-[clamp(1.05rem,1.6vw,1.25rem)] tj:leading-normal">Dva týdny her, výprav a přátelství v přírodě pro děti, které chtějí zažít léto naplno.</p>
 				<?php if ($ended) : ?>
-					<p class="tj:mt-4 tj:mb-0 tj:max-w-[34rem] tj:rounded-r-lg tj:border-l-4 tj:border-tangerine tj:bg-white/72 tj:px-4 tj:py-[.7rem] tj:font-bold tj:leading-[1.45] tj:text-ink">Další léto už připravujeme. Termín a otevření přihlášek oznámíme tady a na našich sociálních sítích.</p>
+					<p class="tj:mt-4 tj:mb-0 tj:max-w-136 tj:rounded-r-lg tj:border-l-4 tj:border-tangerine tj:bg-white/72 tj:px-4 tj:py-[.7rem] tj:font-bold tj:leading-[1.45] tj:text-ink">Další léto už připravujeme. Termín a otevření přihlášek oznámíme tady a na našich sociálních sítích.</p>
 				<?php endif; ?>
 				<?php $part('facts', ['facts' => Home::facts($season, true), 'map' => $map['google']]); ?>
 				<div class="tj:mt-7 tj:flex tj:flex-wrap tj:gap-3">
@@ -58,7 +58,7 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 				'prev' => 'Předchozí aktuality',
 				'next' => 'Další aktuality',
 				'label' => 'Aktuality Táborové jízdy pro rok ' . $year,
-				'class' => 'tj:mt-8 tj:[--tj-gap:1.25rem] tj:[--tj-per-view:3] tj:max-[64rem]:[--tj-per-view:2] tj:max-md:[--tj-per-view:1]',
+				'class' => 'tj:mt-8 tj:[--tj-gap:1.25rem] tj:[--tj-per-view:3] tj:max-lg:[--tj-per-view:2] tj:max-md:[--tj-per-view:1]',
 				'track' => 'tj-rotate tj:nojs:grid tj:nojs:grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] tj:nojs:gap-5',
 				'items' => static function () use ($news, $pinned): void {
 					foreach ($news as $post) :
@@ -67,9 +67,9 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 						$content = apply_filters('the_content', get_the_content());
 						$image = Home::newsCardImage($post, $content);
 						?>
-						<article class="tj-card tj:group/card tj:flex tj:flex-col tj:shadow-card <?php echo $image ? '' : 'tj:border-t-[6px] tj:border-t-(color:--tj-card)'; ?>" data-card>
+						<article class="tj-card tj:group/card tj:flex tj:flex-col tj:shadow-card <?php echo $image ? '' : 'tj:border-t-[6px] tj:border-t-(--tj-card)'; ?>" data-card>
 							<?php if ($image) : ?>
-								<a class="tj:relative tj:block tj:aspect-[16/10] tj:w-full tj:overflow-hidden tj:bg-sun tj:[&>img]:absolute tj:[&>img]:inset-0 tj:[&>img]:block tj:[&>img]:size-full tj:[&>img]:object-cover" href="<?php the_permalink(); ?>" data-dialog-open="<?php echo esc_attr($dialogId); ?>" aria-label="Otevřít aktualitu: <?php echo esc_attr(get_the_title()); ?>"><?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput -- core image markup ?></a>
+								<a class="tj:relative tj:block tj:aspect-16/10 tj:w-full tj:overflow-hidden tj:bg-sun tj:[&>img]:absolute tj:[&>img]:inset-0 tj:[&>img]:block tj:[&>img]:size-full tj:[&>img]:object-cover" href="<?php the_permalink(); ?>" data-dialog-open="<?php echo esc_attr($dialogId); ?>" aria-label="Otevřít aktualitu: <?php echo esc_attr(get_the_title()); ?>"><?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput -- core image markup ?></a>
 							<?php endif; ?>
 							<div class="tj:flex tj:flex-1 tj:flex-col tj:p-[1.4rem] tj:[&>p:not(.tj-meta)]:leading-[1.5] tj:[&>p:not(.tj-meta)]:text-muted">
 								<?php if (in_array($post->ID, $pinned, true)) : ?><p class="tj:mt-0 tj:mb-2 tj:text-[.8rem] tj:font-extrabold tj:tracking-[.06em] tj:uppercase">Důležité oznámení</p><?php endif; ?>
@@ -90,7 +90,7 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 								'content' => static function () use ($content): void {
 									// Featured image only when the text has no photo of its own (avoids duplicates).
 									if (has_post_thumbnail() && ! str_contains($content, '<img')) : ?>
-										<div class="tj:mb-5 tj:[&_img]:block tj:[&_img]:aspect-[3/2] tj:[&_img]:h-auto tj:[&_img]:w-full tj:[&_img]:rounded-lg tj:[&_img]:bg-black tj:[&_img]:object-contain" data-zoom><?php the_post_thumbnail('large'); ?></div>
+										<div class="tj:mb-5 tj:[&_img]:block tj:[&_img]:aspect-3/2 tj:[&_img]:h-auto tj:[&_img]:w-full tj:[&_img]:rounded-lg tj:[&_img]:bg-black tj:[&_img]:object-contain" data-zoom><?php the_post_thumbnail('large'); ?></div>
 									<?php endif; ?>
 									<div class="tj-prose tj:mb-6"><?php echo $content; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
 									<?php
@@ -110,7 +110,7 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 	<section class="tj-section tj:grid tj:items-center tj:gap-[clamp(2rem,6vw,5rem)] tj:[--tj-band:var(--tj-color-paper)] tj:[--tj-stripe:var(--tj-stripe-2)] <?php echo $about['image'] ? 'tj:md:grid-cols-[minmax(0,1.15fr)_minmax(0,.85fr)]' : ''; ?>" aria-labelledby="about-heading">
 		<div data-reveal>
 			<?php $part('section-heading', ['anchor' => 'o-tabore', 'id' => 'about-heading', 'title' => 'Tábor, který tvoříme společně']); ?>
-			<div class="tj-prose tj:mt-6 tj:max-w-[38rem]"><?php echo $about['intro']; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
+			<div class="tj-prose tj:mt-6 tj:max-w-152"><?php echo $about['intro']; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
 			<?php if ($about['rest']) : ?>
 				<a class="tj-btn tj-btn-quiet tj:mt-5" href="<?php echo esc_url(get_permalink()); ?>" data-dialog-open="story-dialog">Celý příběh tábora</a>
 				<?php $part('dialog', [
@@ -148,7 +148,7 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 						endif; ?>
 						<li class="tj:min-w-0">
 							<a class="tj:group tj:grid tj:w-full tj:gap-[.2rem] tj:rounded-xl tj:text-ink tj:no-underline" href="<?php echo esc_url(get_permalink($post)); ?>" data-dialog-open="<?php echo esc_attr($dialogId); ?>" data-card>
-								<span class="tj:mb-[.55rem] tj:grid tj:aspect-[4/5] tj:place-items-center tj:overflow-hidden tj:rounded-xl tj:bg-(--tj-card) tj:shadow-card tj:transition-[transform,box-shadow] tj:duration-180 tj:group-hover:-translate-y-[.2rem] tj:group-hover:shadow-ring tj:group-focus-visible:-translate-y-[.2rem] tj:group-focus-visible:shadow-ring tj:[&_img]:block tj:[&_img]:size-full tj:[&_img]:object-cover">
+								<span class="tj:mb-[.55rem] tj:grid tj:aspect-4/5 tj:place-items-center tj:overflow-hidden tj:rounded-xl tj:bg-(--tj-card) tj:shadow-card tj:transition-[transform,box-shadow] tj:duration-180 tj:group-hover:translate-y-[-0.2rem] tj:group-hover:shadow-ring tj:group-focus-visible:translate-y-[-0.2rem] tj:group-focus-visible:shadow-ring tj:[&_img]:block tj:[&_img]:size-full tj:[&_img]:object-cover">
 									<?php if (has_post_thumbnail($post)) : ?>
 										<?php echo get_the_post_thumbnail($post, 'medium', ['loading' => 'lazy', 'alt' => '']); ?>
 									<?php else : ?>
@@ -165,7 +165,7 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 								'close' => 'Zavřít profil',
 								'content' => static function () use ($post): void { ?>
 									<div class="tj:grid tj:grid-cols-[min(40%,15rem)_minmax(0,1fr)] tj:items-start tj:gap-6 tj:max-[30rem]:grid-cols-1 tj:max-[30rem]:gap-4 tj:[&>:only-child]:col-span-full">
-										<?php if (has_post_thumbnail($post)) : ?><figure class="tj:m-0 tj:mt-1 tj:aspect-[4/5] tj:overflow-hidden tj:rounded-xl tj:bg-canvas tj:max-[30rem]:w-[min(70%,15rem)] tj:[&_img]:block tj:[&_img]:size-full tj:[&_img]:object-cover" data-zoom="team"><?php echo get_the_post_thumbnail($post, 'medium_large', ['alt' => get_the_title($post)]); ?></figure><?php endif; ?>
+										<?php if (has_post_thumbnail($post)) : ?><figure class="tj:m-0 tj:mt-1 tj:aspect-4/5 tj:overflow-hidden tj:rounded-xl tj:bg-canvas tj:max-[30rem]:w-[min(70%,15rem)] tj:[&_img]:block tj:[&_img]:size-full tj:[&_img]:object-cover" data-zoom="team"><?php echo get_the_post_thumbnail($post, 'medium_large', ['alt' => get_the_title($post)]); ?></figure><?php endif; ?>
 										<div class="tj-prose tj-person tj:mb-6"><?php echo Home::personContent($post); // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
 									</div>
 								<?php },
@@ -187,8 +187,8 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 				<?php foreach ($groups as $key => $group) : ?>
 					<?php $dialogId = 'activities-dialog-' . $key; ?>
 					<li class="tj:min-w-0" data-reveal>
-						<a class="tj:group tj:flex tj:h-full tj:flex-col tj:overflow-hidden tj:rounded-xl tj:border tj:border-t-[6px] tj:border-ink/7 tj:border-t-(color:--tj-card) tj:bg-surface tj:text-ink tj:no-underline tj:shadow-tile tj:transition-[transform,box-shadow] tj:duration-180 tj:hover:-translate-y-[.3rem] tj:hover:shadow-ring-lift tj:focus-visible:-translate-y-[.3rem] tj:focus-visible:shadow-ring-lift" href="<?php echo esc_url(get_permalink($group['posts'][0])); ?>" data-dialog-open="<?php echo esc_attr($dialogId); ?>" data-card>
-							<span class="tj:block tj:aspect-[4/3] tj:overflow-hidden tj:bg-linear-135/srgb tj:from-sun/35 tj:to-tangerine/35 tj:[&_img]:block tj:[&_img]:size-full tj:[&_img]:object-cover tj:[&_img]:transition-transform tj:[&_img]:duration-300 tj:group-hover:[&_img]:scale-105" aria-hidden="true"><?php echo $group['cover']; // phpcs:ignore WordPress.Security.EscapeOutput -- core image markup ?></span>
+						<a class="tj:group tj:flex tj:h-full tj:flex-col tj:overflow-hidden tj:rounded-xl tj:border tj:border-t-[6px] tj:border-ink/7 tj:border-t-(--tj-card) tj:bg-surface tj:text-ink tj:no-underline tj:shadow-tile tj:transition-[transform,box-shadow] tj:duration-180 tj:hover:translate-y-[-0.3rem] tj:hover:shadow-ring-lift tj:focus-visible:translate-y-[-0.3rem] tj:focus-visible:shadow-ring-lift" href="<?php echo esc_url(get_permalink($group['posts'][0])); ?>" data-dialog-open="<?php echo esc_attr($dialogId); ?>" data-card>
+							<span class="tj:block tj:aspect-4/3 tj:overflow-hidden tj:bg-linear-135/srgb tj:from-sun/35 tj:to-tangerine/35 tj:[&_img]:block tj:[&_img]:size-full tj:[&_img]:object-cover tj:[&_img]:transition-transform tj:[&_img]:duration-300 tj:group-hover:[&_img]:scale-105" aria-hidden="true"><?php echo $group['cover']; // phpcs:ignore WordPress.Security.EscapeOutput -- core image markup ?></span>
 							<span class="tj:flex tj:flex-1 tj:flex-col tj:gap-3 tj:px-[1.2rem] tj:pt-[1.15rem] tj:pb-5">
 								<span class="tj:text-[1.35rem] tj:font-extrabold tj:leading-[1.15]"><?php echo esc_html($group['label']); ?></span>
 								<span class="tj:flex tj:flex-wrap tj:gap-[.35rem]">
@@ -205,7 +205,7 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 								foreach ($group['posts'] as $post) : ?>
 									<section class="tj:[&+&]:mt-10 tj:[&+&]:border-t tj:[&+&]:border-ink/11 tj:[&+&]:pt-8" aria-labelledby="activity-<?php echo esc_attr((string) $post->ID); ?>">
 										<h3 id="activity-<?php echo esc_attr((string) $post->ID); ?>" class="tj:m-0 tj:mb-4 tj:text-[clamp(1.5rem,2.6vw,2rem)] tj:leading-[1.1] tj:text-ink"><?php echo esc_html(get_the_title($post)); ?></h3>
-										<div class="tj-prose tj-activity tj:max-w-[62rem]"><?php echo $group['content'][$post->ID]; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
+										<div class="tj-prose tj-activity tj:max-w-248"><?php echo $group['content'][$post->ID]; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
 									</section>
 								<?php endforeach;
 							},
@@ -226,7 +226,7 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 			'prev' => 'Předchozí ročníky',
 			'next' => 'Další ročníky',
 			'label' => 'Minulé ročníky Táborové jízdy',
-			'class' => 'tj-pager-night tj:mt-8 tj:[--tj-gap:1.25rem] tj:[--tj-per-view:4] tj:max-[64rem]:[--tj-per-view:3] tj:max-md:[--tj-gap:.75rem] tj:max-md:[--tj-per-view:1]',
+			'class' => 'tj-pager-night tj:mt-8 tj:[--tj-gap:1.25rem] tj:[--tj-per-view:4] tj:max-lg:[--tj-per-view:3] tj:max-md:[--tj-gap:.75rem] tj:max-md:[--tj-per-view:1]',
 			'track' => 'tj:nojs:grid tj:nojs:grid-cols-[repeat(auto-fill,minmax(min(100%,16rem),1fr))] tj:nojs:gap-5',
 			'items' => static function () use ($pastSeasons, $youtubeThumbnail, $youtubeLink): void {
 				foreach ($pastSeasons as $past) :
@@ -253,7 +253,7 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 									<div class="tj:grid tj:gap-3" data-exclusive-accordion>
 										<?php foreach ($past['posts'] as $post) : ?>
 											<details class="tj:group tj:scroll-mt-4 tj:rounded-lg tj:border tj:border-ink/11 tj:bg-canvas tj:open:border-sun tj:open:bg-surface" name="<?php echo esc_attr($dialogId . '-articles'); ?>">
-												<summary class="tj:flex tj:min-h-[56px] tj:cursor-pointer tj:list-none tj:items-center tj:gap-4 tj:px-[1.15rem] tj:py-[.9rem] tj:hover:bg-sun/14 tj:[&::-webkit-details-marker]:hidden tj:after:ml-1 tj:after:size-[.55rem] tj:after:flex-none tj:after:rotate-45 tj:after:border-r-2 tj:after:border-b-2 tj:after:border-current tj:after:transition-transform tj:group-open:after:-rotate-[135deg]"><span class="tj:flex-1 tj:font-extrabold tj:leading-[1.3] tj:text-ink"><?php echo esc_html(html_entity_decode(get_the_title($post), ENT_QUOTES | ENT_HTML5, 'UTF-8')); ?></span><span class="tj:text-[.85rem] tj:whitespace-nowrap tj:text-muted"><?php echo esc_html(get_the_date('j. n. Y', $post)); ?></span></summary>
+												<summary class="tj:flex tj:min-h-[56px] tj:cursor-pointer tj:list-none tj:items-center tj:gap-4 tj:px-[1.15rem] tj:py-[.9rem] tj:hover:bg-sun/14 tj:[&::-webkit-details-marker]:hidden tj:after:ml-1 tj:after:size-[.55rem] tj:after:flex-none tj:after:rotate-45 tj:after:border-r-2 tj:after:border-b-2 tj:after:border-current tj:after:transition-transform tj:group-open:after:rotate-[-135deg]"><span class="tj:flex-1 tj:font-extrabold tj:leading-[1.3] tj:text-ink"><?php echo esc_html(html_entity_decode(get_the_title($post), ENT_QUOTES | ENT_HTML5, 'UTF-8')); ?></span><span class="tj:text-[.85rem] tj:whitespace-nowrap tj:text-muted"><?php echo esc_html(get_the_date('j. n. Y', $post)); ?></span></summary>
 												<div class="tj-prose tj:px-[1.15rem] tj:pt-2 tj:pb-6 tj:text-[1rem] tj:[&_img]:h-auto tj:[&_img]:max-w-full tj:[&_img]:rounded-lg" data-article-body data-post-id="<?php echo esc_attr((string) $post->ID); ?>">
 													<p class="tj:js:in-[[data-article-body]:not([data-error])]:hidden"><a href="<?php echo esc_url(get_permalink($post)); ?>">Přečíst článek</a></p>
 												</div>
@@ -317,7 +317,7 @@ $youtubeLink = static fn (array $video): string => '<a class="tj-link" href="' .
 				</div>
 				<?php if ($map['embed']) : ?>
 					<figure class="tj:m-0 tj:flex tj:flex-1 tj:flex-col tj:overflow-hidden tj:rounded-xl tj:border tj:border-ink/8 tj:bg-surface" data-reveal>
-						<iframe class="tj:block tj:min-h-[15rem] tj:w-full tj:flex-1 tj:border-0" src="<?php echo esc_url($map['embed']); ?>" title="<?php echo esc_attr('Mapa tábora: ' . ($season->location() ?? 'Táborová jízda')); ?>" loading="lazy" referrerpolicy="no-referrer"></iframe>
+						<iframe class="tj:block tj:min-h-60 tj:w-full tj:flex-1 tj:border-0" src="<?php echo esc_url($map['embed']); ?>" title="<?php echo esc_attr('Mapa tábora: ' . ($season->location() ?? 'Táborová jízda')); ?>" loading="lazy" referrerpolicy="no-referrer"></iframe>
 						<figcaption class="tj:flex tj:flex-wrap tj:items-center tj:gap-x-5 tj:gap-y-1 tj:px-[1.1rem] tj:py-3 tj:font-extrabold tj:text-ink">
 							<a class="tj-link" href="<?php echo esc_url($map['google']); ?>" target="_blank" rel="noopener noreferrer">Google Mapy<span class="tj:sr-only"> (nové okno)</span></a>
 							<a class="tj-link" href="<?php echo esc_url($map['mapy']); ?>" target="_blank" rel="noopener noreferrer">Mapy.cz<span class="tj:sr-only"> (nové okno)</span></a>

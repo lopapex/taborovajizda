@@ -58,7 +58,6 @@ $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $seasonPath = Join-Path $repositoryRoot 'theme\config\season.json'
 $assetDirectory = Join-Path $repositoryRoot 'theme\resources\assets\season'
 $heroPath = Join-Path $assetDirectory 'hero.jpg'
-$backgroundPath = Join-Path $assetDirectory 'background.jpg'
 $branchSlug = "$Year-$Slug"
 $branchName = "season/$branchSlug"
 
@@ -125,7 +124,6 @@ if ($LASTEXITCODE -gt 1) { throw 'Unable to scan previous-season references.' }
     Branch = $branchName
     SeasonFile = $seasonPath
     Hero = $heroPath
-    Background = $backgroundPath
     PreviousYear = $previousYear
     PreviousYearReferences = $references.Count
 } | Format-List
@@ -156,4 +154,4 @@ if ($currentBranch -eq 'main') {
 $json = $configuration | ConvertTo-Json -Depth 10
 Set-Content -LiteralPath $seasonPath -Value $json -Encoding UTF8
 
-"Updated $seasonPath. Replace hero.jpg and background.jpg with confirmed artwork, update theme.json tokens and season.css, then run npm run check from theme/."
+"Updated $seasonPath. Replace hero.jpg with the confirmed artwork, update theme.json tokens and season.css, then run npm run check from theme/."

@@ -1,0 +1,4 @@
+{
+  "tailwindCSS.rootFontSize": 18,
+  "tailwindCSS.experimental.configFile": "theme/resources/css/app.css"
+}

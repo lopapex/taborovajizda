@@ -5,11 +5,10 @@ Tento dokument popisuje, odkud se bere veřejný obsah a kde jej měnit při bě
 ## Jak WordPress skládá stránku
 
 - Obsah stránek a příspěvků je v databázi a upravuje se ve WordPress administraci, nikoliv v Gitu.
-- Společný rámec stránky tvoří `header.php`, `sidebar.php` a `footer.php`.
-- Běžné stránky bez vlastního slug template používají fallback `index.php`.
+- Společný rámec stránky tvoří `header.php` a `footer.php` (stejné jako na homepage).
+- Běžné stránky, jednotlivé příspěvky, rubriky a 404 vykresluje `index.php`.
 - `/e-prihlaska/` automaticky používá `page-e-prihlaska.php` podle WordPress template hierarchy. Kontakt je sekce `#kontakt` na homepage.
-- Výpis rubrik prochází přes `category.php`; jednotlivý markup příspěvku sdílí `template-parts/post.php`.
-- Vzhled, komponenty, formulářová logika a roční konfigurace patří do Gitu. Text redakčního obsahu, widgety, menu a média patří do WordPressu.
+- Vzhled, komponenty, formulářová logika a roční konfigurace patří do Gitu. Text redakčního obsahu a média patří do WordPressu. Widgety ani menu šablona nepoužívá.
 
 ## Stránky
 
@@ -32,25 +31,25 @@ V inventuře je 152 publikovaných příspěvků. Jeden příspěvek může být
 
 | Rubrika | Slug / URL | Publikovaných příspěvků | Zobrazení |
 | --- | --- | ---: | --- |
-| Aktuality | `/category/aktuality/` | 75 | `category.php` → `template-parts/post.php` |
-| Lidé | `/category/lide/` | 18 | `category.php` → `template-parts/post.php` |
-| Nezařazené | `/category/nezarazene/` | 1 | `category.php` → `template-parts/post.php` |
-| Tábor 2018 | `/category/tabor2018/` | 8 | `category.php` → `template-parts/post.php` |
-| Tábor 2019 | `/category/tabor-2019/` | 14 | `category.php` → `template-parts/post.php` |
-| Tábor 2021 | `/category/tabor-2021/` | 13 | `category.php` → `template-parts/post.php` |
-| Tábor 2022 | `/category/tabor-2022/` | 7 | `category.php` → `template-parts/post.php` |
-| Tábor 2023 | `/category/tabor-2023/` | 18 | `category.php` → `template-parts/post.php` |
-| Tábor 2024 | `/category/tabor-2024/` | 10 | `category.php` → `template-parts/post.php` |
-| Tábor 2025 | `/category/tabor-2025/` | 18 | `category.php` → `template-parts/post.php` |
-| Tábor 2026 | `/category/tabor-2026/` | 6 | `category.php` → `template-parts/post.php` |
-| Táborové aktivity | `/category/taborove_aktivity/` | 14 | `category.php` → `template-parts/post.php` |
+| Aktuality | `/category/aktuality/` | 75 | `index.php` |
+| Lidé | `/category/lide/` | 18 | `index.php` |
+| Nezařazené | `/category/nezarazene/` | 1 | `index.php` |
+| Tábor 2018 | `/category/tabor2018/` | 8 | `index.php` |
+| Tábor 2019 | `/category/tabor-2019/` | 14 | `index.php` |
+| Tábor 2021 | `/category/tabor-2021/` | 13 | `index.php` |
+| Tábor 2022 | `/category/tabor-2022/` | 7 | `index.php` |
+| Tábor 2023 | `/category/tabor-2023/` | 18 | `index.php` |
+| Tábor 2024 | `/category/tabor-2024/` | 10 | `index.php` |
+| Tábor 2025 | `/category/tabor-2025/` | 18 | `index.php` |
+| Tábor 2026 | `/category/tabor-2026/` | 6 | `index.php` |
+| Táborové aktivity | `/category/taborove_aktivity/` | 14 | `index.php` |
 
-Příspěvek se upravuje v administraci přes Příspěvky. Při změně struktury karty nebo detailu upravuj sdílený `template-parts/post.php`; nevytvářej kopie podle ročníků.
+Příspěvek se upravuje v administraci přes Příspěvky. Při změně struktury karty nebo detailu upravuj `index.php`; nevytvářej kopie podle ročníků.
 
 ## Postup při remodelaci
 
 1. Nejdřív určete, zda se mění obsah v databázi, nebo prezentace v šabloně.
-2. Redakční text, bloky, rubriky, menu, widgety a média měňte ve WordPressu.
+2. Redakční text, bloky, rubriky a média měňte ve WordPressu.
 3. Layout, barvy, komponenty, formuláře a chování měňte v Gitu a ověřte v LocalWP.
 4. Zachovejte slugy a veřejné URL. Přejmenování nebo odstranění vyžaduje plán přesměrování.
 5. Otestujte homepage, všechny vlastní page templates, běžnou stránku, rubriku i jednotlivý příspěvek na desktopu a mobilu.
@@ -72,14 +71,12 @@ Při redesignu je autoritativním úplným seznamem indexovatelných URL WordPre
 
 Při změně šablony nebo informační architektury ověřte všechny tři sitemapové soubory. Stávající URL nesmí zmizet ani se přesměrovat bez samostatně schváleného plánu.
 
-## Snapshot pluginů pro redesign
+## Pluginy
 
-Inventura lokální administrace 10. listopadu 2026: 24 aktivních pluginů a 1 neaktivní (`WP SVG Icons`). Stav je podkladem pro audit, nikoli souhlas k deaktivaci nebo změně produkce.
+Stav lokální instalace po úklidu 12. 11. 2026 (17 → 15 aktivních pluginů; Query Monitor a WP Crontrol odstraněny):
 
-| Skupina | Pluginy | Postup v redesignu |
+| Skupina | Pluginy | Proč zůstávají |
 | --- | --- | --- |
-| Runtime a veřejný obsah | Email Encoder, Envira Gallery, Fluent Forms, Insert PHP Code Snippet, jQuery T(-) Countdown Widget, LiteSpeed Cache, Photonic Gallery & Lightbox, Post SMTP, Safe SVG, SEO SIMPLE PACK, Zalomení | Zachovat, dokud audit konkrétního výstupu nepotvrdí náhradu. Countdown je widget, SEO ovlivňuje metadata a galerie mohou být v redakčním obsahu. |
-| Redakční nástroje | AJAX Thumbnail Rebuild, Copy & Delete Posts, Fix Media Library, Genesis Blocks, Gutenberg, Kadence Blocks, Media Library Organizer, Stackable | Nejsou přímou závislostí nové šablony. Před případným úklidem je nutné ověřit bloky a média používané ve všech publikovaných příspěvcích a stránkách. |
-| Správa, bezpečnost a vývoj | Advanced Access Manager, All In One Login, Backup Migration, Fail2WP, Query Monitor, WP Crontrol | Mimo rozsah redesignu. Zachovat beze změny. |
-
-Kandidáti pro budoucí samostatný úklid jsou neaktivní `WP SVG Icons`, překrývající se blokové knihovny a jednorázové redakční nástroje. Žádný z nich se nemá odstranit bez ověření závislostí, zálohy a samostatného schválení.
+| Obsah | Envira Gallery, Photonic, Genesis Blocks, Kadence Blocks, Stackable, Zalomení, Safe SVG | Bloky a galerie jsou v publikovaném obsahu (Photonic 49, Envira 20, Kadence 11, Genesis 9, Stackable 6 příspěvků). |
+| Provoz | Post SMTP, LiteSpeed Cache, SEO SIMPLE PACK, Email Encoder, Backup Migration | Odesílání formulářových e-mailů, cache, SEO metadata, ochrana adres, zálohy. |
+| Bezpečnost | All In One Login, Fail2WP, Advanced Access Manager | Přihlášení do administrace a přístupová práva. |

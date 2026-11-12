@@ -23,10 +23,6 @@
   --color-sky: var(--wp--preset--color--secondary);
   --color-link: var(--wp--preset--color--link);
   --font-body: var(--wp--preset--font-family--body);
-
-  /* Legacy templates (night palette). */
-  --color-season-surface: var(--wp--preset--color--surface);
-  --color-season-text: var(--wp--preset--color--text);
 }
 
 @theme static {
@@ -116,12 +112,7 @@
   }
 
   button,
-  input[type="submit"],
-  input[type="button"],
-  input[type="reset"],
-  [data-menu-toggle],
-  .button > a,
-  #call-to-action {
+  input[type="submit"] {
     min-height: 44px;
   }
 

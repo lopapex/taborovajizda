@@ -72,12 +72,12 @@ Ověř existenci `theme/public/build/manifest.json`. Build je ignorovaný; `pack
 - `config/season.json`: aktivní roční provozní data;
 - `config/archive-seasons.json`: ověřené historické ročníky, trailery a explicitní vazby na rubriky; bez historických cen a termínů;
 - `resources/css/app.css`: Tailwind vstup, barevné a stínové tokeny a komponenty použité alespoň třikrát; vlastní markup používá přímo `tj:` utility bez `@apply`; barvy pouze jako tokeny a CSS proměnné;
-- `resources/css/content.css`: pouze dynamický WordPress/plugin markup a legacy šablony;
+- `resources/css/content.css`: pouze dynamický WordPress/plugin markup;
 - `resources/css/season.css`: pouze aktivní roční vzhled a efekty;
 - `resources/ts`: TypeScript bez Reactu;
-- `template-parts/`: pouze skutečně sdílené části (dialog, pager, nadpis sekce, fakta, sociální sítě, formulář dotazu, hlavička a patička redesignu, legacy příspěvek); jednorázový markup zůstává ve WordPress entrypointu;
+- `template-parts/`: pouze skutečně sdílené části (dialog, pager, nadpis sekce, fakta, sociální sítě, formulář dotazu, notifikace formulářů); jednorázový markup zůstává ve WordPress entrypointu;
 - `theme.json`: společné design tokeny;
-- kořenové WordPress templates: pouze kompatibilní entrypointy.
+- kořenové WordPress templates: `front-page.php`, `page-e-prihlaska.php`, `index.php` (vše ostatní včetně rubrik a 404), `header.php`, `footer.php`. Legacy layout, sidebar, menu, widgety, odpočet ani newsletter už neexistují; nevracej je.
 
 PHP 8.2 a WordPress 6.5 jsou minimum. Používej namespace `TaborovaJizda\Theme`. Nevytvářej globální legacy soubor, vlastní image pipeline ani kopie jednorázových templates.
 
@@ -91,15 +91,14 @@ Zachovej URL, slugy, navigaci, názvy a pořadí formulářových polí, logo a 
 
 Lokální formulářové testy nesmí zapisovat do externí produkční databáze ani posílat skutečné e-maily.
 
-Veřejný redesign nepřidává newsletter. Homepage a kontakt používají sdílený dotazový formulář. Jeho příjemce je `contactEmail` ze `season.json`; starý newsletterový backend se zatím zachovává jen kvůli kompatibilitě dříve odeslaných validačních a odhlašovacích odkazů.
+Newsletter je zrušený. Homepage používá sdílený dotazový formulář; jeho příjemce je `contactEmail` ze `season.json`.
 
 ## Roční změna
 
 Git je zdroj pravdy pro aktivní rok, název, datum, cenu, kontaktní e-mail, stav registrace a explicitní externí season key. Nepotvrzené hodnoty nech `null`; nevymýšlej je. `contactEmail` je povinná platná adresa a používá se jako provozní odesílatel a interní příjemce formulářových zpráv.
 
-Použij `$tj-new-season` nebo nejdřív spusť `scripts/new-season.ps1` bez `-Apply`. Nevytvářej kopii celého ročního stylesheetu. Provozní data měň v `season.json`; `registration.remainingPlaces` je ručně spravovaný počet volných míst a `null` jej skryje. Nahraď pevně pojmenované `resources/assets/season/hero.jpg` a `background.jpg`, design tokeny měň v `theme.json` a roční efekty v `resources/css/season.css`. Sémantickou CSS komponentu vytvářej pouze pro vzor použitý alespoň třikrát; nepoužívej `@apply`.
+Použij `$tj-new-season` nebo nejdřív spusť `scripts/new-season.ps1` bez `-Apply`. Nevytvářej kopii celého ročního stylesheetu. Provozní data měň v `season.json`; `registration.remainingPlaces` je ručně spravovaný počet volných míst a `null` jej skryje. Nahraď pevně pojmenované `resources/assets/season/hero.jpg`, design tokeny měň v `theme.json` a roční efekty v `resources/css/season.css`. Sémantickou CSS komponentu vytvářej pouze pro vzor použitý alespoň třikrát; nepoužívej `@apply`.
 
-Countdown pochází z databázového WordPress widgetu, ne ze šablony. `app/CountdownWidget.php` jej nevykreslí, jakmile jeho cílový čas uplyne nebo nejde přečíst, takže nikdy neukáže záporný odpočet. Po potvrzení termínu stačí nastavit nové datum widgetu v administraci.
 
 Při redesignu nejprve načti repozitářový `$design-taste-frontend`, proveď audit a zachovej SEO a informační architekturu.
 

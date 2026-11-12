@@ -40,21 +40,7 @@ function initialiseMobileMenu(): void {
     };
     button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
 
-    // Legacy menu: the first tap on a parent item opens its submenu.
-    $$<HTMLAnchorElement>('.menu-item-has-children > a', container).forEach((link) => {
-      const submenu = link.nextElementSibling;
-      if (!(submenu instanceof HTMLElement)) return;
-      submenu.hidden = true;
-      link.setAttribute('aria-expanded', 'false');
-      link.addEventListener('click', (event) => {
-        if (link.getAttribute('aria-expanded') === 'true') return;
-        event.preventDefault();
-        submenu.hidden = false;
-        link.setAttribute('aria-expanded', 'true');
-      });
-    });
-    // Following a link closes the menu (the first tap on a parent item does not).
-    $$('a', container).forEach((link) => link.addEventListener('click', (event) => { if (!event.defaultPrevented) setOpen(false); }));
+    $$('a', container).forEach((link) => link.addEventListener('click', () => setOpen(false)));
   });
 }
 
@@ -387,7 +373,7 @@ function initialiseDialogs(): void {
     if (!button) return;
     const dialog = button.closest('dialog');
     if (dialog) dialog.close();
-    else button.closest<HTMLElement>('[role="dialog"]')?.setAttribute('hidden', '');
+    else button.closest('[role="dialog"]')?.remove();
   });
 }
 
@@ -522,12 +508,10 @@ function markZoomable(root: ParentNode): void {
 }
 
 /**
- * One photo viewer for the redesign: its own modal dialog (so it stacks above
- * open dialogs), never navigates away and replaces plugin lightboxes.
+ * One photo viewer: its own modal dialog (so it stacks above open dialogs),
+ * never navigates away and replaces plugin lightboxes.
  */
 function initialiseLightbox(): void {
-  if (!document.body.classList.contains('tj-home')) return;
-
   const viewer = document.createElement('dialog');
   viewer.className = 'tj-lightbox';
   viewer.setAttribute('aria-label', 'Prohlížení fotografií');
@@ -653,7 +637,7 @@ function initialiseCzechDateInputs(): void {
     const pad = (value: number) => String(value).padStart(2, '0');
     const makeSelect = (label: string, options: Array<[string, string]>) => {
       const select = document.createElement('select');
-      select.className = `${input.className} tj:pr-6 tj:pl-[.55rem] tj:[background-position:calc(100%-.95rem)_55%,calc(100%-.6rem)_55%]`;
+      select.className = `${input.className} tj:pr-6 tj:pl-[.55rem] tj:bg-position-[calc(100%-.95rem)_55%,calc(100%-.6rem)_55%]`;
       select.required = input.required;
       select.setAttribute('aria-label', label);
       select.append(new Option(label, ''), ...options.map(([value, text]) => new Option(text, value)));

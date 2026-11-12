@@ -47,16 +47,12 @@ if (season.startDate && season.endDate && season.startDate > season.endDate) {
   process.exit(1);
 }
 
-for (const [name, asset] of Object.entries({
-  hero: 'resources/assets/season/hero.jpg',
-  background: 'resources/assets/season/background.jpg',
-})) {
-  try {
-    await access(path.join(root, asset));
-  } catch {
-    console.error(`Season asset ${name} does not exist: ${asset}`);
-    process.exit(1);
-  }
+const hero = 'resources/assets/season/hero.jpg';
+try {
+  await access(path.join(root, hero));
+} catch {
+  console.error(`Season hero illustration does not exist: ${hero}`);
+  process.exit(1);
 }
 
 console.log(`Season ${season.year} (${season.slug}) and ${archive.seasons.length} archive seasons are valid.`);

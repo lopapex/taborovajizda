@@ -1,4 +1,4 @@
-# Přihlášky, newsletter a e-maily
+# Přihlášky a e-maily
 
 Tento dokument popisuje produkční chování formulářů. Externí databáze není součástí WordPress databáze ani Gitu a její přístupové údaje se ukládají pouze do neverzované konfigurace WordPressu.
 
@@ -26,12 +26,7 @@ E-mail v současnosti obsahuje údaje z přihlášky včetně rodného čísla a
 
 ## Newsletter
 
-1. Nová adresa se uloží do tabulky `newsletter` s náhodným ověřovacím tokenem a stavem neověřeno.
-2. Odběratel dostane ověřovací odkaz a odhlašovací odkaz.
-3. Ověřovací odkaz nastaví `is_validated = TRUE`.
-4. Odhlašovací odkaz příslušný řádek odstraní.
-5. Při publikaci nového článku dostanou zprávu pouze ověřené adresy.
-6. Interní oznámení o registraci nebo opakovaném ověření chodí na `contactEmail`.
+Newsletter byl 12. 11. 2026 zrušen: web už adresy nesbírá, při publikaci aktuality nic nerozesílá a staré ověřovací ani odhlašovací odkazy nefungují. Tabulka `newsletter` v externí databázi zůstala beze změny; její smazání je samostatný krok správce databáze.
 
 ## E-mailová doprava
 

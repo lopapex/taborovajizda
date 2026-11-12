@@ -129,3 +129,16 @@ Everything the redesign no longer links to was moved to the trash (not deleted p
 Photonic stays: the 2025 and 2026 posts (5251, 5257, 5259, 5355, 5440, 5581, 5613, 5701) show galleries of their own media through `wp:photonic/gallery` blocks. Do not remove it until those blocks are converted to core galleries.
 
 On production, check each ID and title first, then trash with `POST /?rest_route=/wp/v2/<pages|posts>/<id>&_method=DELETE` (the server nginx answers a real `DELETE` with 405), and deactivate (`POST /wp/v2/plugins/<plugin>` with `{"status":"inactive"}`) before deleting each plugin (`POST …/plugins/<plugin>&_method=DELETE`). Keep `wp-staging` and any plugin not listed here. Release the theme together with the cleanup, so no template links to a trashed page.
+
+## Legacy removal (12. 11. 2026, local only)
+
+The theme no longer has the legacy layout (sidebar, menus, widgets, countdown, newsletter). Locally (full dump before the cleanup in the session scratchpad, not in Git) WordPress was cleaned to match:
+
+- all sidebar widgets and the `sidebars_widgets` assignment, the menu "Hlavní menu" with its 15 items, its theme locations and the `wp_navigation` post;
+- the trash emptied permanently (including the 26 news posts and 8 pages trashed in the previous cleanup), all revisions and auto-drafts;
+- posts of unregistered types left by removed plugins (NextGEN, FooGallery, Advanced Gutenberg, …);
+- tables of removed plugins (`wp_fluentform_*` with the old submissions, `wp_yoast_*`, `wp_ngg_*`, `wp_bwg_*`, `wp_modula*`, `wp_unitegallery_*`, `wp_gdgallery*`, `wp_gg_*`, `wp_easy_gallery*`, `wp_xcloner_*`, `wp_tm_task*`, `wp_way2enjoy_*`, `wp_ewwwio_*`, `wp_ff_*`) and the unused old `tj_*` table set;
+- options of removed plugins (Yoast, W3 Total Cache, UpdraftPlus, Smush, TinyPNG, EWWW, XCloner, Fluent Forms, …) and all transients;
+- plugins Query Monitor and WP Crontrol.
+
+Stage and production are untouched. Do the same there only on a separate request, after a backup, together with the theme release that removes the legacy templates. Check every table and option prefix against the installed plugins of that environment first; `wp-staging` stays on stage.

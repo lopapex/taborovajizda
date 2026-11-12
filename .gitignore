@@ -30,7 +30,8 @@ wp-config-*.php
 .localwp.json
 .local/
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .DS_Store
 Thumbs.db
 .tags

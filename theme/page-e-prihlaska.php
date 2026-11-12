@@ -42,7 +42,7 @@ get_header();
 		<header class="tj:relative tj:-mt-[clamp(2.5rem,6vw,4.5rem)] tj:bg-afternoon tj:pt-[clamp(2.5rem,6vw,4.5rem)] tj:pb-10 tj:shadow-[0_0_0_100vmax_var(--tj-color-afternoon)] tj:[clip-path:inset(0_-100vmax)] tj:[--tj-eyebrow:var(--tj-color-warm-ink)] tj:after:absolute tj:after:bottom-0 tj:after:left-[calc(50%-50vw)] tj:after:h-[5px] tj:after:w-screen tj:after:bg-(image:--tj-stripe-1)">
 			<p class="tj-eyebrow">Táborová jízda <?php echo esc_html((string) $season->year()); ?></p>
 			<h1 class="tj:m-0 tj:font-display tj:text-[clamp(2.5rem,6vw,4.25rem)] tj:leading-none tj:font-normal tj:uppercase">Elektronická přihláška</h1>
-			<p class="tj:mt-4 tj:mb-0 tj:max-w-[40rem] tj:text-[1.1rem] tj:leading-[1.55] tj:text-slate">Tři krátké kroky: údaje o dítěti, kontakt na Vás a doplňující informace. Kopii přihlášky i pokyny k platbě Vám pošleme na e-mail.</p>
+			<p class="tj:mt-4 tj:mb-0 tj:max-w-160 tj:text-[1.1rem] tj:leading-[1.55] tj:text-slate">Tři krátké kroky: údaje o dítěti, kontakt na Vás a doplňující informace. Kopii přihlášky i pokyny k platbě Vám pošleme na e-mail.</p>
 			<?php get_template_part('template-parts/facts', null, ['facts' => Home::facts($season, false), 'class' => 'tj:mt-6']); ?>
 		</header>
 
@@ -57,11 +57,11 @@ get_header();
 			};
 			?>
 			<?php if ($notice !== '') : ?>
-				<div class="tj:mb-6 tj:rounded-lg tj:border-l-4 tj:border-sun tj:bg-sun/12 tj:px-5 tj:py-4 tj:leading-[1.5] tj:text-ink tj:[&_a]:font-extrabold tj:[&_a]:text-link tj:[&_p]:m-0 tj:[&_p+p]:mt-2" role="status"><?php echo $notice; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped above ?></div>
+				<div class="tj:mb-6 tj:rounded-lg tj:border-l-4 tj:border-sun tj:bg-sun/12 tj:px-5 tj:py-4 tj:leading-normal tj:text-ink tj:[&_a]:font-extrabold tj:[&_a]:text-link tj:[&_p]:m-0 tj:[&_p+p]:mt-2" role="status"><?php echo $notice; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped above ?></div>
 			<?php endif; ?>
 
 			<?php if ($acceptsRegistrations || $debugForm) : ?>
-			<ol class="tj:m-0 tj:mb-6 tj:grid tj:scroll-mt-24 tj:list-none tj:grid-cols-3 tj:gap-2 tj:p-0 tj:[&[hidden]]:hidden" data-registration-steps hidden>
+			<ol class="tj:m-0 tj:mb-6 tj:grid tj:scroll-mt-24 tj:list-none tj:grid-cols-3 tj:gap-2 tj:p-0 tj:[[hidden]]:hidden" data-registration-steps hidden>
 				<?php foreach (['Dítě', 'Kontakt', 'Dokončení'] as $index => $step) : ?>
 					<li><button class="tj:group tj:flex tj:min-h-[52px] tj:w-full tj:cursor-pointer tj:items-center tj:gap-[.6rem] tj:rounded-lg tj:border tj:border-ink/15 tj:bg-white/80 tj:px-[.8rem] tj:py-[.55rem] tj:text-left tj:font-extrabold tj:text-muted tj:enabled:hover:border-sun-deep tj:disabled:cursor-default tj:disabled:opacity-60 tj:aria-[current=step]:border-sun-deep tj:aria-[current=step]:bg-sun-tint tj:aria-[current=step]:text-ink tj:aria-[current=step]:inset-ring tj:aria-[current=step]:inset-ring-sun-deep tj:[&.is-done]:text-ink tj:max-md:justify-center tj:max-md:p-2 tj:max-md:text-[.9rem]" type="button" data-step-target="<?php echo $index + 1; ?>"<?php echo $index === 0 ? ' aria-current="step"' : ' disabled'; ?>><span class="tj:grid tj:size-[1.9rem] tj:flex-none tj:place-items-center tj:rounded-full tj:bg-ink/8 tj:text-ink tj:group-aria-[current=step]:bg-sun tj:group-[.is-done]:bg-sun"><?php echo $index + 1; ?></span> <?php echo esc_html($step); ?></button></li>
 				<?php endforeach; ?>
@@ -70,7 +70,7 @@ get_header();
 			<form id="eprihlaska" class="tj:group/form tj:grid tj:gap-5" action="<?php echo esc_url(home_url('/odeslat-dotaz/')); ?>" method="post" data-registration-form>
 				<input type="hidden" name="action" value="tj_registration_submit">
 				<?php wp_nonce_field('tj_form_submit', 'tj_nonce'); ?>
-				<p class="tj:m-0 tj:leading-[1.5] tj:text-muted">Pole označená <span class="tj:text-link">*</span> jsou povinná. Mějte prosím na paměti, že <strong>elektronická forma přihlášky je závazná</strong>.</p>
+				<p class="tj:m-0 tj:leading-normal tj:text-muted">Pole označená <span class="tj:text-link">*</span> jsou povinná. Mějte prosím na paměti, že <strong>elektronická forma přihlášky je závazná</strong>.</p>
 
 				<fieldset class="<?php echo $fieldset; ?>" data-step="1">
 					<legend class="<?php echo $legend; ?>">Údaje o dítěti</legend>
@@ -91,7 +91,7 @@ get_header();
 
 				<fieldset class="<?php echo $fieldset; ?>" data-step="2">
 					<legend class="<?php echo $legend; ?>">Kontakt na zákonného zástupce</legend>
-					<p class="tj:mt-0 tj:mb-5 tj:leading-[1.5] tj:text-muted">Vyplňte prosím jen <strong>jeden</strong> kontakt. Další kontakty můžete napsat do doplňujících informací.</p>
+					<p class="tj:mt-0 tj:mb-5 tj:leading-normal tj:text-muted">Vyplňte prosím jen <strong>jeden</strong> kontakt. Další kontakty můžete napsat do doplňujících informací.</p>
 					<div class="<?php echo $grid; ?>">
 						<?php
 						$field('kontakt_jmeno', 'Jméno a příjmení', $input('text', 'kontakt_jmeno', ' autocomplete="name"'));
@@ -105,7 +105,7 @@ get_header();
 				<fieldset class="<?php echo $fieldset; ?>" data-step="3">
 					<legend class="<?php echo $legend; ?>">Doplňující informace</legend>
 					<?php $field('dotaz', 'Zdravotní potřeby, alergie, dieta a další poznámky', '<textarea class="tj-input" id="%1$s" name="dotaz" rows="6"%2$s></textarea>', ['hint' => 'Cokoliv, co bychom měli vědět a nenašli jste pro to kolonku. Pokud máte táborový poukaz na slevu, opište sem kód z jeho pravého dolního rohu.']); ?>
-					<p class="tj:mt-5 tj:mb-0 tj:text-[.95rem] tj:leading-[1.5] tj:text-muted tj:[&_a]:font-extrabold tj:[&_a]:text-link">Přihlášením vyjadřujete svůj souhlas se zpracováním osobních údajů. Více podrobností naleznete zde: <a href="<?php echo esc_url(home_url('/ochrana-osobnich-udaju/#menu')); ?>">Prohlášení o zpracování osobních údajů</a></p>
+					<p class="tj:mt-5 tj:mb-0 tj:text-[.95rem] tj:leading-normal tj:text-muted tj:[&_a]:font-extrabold tj:[&_a]:text-link">Přihlášením vyjadřujete svůj souhlas se zpracováním osobních údajů. Více podrobností naleznete zde: <a href="<?php echo esc_url(home_url('/ochrana-osobnich-udaju/#menu')); ?>">Prohlášení o zpracování osobních údajů</a></p>
 					<?php $stepNav(true, 'Přihlásit dítě', 'submit'); ?>
 				</fieldset>
 			</form>

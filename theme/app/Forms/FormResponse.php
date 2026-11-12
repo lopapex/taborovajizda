@@ -18,11 +18,7 @@ final class FormResponse
                 : sanitize_text_field(wp_unslash((string) $value));
         }
         error_log('[taborovajizda] Local form simulation: ' . wp_json_encode(['type' => $type, 'payload' => $payload]));
-        if (in_array($type, ['validate', 'unsubscribe'], true)) {
-            $this->plain('Lokální simulace proběhla úspěšně. Produkční databáze nebyla změněna.');
-        }
-        $codes = ['registration' => 1, 'contact' => 2, 'subscribe' => 3, 'resend' => 4];
-        $this->redirect('success', $codes[$type] ?? 1);
+        $this->redirect('success', $type === 'contact' ? 2 : 1);
     }
 
     public function redirect(string $kind, int $code, array $extra = []): never
