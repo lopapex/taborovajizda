@@ -99,7 +99,7 @@ final class RegistrationHandler
             'Kontakt jméno: ' . ($values['contactName'] ?? ' -') . "\r\nKontakt telefon: " . ($values['contactPhone'] ?? ' -') . "\r\nKontakt e-mail: {$values['email']}\r\n" .
             'S kým chci být ve stanu: ' . ($values['roommate'] ?? ' -') . "\r\nKde se k vám připojím: {$values['arrival']}\r\nZ tábora s Vámi pojedu: {$values['departure']}\r\n" .
             "Doplňující informace:\r\n" . ($values['note'] ?? '') . "\r\n\r\nTábor se koná v areálu Plátěná osada v termínu $start – $end {$season->year()}. Cena tábora je $price Kč. Za každého dalšího sourozence dítěte však zaplatíte pouze " . ($price - 500) . " Kč. " .
-            "Platbu proveďte nejpozději do konce *května* na účet 27-3094190207/0100 a jako variabilní symbol uveďte rodné číslo svého dítěte. Pokud provádíte platbu pro více dětí najednou (sourozenci), použijte rodné číslo jednoho z nich.\r\n\r\n" .
+            "Platbu proveďte nejpozději do konce *června* na účet 27-3094190207/0100 a jako variabilní symbol uveďte rodné číslo svého dítěte. Pokud provádíte platbu pro více dětí najednou (sourozenci), použijte rodné číslo jednoho z nich.\r\n\r\n" .
             "Rádi Vám vystavíme fakturu pro zaměstnavatele, pokud chcete čerpat příspěvek z FKSP nebo potvrzení pro pojišťovnu o absolvování tábora.\r\n\r\n" .
             "V den odjezdu nezapomeňte potřebné dokumenty (potvrzení o zdravotní způsobilosti, potvrzení bezinfekčnosti, kartičku zdravotní pojišťovny, souhlas s využitím mediálních materiálů pro propagaci tábora, zmocnění pro zdravotníka)\r\n\r\n" .
             "Přejeme krásný den a těšíme se v srpnu na viděnou\r\nTým Táborové jízdy.";
