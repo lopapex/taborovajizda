@@ -220,14 +220,22 @@ img.attachment-thumbnail,
   object-fit: cover;
 }
 
-/* People dialog: the card portrait (4:5) floats top-left and the text wraps it. */
+/*
+ * People dialog: the card portrait (4:5) on the left and the text in its own
+ * column, so short profiles never wrap a stray line under the photo. Stacked
+ * on narrow screens.
+ */
 .tj-home .tj-home-person-dialog {
-  display: flow-root;
+  display: grid;
+  grid-template-columns: min(40%, 15rem) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem;
+}
+.tj-home .tj-home-person-dialog > .tj-home-prose:only-child {
+  grid-column: 1 / -1;
 }
 .tj-home .tj-home-person-dialog__photo {
-  float: left;
-  width: min(40%, 15rem);
-  margin: 0.25rem 1.5rem 1rem 0;
+  margin: 0.25rem 0 0;
   overflow: hidden;
   aspect-ratio: 4 / 5;
   border-radius: 0.75rem;
@@ -239,10 +247,33 @@ img.attachment-thumbnail,
   height: 100%;
   object-fit: cover;
 }
+.tj-home .tj-home-person-dialog .tj-home-prose > p {
+  max-width: none;
+}
+.tj-home .tj-home-person-dialog .tj-home-prose > :nth-child(1 of :not(p:empty, .wp-block-image:not(:has(img, video, iframe)))) {
+  margin-top: 0;
+}
+/* The portrait embedded in the text is removed in front-page.php; drop what stays behind. */
+.tj-home .tj-home-person-dialog .tj-home-prose p:empty,
+.tj-home .tj-home-person-dialog .tj-home-prose :is(.wp-block-image, figure):not(:has(img, video, iframe)),
+.tj-home .tj-home-person-dialog .wp-block-column:not(:has(p, h2, h3, h4, ul, ol, blockquote)) {
+  display: none;
+}
+.tj-home .tj-home-person-dialog .wp-block-columns {
+  display: block;
+  margin: 0;
+}
+.tj-home .tj-home-person-dialog .wp-block-column {
+  flex-basis: auto !important;
+  width: auto;
+}
 @media (max-width: 30rem) {
+  .tj-home .tj-home-person-dialog {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
   .tj-home .tj-home-person-dialog__photo {
-    width: 45%;
-    margin-right: 1rem;
+    width: min(70%, 15rem);
   }
 }
 
