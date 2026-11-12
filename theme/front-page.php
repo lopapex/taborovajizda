@@ -116,7 +116,7 @@ $archiveSeasons = array_values(array_filter(
 						<a class="tj-home-button tj-home-button--quiet" href="#o-tabore">Poznat tábor</a>
 					<?php else : ?>
 						<?php if (taborovajizda_debug_registration_cta()) : ?>
-							<a class="tj-home-button tj-is-debug-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>" title="Ladicí zobrazení: jen v lokálním prostředí, ročník přihlášky nepřijímá"><?php echo esc_html($registrationCta); ?></a>
+							<a class="tj-home-button tj-is-debug-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>" title="Ladicí zobrazení: jen mimo produkci, ročník přihlášky nepřijímá"><?php echo esc_html($registrationCta); ?></a>
 						<?php endif; ?>
 						<a class="tj-home-button<?php echo taborovajizda_debug_registration_cta() ? ' tj-home-button--quiet' : ''; ?>" href="#o-tabore">Poznat tábor</a>
 						<a class="tj-home-button tj-home-button--quiet" href="#minule-rocniky">Minulé ročníky</a>
@@ -492,33 +492,31 @@ $archiveSeasons = array_values(array_filter(
 				<h3>Časté otázky</h3>
 				<div class="tj-home-prose tj-home-parents__content"><?php echo $faqHtml; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
 			</div>
-			<div class="tj-home-parents__side">
-				<?php if ($documentsHtml !== '') : ?>
-					<section class="tj-home-panel tj-home-parents__documents" id="dokumenty" aria-labelledby="documents-heading">
-						<h3 id="documents-heading">Dokumenty ke stažení</h3>
-						<?php if ($documentLinks !== []) : ?>
-							<ul class="tj-home-documents tj-home-documents--panel">
-								<?php foreach ($documentLinks as $documentLink) : ?><li><?php echo $documentLink; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></li><?php endforeach; ?>
-							</ul>
-						<?php else : ?>
-							<p>Formuláře k odjezdu a seznam věcí do kufru na jednom místě.</p>
-						<?php endif; ?>
-						<a class="tj-home-text-link" href="<?php echo esc_url(get_permalink($documentsPage)); ?>" data-home-dialog-open="documents-dialog">Pokyny a seznam věcí do kufru</a>
-						<dialog class="tj-home-content-dialog" id="documents-dialog" aria-labelledby="documents-dialog-title">
-							<div class="tj-home-news-dialog__content">
-								<div class="tj-home-news-dialog__top"><p class="tj-home-meta">Pro rodiče</p><button class="tj-home-news-dialog__close" type="button" data-home-dialog-close aria-label="Zavřít dokumenty">Zavřít</button></div>
-								<h2 id="documents-dialog-title">Dokumenty ke stažení</h2>
-								<div class="tj-home-prose tj-home-documents"><?php echo $documentsHtml; ?></div>
-							</div>
-						</dialog>
-					</section>
-				<?php endif; ?>
-				<section class="tj-home-panel tj-home-parents__ask" aria-labelledby="ask-heading">
-					<h3 id="ask-heading">Nenašli jste odpověď?</h3>
-					<p>Zavolejte na <a class="tj-home-parents__phone" href="tel:+420605947103">605&nbsp;947&nbsp;103</a> nebo nám napište, rádi poradíme.</p>
-					<a class="tj-home-text-link" href="#kontakt">Napsat dotaz</a>
+			<?php if ($documentsHtml !== '') : ?>
+				<section class="tj-home-panel tj-home-parents__documents" id="dokumenty" aria-labelledby="documents-heading">
+					<h3 id="documents-heading">Dokumenty ke stažení</h3>
+					<?php if ($documentLinks !== []) : ?>
+						<ul class="tj-home-documents tj-home-documents--panel">
+							<?php foreach ($documentLinks as $documentLink) : ?><li><?php echo $documentLink; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></li><?php endforeach; ?>
+						</ul>
+					<?php else : ?>
+						<p>Formuláře k odjezdu a seznam věcí do kufru na jednom místě.</p>
+					<?php endif; ?>
+					<a class="tj-home-text-link" href="<?php echo esc_url(get_permalink($documentsPage)); ?>" data-home-dialog-open="documents-dialog">Pokyny a seznam věcí do kufru</a>
+					<dialog class="tj-home-content-dialog" id="documents-dialog" aria-labelledby="documents-dialog-title">
+						<div class="tj-home-news-dialog__content">
+							<div class="tj-home-news-dialog__top"><p class="tj-home-meta">Pro rodiče</p><button class="tj-home-news-dialog__close" type="button" data-home-dialog-close aria-label="Zavřít dokumenty">Zavřít</button></div>
+							<h2 id="documents-dialog-title">Dokumenty ke stažení</h2>
+							<div class="tj-home-prose tj-home-documents"><?php echo $documentsHtml; ?></div>
+						</div>
+					</dialog>
 				</section>
-			</div>
+			<?php endif; ?>
+			<section class="tj-home-panel tj-home-parents__ask" aria-labelledby="ask-heading">
+				<h3 id="ask-heading">Nenašli jste odpověď?</h3>
+				<p>Zavolejte na <a class="tj-home-parents__phone" href="tel:+420605947103">605&nbsp;947&nbsp;103</a> nebo nám napište, rádi poradíme.</p>
+				<a class="tj-home-text-link" href="#kontakt">Napsat dotaz</a>
+			</section>
 		</div>
 	</section>
 

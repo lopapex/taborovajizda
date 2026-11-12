@@ -47,6 +47,7 @@ jobs:
         run: |
           php theme/tests/SeasonTest.php
           php theme/tests/PersonalIdValidatorTest.php
+          php theme/tests/IndexPermalinksTest.php
 
       - name: Verify release-only files stay untracked
         working-directory: .

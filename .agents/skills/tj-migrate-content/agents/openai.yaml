@@ -1,0 +1,6 @@
+interface:
+  display_name: "TJ Migrate Content"
+  short_description: "Move reviewed LocalWP content and a theme release to stage or production"
+  default_prompt: "Use $tj-migrate-content to migrate the reviewed LocalWP content changes and the theme release to stage."
+policy:
+  allow_implicit_invocation: true

@@ -46,6 +46,7 @@ final class Theme
         (new YouTubeEmbeds())->register();
         (new ContactLinks())->register();
         (new PostContentEndpoint())->register();
+        (new IndexPermalinks())->register();
     }
 
     public static function setup(): void

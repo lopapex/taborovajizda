@@ -548,14 +548,20 @@ function initialiseHeaderState(): void {
 }
 
 /**
- * Pro rodiče: the side column is exactly as tall as the FAQ card with every
- * item closed. The collapsed height is computed from the current height minus
- * what open items add, so it stays correct while an item is animating.
+ * Pro rodiče: the documents card is as tall as the FAQ card with every item
+ * closed. The collapsed height is computed from the current height minus what
+ * open items add, so it stays correct while an item is animating. While an
+ * item is open the container gets .is-faq-open and the CSS moves the
+ * "Nenašli jste odpověď?" strip under the documents card.
  */
 function initialiseCollapsedEqualHeight(): void {
   document.querySelectorAll<HTMLElement>('[data-collapsed-equal]').forEach((container) => {
     const main = container.firstElementChild as HTMLElement | null;
     if (!main) return;
+    const syncOpen = () => container.classList.toggle('is-faq-open', main.querySelector('details[open]') !== null);
+    // `toggle` does not bubble; listen in the capture phase for every details element.
+    main.addEventListener('toggle', syncOpen, true);
+    syncOpen();
     const measure = () => {
       if (getComputedStyle(container).gridTemplateColumns.split(' ').length < 2) {
         container.style.removeProperty('--tj-collapsed-height');

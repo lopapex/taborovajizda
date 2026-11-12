@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TaborovaJizda\Theme\Forms;
 
+use TaborovaJizda\Theme\IndexPermalinks;
+
 final class Forms
 {
     private const ACTIONS = [
@@ -49,7 +51,7 @@ final class Forms
     public function routeLegacyRequest(): void
     {
         $path = wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH);
-        if (! is_string($path) || trim($path, '/') !== 'odeslat-dotaz') {
+        if (! is_string($path) || IndexPermalinks::relativeRequestPath($path) !== 'odeslat-dotaz') {
             return;
         }
 
