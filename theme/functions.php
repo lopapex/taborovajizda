@@ -39,14 +39,14 @@ function taborovajizda_season(): TaborovaJizda\Theme\Season\Season
 }
 
 /**
- * Local debugging aid: show the registration CTA even when the season does not
- * accept registrations, so its placement can be reviewed. Never active outside
- * the `local` environment; disable locally with
- * `define('TJ_DEBUG_REGISTRATION_CTA', false);` in wp-config.php.
+ * Debugging aid: show the registration CTA and form even when the season does
+ * not accept registrations, so they can be reviewed and tested. Active only in
+ * the `local` and `staging` environments, where form submissions are simulated;
+ * disable with `define('TJ_DEBUG_REGISTRATION_CTA', false);` in wp-config.php.
  */
 function taborovajizda_debug_registration_cta(): bool
 {
-    if (wp_get_environment_type() !== 'local') {
+    if (! in_array(wp_get_environment_type(), ['local', 'staging'], true)) {
         return false;
     }
 

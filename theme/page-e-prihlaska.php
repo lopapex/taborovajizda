@@ -30,7 +30,7 @@ get_header();
 			<?php if (! $acceptsRegistrations) : ?>
 				<div class="tj-registration-notice tj-registration-notice--closed" role="status">
 					<p><strong>Přihlášky na ročník <?php echo esc_html((string) $season->year()); ?> jsou uzavřené.</strong> Termín dalšího ročníku zveřejníme na <a href="<?php echo esc_url(home_url('/')); ?>">hlavní stránce</a>.</p>
-					<?php if ($debugForm) : ?><p class="tj-is-debug-cta">Ladicí zobrazení: formulář je vidět jen v lokálním prostředí.</p><?php endif; ?>
+					<?php if ($debugForm) : ?><p class="tj-is-debug-cta">Ladicí zobrazení: formulář je vidět jen mimo produkci (lokál a stage) a odeslání se pouze simuluje.</p><?php endif; ?>
 				</div>
 			<?php elseif ($season->isFull()) : ?>
 				<div class="tj-registration-notice" role="status"><p><strong>Tábor je již obsazen.</strong> Vaše přihláška bude zařazena na seznam náhradníků. Pokud se uvolní místo, ozveme se.</p></div>

@@ -130,3 +130,9 @@ Release artefakty necommituj, nenahrávej a nenasazuj bez samostatného požadav
 ## Produkční nasazení
 
 Před nahráním ukaž ZIP, manifest, rollback a kontrolní kroky a vyžádej samostatné potvrzení. Nasazení probíhá ručně přes Vzhled → Šablony → Instalovat → Nahrát. Po nahrazení vyčisti cache a proveď produkční smoke test.
+
+## Migrace obsahu a stage
+
+Redakční změny z LocalWP se na stage i produkci přenášejí po jednotlivých objektech, nikdy kopií databáze. Postup, mapování URL, dokumenty, ověření a seznam obsahu redesignu 2027 jsou ve skillu `$tj-migrate-content` (`.agents/skills/tj-migrate-content/SKILL.md`).
+
+Stage (`https://taborovajizda.cz/test/`, WP Staging) má trvalé odkazy `/index.php/%postname%/`, protože nginx serveru posílá ostatní cesty pod `/test/` na produkční WordPress a ke konfiguraci serveru nemáme přístup. Šablona v tom režimu sama doplňuje `index.php/` do odkazů (`app/IndexPermalinks.php`); na produkci nic nemění. Stage má `WP_ENVIRONMENT_TYPE` `staging`, zobrazuje ladicí přihlášku a formuláře jen simuluje.

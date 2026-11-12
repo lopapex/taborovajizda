@@ -47,6 +47,8 @@ V prostředí, jehož `wp_get_environment_type()` není `production`, se po stej
 
 Stage musí mít `WP_ENVIRONMENT_TYPE` nastavený na `staging`. Jinak by se mohl chovat jako produkce.
 
+V prostředích `local` a `staging` je přihláška vidět i při uzavřeném ročníku (ladicí zobrazení), aby šla otestovat; vypnout ji lze `define('TJ_DEBUG_REGISTRATION_CTA', false);`. Na stage formuláře odesílají na `/test/index.php/odeslat-dotaz/`, protože jiné cesty pod `/test/` obsluhuje produkční server.
+
 ## Příprava roku 2027
 
 1. V externí tabulce `tabory` vytvořit řádek s rokem, názvem, cenou a termínem.

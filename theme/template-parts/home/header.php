@@ -49,7 +49,7 @@ $homeAnchor = is_front_page() ? '' : home_url('/');
 		<?php if ($season->acceptsRegistrations()) : ?>
 			<a class="tj-home-header-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>"><?php echo esc_html($season->isFull() ? 'Přihlásit náhradníka' : 'Přihlásit dítě'); ?></a>
 		<?php elseif (taborovajizda_debug_registration_cta()) : ?>
-			<a class="tj-home-header-cta tj-is-debug-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>" title="Ladicí zobrazení: jen v lokálním prostředí, ročník přihlášky nepřijímá"><?php echo esc_html($season->isFull() ? 'Přihlásit náhradníka' : 'Přihlásit dítě'); ?></a>
+			<a class="tj-home-header-cta tj-is-debug-cta" href="<?php echo esc_url(home_url('/e-prihlaska/#menu')); ?>" title="Ladicí zobrazení: jen mimo produkci, ročník přihlášky nepřijímá"><?php echo esc_html($season->isFull() ? 'Přihlásit náhradníka' : 'Přihlásit dítě'); ?></a>
 		<?php endif; ?>
 	</div>
 </header>
