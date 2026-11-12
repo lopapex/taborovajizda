@@ -1,0 +1,7 @@
+# Text files use LF everywhere (repository, CI and Windows checkouts), whatever core.autocrlf says.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.otf binary
+*.woff2 binary
