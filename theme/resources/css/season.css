@@ -504,6 +504,20 @@ body.tj-home {
 }
 /* Desktop: the text sits on its own paper panel, so it reads at any width while
    the rest of the illustration stays at full strength. */
+/* The trailer gets its own paper card with a small "Trailer <year>" label,
+   pairing with the text panel instead of floating on the illustration. */
+.tj-home-hero__media {
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border-radius: var(--tj-radius-card);
+  background: rgb(247 241 230 / 0.94);
+  box-shadow: 0 1.5rem 3rem rgb(16 34 52 / 0.28);
+}
+.tj-home-hero__media > figcaption.tj-home-eyebrow {
+  margin: 0 0 0.75rem;
+}
+.tj-home-hero__media .tj-home-hero__trailer {
+  box-shadow: none;
+}
 @media (min-width: 60.01rem) {
   .tj-home-hero__content {
     padding: clamp(1.5rem, 3vw, 2.25rem);
