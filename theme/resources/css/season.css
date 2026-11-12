@@ -489,8 +489,11 @@ body.tj-home {
   color: var(--wp--preset--color--primary);
 }
 
-/* Hero: less wash over the season illustration. */
+/* Hero: less wash over the season illustration. The illustration reaches a
+   little below the hero so its lighter orange bottom edge hides under the
+   seam stripe instead of showing as a separate band above it. */
 .tj-home-hero__image {
+  bottom: calc(-1 * clamp(1.5rem, 2.5vw, 3rem));
   background:
     linear-gradient(90deg, rgb(247 241 230 / 0.55) 0%, rgb(247 241 230 / 0) 30%),
     url("../assets/season/hero.jpg") center / cover;
