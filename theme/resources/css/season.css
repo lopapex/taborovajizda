@@ -439,8 +439,12 @@ body.tj-home {
 :is(.tj-home-section--news, .tj-home-section--program) > .tj-home-section__heading :is(p:not(.tj-home-eyebrow)) {
   color: #3d5366;
 }
-:is(.tj-home-section--news, .tj-home-section--program) > .tj-home-section__heading .tj-home-text-link {
-  color: #084a64;
+/* Links are tangerine (#b54306) site-wide; on the saturated bands a burnt
+   orange keeps them above 4.5:1. */
+:is(.tj-home-section--news, .tj-home-section--program) > :not(:is(.tj-home-post-card, .tj-home-program-card, dialog)) :is(.tj-home-text-link, .tj-home-prose a),
+:is(.tj-home-section--news, .tj-home-section--program) > .tj-home-section__heading .tj-home-text-link,
+.tj-registration-page__header a {
+  color: #963604;
 }
 
 /*
@@ -506,13 +510,6 @@ body.tj-home {
     border-radius: var(--tj-radius-card);
     background: rgb(247 241 230 / 0.94);
     box-shadow: 0 1.5rem 3rem rgb(16 34 52 / 0.28);
-  }
-  .tj-home-hero__media figcaption {
-    display: inline-block;
-    border-radius: var(--tj-radius-control);
-    background: rgb(247 241 230 / 0.94);
-    color: var(--wp--preset--color--text);
-    padding: 0.3rem 0.65rem;
   }
 }
 @media (max-width: 60rem) {
