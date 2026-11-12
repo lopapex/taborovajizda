@@ -770,6 +770,8 @@ function initialiseExternalLinks(): void {
 
 function initialiseHomeDialogs(): void {
   const lastFocused = new WeakMap<HTMLDialogElement, HTMLElement>();
+  // Dialogs opened with the mouse return focus without a visible ring; keyboard users keep it.
+  const openedByPointer = new WeakSet<HTMLDialogElement>();
   // Openers are links to the post permalink, so content stays reachable without
   // JavaScript; with JavaScript they open the inline dialog instead.
   document.querySelectorAll<HTMLElement>('[data-home-dialog-open]').forEach((opener) => {
@@ -781,6 +783,9 @@ function initialiseHomeDialogs(): void {
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.button !== 0) return;
       event.preventDefault();
       lastFocused.set(dialog, opener);
+      // `detail` counts pointer clicks; a keyboard-activated link reports 0.
+      if (event.detail > 0) openedByPointer.add(dialog);
+      else openedByPointer.delete(dialog);
       dialog.showModal();
       document.documentElement.classList.add('has-home-dialog');
     });
@@ -796,7 +801,7 @@ function initialiseHomeDialogs(): void {
       });
       const opener = lastFocused.get(dialog);
       lastFocused.delete(dialog);
-      opener?.focus();
+      opener?.focus({ preventScroll: true, focusVisible: !openedByPointer.has(dialog) } as FocusOptions);
     };
     const close = () => {
       dialog.close();
