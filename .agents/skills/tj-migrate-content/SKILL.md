@@ -145,6 +145,6 @@ Stage (12. 11. 2026, after a Backup Migration backup of the database and plugins
 
 Not possible without database access, so still on stage: 575 revisions (REST answers `rest_cannot_delete`, nginx refuses a real `DELETE`), the old `tj_*` tables and the options of removed plugins.
 
-The only path from stage to production left is the login: All In One Login keeps the production slug `65e43gerg534e`, which nginx sends to production, and the WP Staging login screen links to it. Sign in at `/test/wp-login.php` instead.
+All In One Login "Change Login URL" is switched off on stage: its custom slug (the production `65e43gerg534e`) is not a real file under `/test/`, so nginx sent it, and every login link of WP Staging, to the production site. Stage login is now `/test/wp-login.php`, still behind the WP Staging login. Production keeps the custom slug; do not switch it off there.
 
 Production is untouched. Do the same there only on a separate request, after a backup, together with the production theme release. Check every table and option prefix against the installed plugins of that environment first.
