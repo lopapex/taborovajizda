@@ -471,14 +471,30 @@ $archiveSeasons = array_values(array_filter(
 		        return '<a' . $attributes . '>' . $link[2] . '</a>';
 		    }, $documentsHtml) ?? $documentsHtml;
 		}
-		// The panel lists the downloads directly; notes and the packing list stay in the dialog.
+		// Everything from the Dokumenty page is shown in the panel itself: the downloads
+		// as a list, then the rest of the page (packing-list link and notes). No dialog,
+		// so the packing list opens as the only dialog instead of a nested one.
 		$documentLinks = [];
+		$documentNotes = '';
 		if (preg_match_all('/<a\b[^>]*class="[^"]*tj-home-document-link[^"]*"[^>]*>.*?<\/a>/is', $documentsHtml, $documentMatches)) {
 		    $documentLinks = array_map(
-		        // Shorter labels in the panel: drop the "(pdf)" suffix and the instruction after the dash.
-		        static fn (string $link): string => preg_replace(['/\s*\(pdf\)\s*(?=<\/a>)/i', '/(?:\s|&nbsp;)+(?:[–-]|&#821[12];|&ndash;)(?:\s|&nbsp;)+[^<]*(?=<\/a>)/u'], '', $link) ?? $link,
+		        // Shorter labels: drop the "(pdf)" suffix; the instruction after the dash becomes a hint line.
+		        static function (string $link): string {
+		            $link = preg_replace('/\s*\(pdf\)\s*(?=<\/a>)/i', '', $link) ?? $link;
+		            $link = preg_replace_callback(
+		                '/(?:\s|&nbsp;)+(?:[–-]|&#821[12];|&ndash;)(?:\s|&nbsp;)+([^<]*)(?=<\/a>)/u',
+		                static fn (array $hint): string => '<span class="tj-home-document-link__hint">' . trim($hint[1]) . '</span>',
+		                $link
+		            ) ?? $link;
+		            // One text column next to the PDF badge: label with the hint underneath.
+		            return preg_replace('/^(<a\b[^>]*>)(.*)(<\/a>)$/is', '$1<span class="tj-home-document-link__text">$2</span>$3', $link) ?? $link;
+		        },
 		        $documentMatches[0]
 		    );
+		    // The rest of the page: list items without a download become paragraphs.
+		    $documentNotes = preg_replace('/<li\b[^>]*>(?:(?!<\/li>).)*tj-home-document-link(?:(?!<\/li>).)*<\/li>/is', '', $documentsHtml) ?? '';
+		    $documentNotes = preg_replace(['/<li\b[^>]*>/i', '/<\/li>/i', '/<\/?ul\b[^>]*>/i'], ['<p>', '</p>', ''], $documentNotes) ?? '';
+		    $documentNotes = trim($documentNotes);
 		}
 		// FAQ questions are written with a trailing ellipsis ("Jak se přihlásit…"); the open/close marker already says there is more.
 		$faqHtml = '';
@@ -499,17 +515,12 @@ $archiveSeasons = array_values(array_filter(
 						<ul class="tj-home-documents tj-home-documents--panel">
 							<?php foreach ($documentLinks as $documentLink) : ?><li><?php echo $documentLink; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></li><?php endforeach; ?>
 						</ul>
+						<?php if ($documentNotes !== '') : ?>
+							<div class="tj-home-prose tj-home-parents__documents-notes"><?php echo $documentNotes; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
+						<?php endif; ?>
 					<?php else : ?>
-						<p>Formuláře k odjezdu a seznam věcí do kufru na jednom místě.</p>
+						<div class="tj-home-prose tj-home-documents"><?php echo $documentsHtml; // phpcs:ignore WordPress.Security.EscapeOutput -- the_content output ?></div>
 					<?php endif; ?>
-					<a class="tj-home-text-link" href="<?php echo esc_url(get_permalink($documentsPage)); ?>" data-home-dialog-open="documents-dialog">Pokyny a seznam věcí do kufru</a>
-					<dialog class="tj-home-content-dialog" id="documents-dialog" aria-labelledby="documents-dialog-title">
-						<div class="tj-home-news-dialog__content">
-							<div class="tj-home-news-dialog__top"><p class="tj-home-meta">Pro rodiče</p><button class="tj-home-news-dialog__close" type="button" data-home-dialog-close aria-label="Zavřít dokumenty">Zavřít</button></div>
-							<h2 id="documents-dialog-title">Dokumenty ke stažení</h2>
-							<div class="tj-home-prose tj-home-documents"><?php echo $documentsHtml; ?></div>
-						</div>
-					</dialog>
 				</section>
 			<?php endif; ?>
 			<section class="tj-home-panel tj-home-parents__ask" aria-labelledby="ask-heading">

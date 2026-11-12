@@ -334,6 +334,12 @@
   .tj-home-documents--panel { display: grid; width: 100%; margin: 0 0 .75rem; padding: 0; gap: .5rem; list-style: none; }
   .tj-home-documents--panel a.tj-home-document-link { min-height: 48px; color: var(--wp--preset--color--text); font-size: .95rem; font-weight: 700; line-height: 1.3; transition: background-color .15s ease, translate .15s ease; }
   .tj-home-documents--panel a.tj-home-document-link:hover { translate: 3px 0; }
+  .tj-home-document-link__text { display: grid; gap: .15rem; }
+  .tj-home-document-link__hint { color: var(--wp--preset--color--muted); font-size: .8rem; font-weight: 600; }
+  .tj-home-parents__documents-notes { margin-top: .5rem; font-size: .85rem; }
+  .tj-home-parents__documents-notes > p { margin: 0 0 .75rem; color: var(--wp--preset--color--muted); line-height: 1.5; }
+  .tj-home-parents__documents-notes > p:first-child { color: var(--wp--preset--color--text); }
+  .tj-home-parents__documents-notes > p:last-child { margin-bottom: 0; }
   .tj-home-documents ul { display: grid; margin: 0; padding: 0; gap: .6rem; list-style: none; }
   .tj-home-documents a.tj-home-document-link { display: flex; min-height: 52px; align-items: center; gap: .75rem; border: 1px solid rgb(255 183 3 / 0.4); border-radius: var(--tj-radius-control); background: rgb(255 183 3 / 0.08); padding: .65rem .9rem; text-decoration: none; }
   .tj-home-documents a.tj-home-document-link::before { flex: 0 0 auto; border-radius: .35rem; background: var(--wp--preset--color--primary); color: var(--wp--preset--color--text); padding: .15rem .4rem; content: 'PDF'; font-size: .7rem; font-weight: 800; }
@@ -451,7 +457,7 @@
   .tj-home-archive-card h3 a { color: var(--wp--preset--color--text); text-decoration: none; }
   .tj-home-section--parents, .tj-home-section--archive { border-top: 1px solid rgb(23 50 77 / 0.14); }
   .tj-home-parents { display: grid; max-width: 56rem; margin-top: 2rem; align-items: stretch; gap: 1.25rem; }
-  .tj-home-parents--split { max-width: none; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
+  .tj-home-parents--split { max-width: none; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /*
    * Desktop: with every FAQ item closed the documents card is exactly as tall as
    * the FAQ card and "Nenašli jste odpověď?" is a strip across both columns.
