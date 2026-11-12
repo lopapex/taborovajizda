@@ -447,9 +447,14 @@ function initialiseBackToTop(): void {
   if (!button || !('IntersectionObserver' in window)) return;
   const sentinel = document.createElement('div');
   sentinel.setAttribute('aria-hidden', 'true');
-  sentinel.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:200vh;pointer-events:none;';
+  // A 1px marker at the top; the observed area reaches two viewports above the screen,
+  // so the button appears after scrolling 200vh without making short pages taller.
+  sentinel.style.cssText = 'position:absolute;top:0;left:0;width:1px;height:1px;pointer-events:none;';
   document.body.prepend(sentinel);
-  new IntersectionObserver(([entry]) => button.classList.toggle('is-shown', !entry.isIntersecting)).observe(sentinel);
+  new IntersectionObserver(
+    ([entry]) => button.classList.toggle('is-shown', !entry.isIntersecting),
+    { rootMargin: '200% 0px 0px 0px' },
+  ).observe(sentinel);
   button.addEventListener('click', (event) => {
     event.preventDefault();
     window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
