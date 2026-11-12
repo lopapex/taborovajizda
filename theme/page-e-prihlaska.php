@@ -18,7 +18,7 @@ get_header();
 		<header class="tj-registration-page__header">
 			<p class="tj-home-eyebrow">Táborová jízda <?php echo esc_html((string) $season->year()); ?></p>
 			<h1>Elektronická přihláška</h1>
-			<p>Tři krátké kroky: údaje o dítěti, kontakt na vás a doplňující informace. Kopii přihlášky i pokyny k platbě vám pošleme na e-mail.</p>
+			<p>Tři krátké kroky: údaje o dítěti, kontakt na Vás a doplňující informace. Kopii přihlášky i pokyny k platbě Vám pošleme na e-mail.</p>
 			<dl class="tj-home-facts tj-registration-facts" aria-label="Základní informace o táboře">
 				<?php foreach ($registrationFacts as $label => $value) : ?>
 					<div><dt><?php echo esc_html($label); ?></dt><dd><?php echo esc_html($value); ?></dd></div>
