@@ -228,7 +228,6 @@
   .tj-home-people-grid > :nth-child(4n + 4) .tj-home-person-card__portrait { background: var(--tj-tangerine); }
   .tj-home-person-card__initials { color: var(--wp--preset--color--text); }
   .tj-home-parents__documents { border-top-color: var(--tj-sky); }
-  .tj-home-parents__ask { border-top-color: var(--tj-tangerine); }
   .tj-home-parents__faq { border-top-color: var(--tj-grass); }
   /* Header state: stronger shadow and smaller logo after scrolling (initialiseHeaderState). */
   .tj-home-header { transition: box-shadow .25s ease; }
@@ -325,12 +324,8 @@
   .tj-home-panel { padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid rgb(23 50 77 / 0.07); border-top: 4px solid var(--wp--preset--color--primary); border-radius: var(--tj-radius-card); background: rgb(255 255 255 / 0.92); box-shadow: 0 1rem 2.5rem rgb(23 50 77 / 0.11); }
   .tj-home-panel > h3 { margin: 0 0 1rem; color: var(--wp--preset--color--text); font-size: clamp(1.35rem, 2.4vw, 1.75rem); line-height: 1.15; }
   .tj-home-panel > p { margin: 0 0 1.25rem; color: var(--wp--preset--color--muted); line-height: 1.55; }
-  .tj-home-parents__ask, .tj-home-parents__documents { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; }
-  .tj-home-parents__ask .tj-home-text-link, .tj-home-parents__documents > .tj-home-text-link { margin-top: auto; }
-  .tj-home-parents__ask { flex: 0 0 auto; }
-  .tj-home-parents__phone { color: var(--wp--preset--color--text); font-weight: 800; white-space: nowrap; }
-  .tj-home-parents__phone:hover { color: var(--tj-ink-accent); }
-  .tj-home-parents__ask > p { margin-bottom: .5rem; }
+  .tj-home-parents__documents { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; }
+  .tj-home-parents__documents > .tj-home-text-link { margin-top: auto; }
   .tj-home-documents--panel { display: grid; width: 100%; margin: 0 0 .75rem; padding: 0; gap: .5rem; list-style: none; }
   .tj-home-documents--panel a.tj-home-document-link { min-height: 48px; color: var(--wp--preset--color--text); font-size: .95rem; font-weight: 700; line-height: 1.3; transition: background-color .15s ease, translate .15s ease; }
   .tj-home-documents--panel a.tj-home-document-link:hover { translate: 3px 0; }
@@ -460,21 +455,11 @@
   .tj-home-parents--split { max-width: none; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /*
    * Desktop: with every FAQ item closed the documents card is exactly as tall as
-   * the FAQ card and "Nenašli jste odpověď?" is a strip across both columns.
-   * Once an item opens (JS adds .is-faq-open), the documents card keeps the
-   * closed height (--tj-collapsed-height) and the strip moves under it.
+   * the FAQ card. Once an item opens (JS adds .is-faq-open), the documents card
+   * keeps the closed height (--tj-collapsed-height) instead of stretching.
    */
   @media (min-width: 48.01rem) {
-    .tj-home-parents--split { grid-template-areas: "faq documents" "ask ask"; }
-    .tj-home-parents--split > .tj-home-parents__faq { grid-area: faq; }
-    .tj-home-parents--split > .tj-home-parents__documents { grid-area: documents; }
-    .tj-home-parents--split > .tj-home-parents__ask { grid-area: ask; }
-    .tj-home-parents--split:not(.is-faq-open) > .tj-home-parents__ask { flex-flow: row wrap; align-items: center; gap: .25rem 1.5rem; }
-    .tj-home-parents--split:not(.is-faq-open) > .tj-home-parents__ask > * { margin: 0; }
-    .tj-home-parents--split:not(.is-faq-open) > .tj-home-parents__ask > .tj-home-text-link { margin-left: auto; }
-    .tj-home-parents--split.is-faq-open { grid-template-areas: "faq documents" "faq ask"; grid-template-rows: auto 1fr; }
-    .tj-home-parents--split.is-faq-open > .tj-home-parents__documents { min-height: var(--tj-collapsed-height, auto); }
-    .tj-home-parents--split.is-faq-open > .tj-home-parents__ask { align-self: start; }
+    .tj-home-parents--split.is-faq-open > .tj-home-parents__documents { align-self: start; min-height: var(--tj-collapsed-height, auto); }
   }
   .tj-home-parents__content h1 { display: none; }
   .tj-home-parents__content h2 { margin-top: 2rem; font-size: clamp(1.6rem, 3vw, 2.2rem); }
