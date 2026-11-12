@@ -91,7 +91,7 @@ final class RegistrationHandler
         $end = $season->endDate()?->format('j. n.') ?? date_create_from_format('!Y-m-d', $camp['termin_do'])->format('j. n.');
         $birthDate = date_create_from_format('!Y-m-d', $values['birthDate']);
         $fullText = $season->isFull()
-            ? "Omlouváme se. TÁBOR JE JIŽ PLNĚ OBSAZEN!\r\nVaše přihláška bude zařazena do seznamu náhradníku, pokud se uvolní místo, ozveme se. TÁBOR ZATÍM NEPLAŤTE! \r\nDěkujeme za zájem i za pochopení.\r\n\r\n"
+            ? "Omlouváme se. TÁBOR JE JIŽ PLNĚ OBSAZEN!\r\nVaše přihláška bude zařazena do seznamu náhradníků, pokud se uvolní místo, ozveme se. TÁBOR ZATÍM NEPLAŤTE! \r\nDěkujeme za zájem i za pochopení.\r\n\r\n"
             : '';
         return "Dobrý den,\ntoto je automaticky vygenerovaný e-mail ze stránek https://taborovajizda.cz a byl Vám odeslán, protože Vaše adresa byla uvedena jako kontaktní e-mail v elektronické přihlášce na letní dětský tábor \"{$season->title()}\"\r\n\r\n" .
             $fullText .
@@ -100,7 +100,7 @@ final class RegistrationHandler
             'S kým chci být ve stanu: ' . ($values['roommate'] ?? ' -') . "\r\nKde se k vám připojím: {$values['arrival']}\r\nZ tábora s Vámi pojedu: {$values['departure']}\r\n" .
             "Doplňující informace:\r\n" . ($values['note'] ?? '') . "\r\n\r\nTábor se koná v areálu Plátěná osada v termínu $start – $end {$season->year()}. Cena tábora je $price Kč. Za každého dalšího sourozence dítěte však zaplatíte pouze " . ($price - 500) . " Kč. " .
             "Platbu proveďte nejpozději do konce *května* na účet 27-3094190207/0100 a jako variabilní symbol uveďte rodné číslo svého dítěte. Pokud provádíte platbu pro více dětí najednou (sourozenci), použijte rodné číslo jednoho z nich.\r\n\r\n" .
-            "Rádi Vám vystavíme fakturu pro zaměstnavatele, pokud chcete čerpat příspěvěk z FKSP nebo potvrzení pro pojišťovnu o absolvování tábora\r\n\r\n" .
+            "Rádi Vám vystavíme fakturu pro zaměstnavatele, pokud chcete čerpat příspěvek z FKSP nebo potvrzení pro pojišťovnu o absolvování tábora.\r\n\r\n" .
             "V den odjezdu nezapomeňte potřebné dokumenty (potvrzení o zdravotní způsobilosti, potvrzení bezinfekčnosti, kartičku zdravotní pojišťovny, souhlas s využitím mediálních materiálů pro propagaci tábora, zmocnění pro zdravotníka)\r\n\r\n" .
             "Přejeme krásný den a těšíme se v srpnu na viděnou\r\nTým Táborové jízdy.";
     }

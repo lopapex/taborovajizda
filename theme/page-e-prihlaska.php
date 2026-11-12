@@ -48,7 +48,7 @@ get_header();
 			<form id="eprihlaska" class="eprihlaska tj-registration-form" action="<?php echo esc_url(home_url('/odeslat-dotaz/')); ?>" method="post" data-registration-form>
 				<input type="hidden" name="action" value="tj_registration_submit">
 				<?php wp_nonce_field('tj_form_submit', 'tj_nonce'); ?>
-				<p class="tj-registration-form__legend">Pole označená <span class="tj-field__required">*</span> jsou povinná. Veďte prosím v patrnosti, že <strong>elektronická forma přihlášky je závazná</strong>.</p>
+				<p class="tj-registration-form__legend">Pole označená <span class="tj-field__required">*</span> jsou povinná. Mějte prosím na paměti, že <strong>elektronická forma přihlášky je závazná</strong>.</p>
 
 				<fieldset class="tj-form-step" data-step="1">
 					<legend>Údaje o dítěti</legend>
@@ -85,7 +85,7 @@ get_header();
 						<textarea class="tj-registration-control" id="dotaz" name="dotaz" rows="6" aria-describedby="dotaz-hint"></textarea>
 						<p class="tj-field__hint" id="dotaz-hint">Cokoliv, co bychom měli vědět a nenašli jste pro to kolonku. Pokud máte táborový poukaz na slevu, opište sem kód z jeho pravého dolního rohu.</p>
 					</div>
-					<p class="tj-registration-consent">Přihlášením vyjadřujete svůj souhlas se zpracováním osobních udajů. Více podrobností naleznete zde: <a href="<?php echo esc_url(home_url('/ochrana-osobnich-udaju/#menu')); ?>">Prohlášení o zpracování osobních údajů</a></p>
+					<p class="tj-registration-consent">Přihlášením vyjadřujete svůj souhlas se zpracováním osobních údajů. Více podrobností naleznete zde: <a href="<?php echo esc_url(home_url('/ochrana-osobnich-udaju/#menu')); ?>">Prohlášení o zpracování osobních údajů</a></p>
 					<div class="tj-form-step__nav"><button class="tj-home-button tj-home-button--quiet" type="button" data-step-prev>Zpět</button><button class="tj-home-button" type="submit">Přihlásit dítě</button></div>
 				</fieldset>
 			</form>
