@@ -17,7 +17,7 @@
 }
 
 @layer components {
-  .tj-home { --tj-radius-card: .75rem; --tj-radius-control: .5rem; --tj-line: rgb(23 50 77 / 0.11); --tj-ink-accent: var(--wp--preset--color--link, #0f6f94); --tj-sun: #ffb703; --tj-sun-deep: #d99a00; --tj-tangerine: #fb5607; --tj-tangerine-ink: #b54306; --tj-sky: #219ebc; --tj-grass: #2db37a; --tj-sun-tint: #fff0bf; --tj-sky-tint: #dff2fb; --tj-grass-tint: #e2f6eb; --tj-tangerine-tint: #ffe3d6; }
+  .tj-home { --tj-radius-card: .75rem; --tj-radius-control: .5rem; --tj-line: rgb(23 50 77 / 0.11); --tj-ink-accent: var(--wp--preset--color--link, #b54306); --tj-sun: #ffb703; --tj-sun-deep: #d99a00; --tj-tangerine: #fb5607; --tj-tangerine-ink: #b54306; --tj-sky: #219ebc; --tj-grass: #2db37a; --tj-sun-tint: #fff0bf; --tj-sky-tint: #dff2fb; --tj-grass-tint: #e2f6eb; --tj-tangerine-tint: #ffe3d6; }
   .tj-home-header, .tj-home-main, .tj-home-footer { font-family: var(--wp--preset--font-family--body); }
   .tj-home-skip-link { position: fixed; top: .75rem; left: .75rem; z-index: 200; transform: translateY(-200%); padding: .75rem 1rem; border-radius: var(--tj-radius-control); background: var(--wp--preset--color--primary); color: var(--wp--preset--color--text); font-weight: 700; }
   .tj-home-skip-link:focus { transform: translateY(0); }
@@ -72,7 +72,6 @@
   .tj-home-hero__trailer { overflow: hidden; aspect-ratio: 16 / 9; border-radius: var(--tj-radius-card); background: rgb(255 255 255 / 0.85); box-shadow: 0 1.25rem 3rem rgb(23 50 77 / 0.11); }
   .tj-home-hero__trailer, .tj-home-hero__trailer img, .tj-home-hero__trailer iframe { min-height: 0; }
   .tj-home-hero__trailer > a { display: flex; height: 100%; align-items: center; justify-content: center; padding: 1rem; }
-  .tj-home-hero__media figcaption { margin-top: .75rem; color: var(--wp--preset--color--muted); font-size: .9rem; }
   @media (max-width: 60rem) { .tj-home-hero--with-media .tj-home-hero__inner { grid-template-columns: minmax(0, 1fr); } }
   /* Text spans the full width on narrow screens, so the photo needs an even, darker scrim. */
   @media (max-width: 64rem) { .tj-home-activity-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

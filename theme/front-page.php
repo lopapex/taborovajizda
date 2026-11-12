@@ -132,7 +132,6 @@ $archiveSeasons = array_values(array_filter(
 					<div class="youtube-player tj-home-hero__trailer" data-id="<?php echo esc_attr($heroTrailer['youtubeId']); ?>" data-title="<?php echo esc_attr($heroTrailerTitle); ?>" data-thumbnail="<?php echo esc_url(sprintf('https://i.ytimg.com/vi/%s/%s.jpg', rawurlencode($heroTrailer['youtubeId']), rawurlencode($heroTrailer['thumbnail']))); ?>">
 						<a class="tj-home-text-link" href="<?php echo esc_url($heroTrailerUrl); ?>" target="_blank" rel="noopener noreferrer">Přehrát trailer na YouTube</a>
 					</div>
-					<figcaption><?php echo esc_html($heroTrailerTitle); ?></figcaption>
 				</figure>
 			<?php endif; ?>
 		</div>
