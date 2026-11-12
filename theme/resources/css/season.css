@@ -399,12 +399,23 @@ body.tj-home {
 
 /*
  * Section transitions: every seam carries the header's four-colour stripe, so
- * one brand element marks each step of the day. The footer keeps its own
- * stripe for the last seam.
+ * one brand element marks each step of the day. Down the page the colours
+ * shift by one place per seam (sun → tangerine → sky → grass, then rotated),
+ * so each seam shows where you are; the footer closes the cycle.
  */
 .tj-home {
-  --tj-stripe: linear-gradient(90deg, var(--tj-sun) 0 25%, var(--tj-tangerine) 25% 50%, var(--tj-sky) 50% 75%, var(--tj-grass) 75%);
+  --tj-stripe-1: linear-gradient(90deg, var(--tj-sun) 0 25%, var(--tj-tangerine) 25% 50%, var(--tj-sky) 50% 75%, var(--tj-grass) 75%);
+  --tj-stripe-2: linear-gradient(90deg, var(--tj-tangerine) 0 25%, var(--tj-sky) 25% 50%, var(--tj-grass) 50% 75%, var(--tj-sun) 75%);
+  --tj-stripe-3: linear-gradient(90deg, var(--tj-sky) 0 25%, var(--tj-grass) 25% 50%, var(--tj-sun) 50% 75%, var(--tj-tangerine) 75%);
+  --tj-stripe-4: linear-gradient(90deg, var(--tj-grass) 0 25%, var(--tj-sun) 25% 50%, var(--tj-tangerine) 50% 75%, var(--tj-sky) 75%);
 }
+.tj-home-main > .tj-home-section { --tj-stripe: var(--tj-stripe-1); }
+.tj-home-main > .tj-home-section--intro,
+.tj-home-main > .tj-home-section--parents { --tj-stripe: var(--tj-stripe-2); }
+.tj-home-main > .tj-home-section--people,
+.tj-home-main > .tj-home-section--contact { --tj-stripe: var(--tj-stripe-3); }
+.tj-home-main > .tj-home-section--program { --tj-stripe: var(--tj-stripe-4); }
+.tj-home-footer::before { background: var(--tj-stripe-4); }
 .tj-home-main > .tj-home-section::before {
   position: absolute;
   top: 0;
