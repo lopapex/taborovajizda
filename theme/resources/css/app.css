@@ -417,6 +417,8 @@
   .tj-home-person-card__open:hover .tj-home-person-card__name { color: var(--tj-ink-accent); }
   .tj-home-person-card > div { padding: 1.25rem; }
   .tj-home-person-card__open { width: 100%; border: 0; padding: 0; cursor: pointer; }
+  /* Card openers get focus back when their dialog closes; the focus ring follows the card's rounded corners. */
+  .tj-home-person-card__open, [data-home-dialog-open].tj-home-activity-card__open, .tj-home-post-card [data-home-dialog-open], .tj-home-archive-card [data-home-dialog-open] { border-radius: var(--tj-radius-card); }
   .tj-home-person-card h3 { margin: 0; font-size: 1.3rem; line-height: 1.1; }
   .tj-home-person-card h3 a, .tj-home-person-card__title { color: var(--wp--preset--color--text); text-decoration: none; }
   .tj-home-person-card__title { border: 0; background: transparent; padding: 0; font: inherit; font-weight: inherit; text-align: left; cursor: pointer; }

@@ -4,7 +4,7 @@ $formId = is_string($args['form_id'] ?? null) ? $args['form_id'] : 'question-for
 ?>
 <section class="tj:rounded-xl tj:bg-season-surface tj:p-5 tj:sm:p-7" aria-labelledby="<?php echo esc_attr($formId . '-heading'); ?>">
 	<h2 id="<?php echo esc_attr($formId . '-heading'); ?>" class="tj:mb-3 tj:mt-0 tj:text-3xl"><?php echo esc_html($heading); ?></h2>
-	<p class="tj:mt-0">Napište nám a odpověď vám pošleme na uvedený e-mail.</p>
+	<p class="tj:mt-0">Napište nám a odpověď Vám pošleme na uvedený e-mail.</p>
 	<form id="<?php echo esc_attr($formId); ?>" class="tj:grid tj:gap-4" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
 		<input type="hidden" name="action" value="tj_contact_submit">
 		<?php wp_nonce_field('tj_form_submit', 'tj_nonce'); ?>
