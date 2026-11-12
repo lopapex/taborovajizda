@@ -357,22 +357,160 @@ html:has(body.tj-home) {
 body.tj-home {
   background: transparent;
 }
+/*
+ * Palette "Den na táboře": the strong bands follow a camp day down the page:
+ * morning sun (news), afternoon apricot (programme), dusk (past seasons) and
+ * the night at the campfire (footer). Light paper and white bands between
+ * them are the pauses for reading. One warm neutral family, the flame amber
+ * and the brand night blue; every ink pair passes WCAG AA.
+ */
+.tj-home {
+  --tj-paper: #f7f1e6;
+  --tj-morning: #ffe39a;
+  --tj-afternoon: #ffc68a;
+  --tj-dusk: #2b4766;
+  --tj-night: #102234;
+  --tj-on-night: #f4efe6;
+  --tj-on-night-muted: #b9c6d3;
+}
 .tj-home-main > .tj-home-section {
-  --tj-band: rgb(244 249 255 / 0.94);
+  --tj-band: #ffffff;
   background: var(--tj-band);
   box-shadow: 0 0 0 100vmax var(--tj-band);
   clip-path: inset(0 -100vmax);
 }
-/* Cheerful alternating bands (palette A): sky, sun and grass tints between white. */
-.tj-home-main > .tj-home-section--news,
-.tj-home-main > .tj-home-section--archive {
-  --tj-band: rgb(223 242 251 / 0.95);
+.tj-home-main > .tj-home-section {
+  position: relative;
+  border-top: 0;
+}
+.tj-home-main > .tj-home-section--intro,
+.tj-home-main > .tj-home-section--parents {
+  --tj-band: var(--tj-paper);
+}
+.tj-home-main > .tj-home-section--news {
+  --tj-band: var(--tj-morning);
 }
 .tj-home-main > .tj-home-section--program {
-  --tj-band: rgb(255 240 191 / 0.95);
+  --tj-band: var(--tj-afternoon);
 }
-.tj-home-main > .tj-home-section--parents {
-  --tj-band: rgb(226 246 235 / 0.95);
+.tj-home-main > .tj-home-section--archive {
+  --tj-band: var(--tj-dusk);
+}
+
+/*
+ * Section transitions: every seam carries the header's four-colour stripe, so
+ * one brand element marks each step of the day. The footer keeps its own
+ * stripe for the last seam.
+ */
+.tj-home {
+  --tj-stripe: linear-gradient(90deg, var(--tj-sun) 0 25%, var(--tj-tangerine) 25% 50%, var(--tj-sky) 50% 75%, var(--tj-grass) 75%);
+}
+.tj-home-main > .tj-home-section::before {
+  position: absolute;
+  top: 0;
+  left: calc(50% - 50vw);
+  z-index: 1;
+  width: 100vw;
+  height: 5px;
+  background: var(--tj-stripe);
+  pointer-events: none;
+  content: "";
+}
+/* Reading progress under the header: the unfilled part matches the white header. */
+.home .tj-home-header::before {
+  background: rgb(255 255 255 / 0.9);
+}
+
+/* Warm bands (morning, afternoon): darker inks keep small text above 4.5:1. */
+:is(.tj-home-section--news, .tj-home-section--program) > .tj-home-section__heading .tj-home-eyebrow {
+  color: #7a2c02;
+}
+:is(.tj-home-section--news, .tj-home-section--program) > .tj-home-section__heading :is(p:not(.tj-home-eyebrow)) {
+  color: #3d5366;
+}
+:is(.tj-home-section--news, .tj-home-section--program) > .tj-home-section__heading .tj-home-text-link {
+  color: #084a64;
+}
+
+/*
+ * Dusk surface: only the section heading and the controls around the cards
+ * switch to light ink. Cards and dialogs inside the band stay white with the
+ * normal dark text, so nothing inherits the light colour.
+ */
+.tj-home-section--archive > .tj-home-section__heading :is(h2, p:not(.tj-home-eyebrow), .tj-home-text-link) {
+  color: var(--tj-on-night);
+}
+.tj-home-section--archive > .tj-home-section__heading .tj-home-eyebrow {
+  color: var(--wp--preset--color--primary);
+}
+.tj-home-section--archive .tj-home-archive-card {
+  border-color: transparent;
+  box-shadow: 0 1.25rem 2.5rem rgb(0 0 0 / 0.35);
+}
+.tj-home-section--archive .tj-home-pager__dot::before {
+  background: rgb(244 239 230 / 0.35);
+}
+.tj-home-section--archive .tj-home-pager__status {
+  color: var(--tj-on-night);
+}
+.tj-home-content-dialog {
+  color: var(--wp--preset--color--text);
+}
+
+/* Cards on paper and sun bands lift off the page. */
+.tj-home-section--news .tj-home-post-card,
+.tj-home-section--people .tj-home-person-card__portrait,
+.tj-home-section--program .tj-home-program-card,
+.tj-home-section--contact .tj-home-contact-form {
+  box-shadow: 0 1rem 2.2rem rgb(16 34 52 / 0.1);
+}
+
+/* Footer on night blue, closing the page like the header opens it. */
+.tj-home-footer {
+  background: var(--tj-night);
+  color: var(--tj-on-night-muted);
+}
+.tj-home-footer h2,
+.tj-home-footer a {
+  color: var(--tj-on-night);
+}
+.tj-home-footer a:hover {
+  color: var(--wp--preset--color--primary);
+}
+
+/* Hero: less wash over the season illustration. */
+.tj-home-hero__image {
+  background:
+    linear-gradient(90deg, rgb(247 241 230 / 0.55) 0%, rgb(247 241 230 / 0) 30%),
+    url("../assets/season/hero.jpg") center / cover;
+}
+/* Desktop: the text sits on its own paper panel, so it reads at any width while
+   the rest of the illustration stays at full strength. */
+@media (min-width: 60.01rem) {
+  .tj-home-hero__content {
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    border-radius: var(--tj-radius-card);
+    background: rgb(247 241 230 / 0.94);
+    box-shadow: 0 1.5rem 3rem rgb(16 34 52 / 0.28);
+  }
+  .tj-home-hero__media figcaption {
+    display: inline-block;
+    border-radius: var(--tj-radius-control);
+    background: rgb(247 241 230 / 0.94);
+    color: var(--wp--preset--color--text);
+    padding: 0.3rem 0.65rem;
+  }
+}
+@media (max-width: 60rem) {
+  /* Text spans the full width on small screens: a vertical, denser wash keeps it readable. */
+  .tj-home-hero__image {
+    background:
+      linear-gradient(180deg, rgb(247 241 230 / 0.9) 0%, rgb(247 241 230 / 0.84) 60%, rgb(247 241 230 / 0.6) 100%),
+      url("../assets/season/hero.jpg") center / cover;
+  }
+}
+.tj-home-header {
+  background: rgb(255 255 255 / 0.92);
 }
 
 /* Season display font for the season title and section headings only. */
@@ -396,7 +534,7 @@ body.tj-home {
 
 /* Registration page: readable band over the season illustration. */
 .tj-home-main > .tj-registration-page {
-  --tj-band: rgb(244 249 255 / 0.86);
+  --tj-band: rgb(247 241 230 / 0.95);
   background: var(--tj-band);
   box-shadow: 0 0 0 100vmax var(--tj-band);
   clip-path: inset(0 -100vmax);
