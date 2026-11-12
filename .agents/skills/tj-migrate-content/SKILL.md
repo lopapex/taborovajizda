@@ -117,3 +117,15 @@ Photonic galleries from Google Photos (51 posts, 2019–2026) are gone for good:
 The season font `theme/fonts/third-man.otf` originally drew "Ě/ě" exactly like "É/é" (homepage showed "SPOLEČNÉ"). Its Ecaron/ecaron glyphs were rebuilt from E/e plus the caron of Č/č; the change ships with the theme release, no content migration is needed.
 
 For production, run steps 2–7 for this set against production: compare with the production state, map URLs to `https://taborovajizda.cz`, then apply after confirmation.
+
+## Unreachable content cleanup (12. 11. 2026)
+
+Everything the redesign no longer links to was moved to the trash (not deleted permanently), locally (backup `pre-cleanup-20261112-122516.sql`) and on stage:
+
+- pages 43 Minulé ročníky, 803 Přihlašování uzavřeno, 2123, 2459, 2473, 2589 (2020–2021 season pages) and 4917 Kontakt (`/kontakt-2/`); the theme no longer has `page-kontakt-2.php` or `page-minule-rocniky.php`, and its footer and archive links point to the homepage anchors;
+- 26 old news posts: 1194, 1352, 1518, 1535, 1852, 2068, 2145, 2270, 2292, 2304, 2309, 2346, 2379, 2527, 2538, 2560, 2604, 2628, 2669, 2985, 2988, 3220, 3576, 3670, 3741, 4090;
+- plugins deactivated and deleted: fluentform, jquery-t-countdown-widget, insert-php-code-snippet, gutenberg, copy-delete-posts, wow-media-library-fix, ajax-thumbnail-rebuild, media-library-organizer, svg-vector-icon-plugin (WP SVG Icons). Fluent Forms has no uninstall routine, so its `wp_fluentform_*` tables with the old submissions stay in the database.
+
+Photonic stays: the 2025 and 2026 posts (5251, 5257, 5259, 5355, 5440, 5581, 5613, 5701) show galleries of their own media through `wp:photonic/gallery` blocks. Do not remove it until those blocks are converted to core galleries.
+
+On production, check each ID and title first, then trash with `POST /?rest_route=/wp/v2/<pages|posts>/<id>&_method=DELETE` (the server nginx answers a real `DELETE` with 405), and deactivate (`POST /wp/v2/plugins/<plugin>` with `{"status":"inactive"}`) before deleting each plugin (`POST …/plugins/<plugin>&_method=DELETE`). Keep `wp-staging` and any plugin not listed here. Release the theme together with the cleanup, so no template links to a trashed page.
