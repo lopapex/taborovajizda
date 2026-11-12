@@ -7,7 +7,7 @@ Tento dokument popisuje, odkud se bere veřejný obsah a kde jej měnit při bě
 - Obsah stránek a příspěvků je v databázi a upravuje se ve WordPress administraci, nikoliv v Gitu.
 - Společný rámec stránky tvoří `header.php`, `sidebar.php` a `footer.php`.
 - Běžné stránky bez vlastního slug template používají fallback `index.php`.
-- `/e-prihlaska/` automaticky používá `page-e-prihlaska.php` a `/kontakt-2/` používá `page-kontakt-2.php` podle WordPress template hierarchy.
+- `/e-prihlaska/` automaticky používá `page-e-prihlaska.php` podle WordPress template hierarchy. Kontakt je sekce `#kontakt` na homepage.
 - Výpis rubrik prochází přes `category.php`; jednotlivý markup příspěvku sdílí `template-parts/post.php`.
 - Vzhled, komponenty, formulářová logika a roční konfigurace patří do Gitu. Text redakčního obsahu, widgety, menu a média patří do WordPressu.
 
@@ -21,15 +21,10 @@ WordPress má nastavenou statickou homepage: stránka ID `432`, slug `vitejte-na
 | 20 | Dokumenty | `/dokumenty/` | Stránky → Dokumenty | `index.php` |
 | 28 | Elektronická přihláška na tábor | `/e-prihlaska/` | Pevný formulář a text v Gitu; stav ročníku v `season.json` | `page-e-prihlaska.php` |
 | 289 | Informace pro rodiče | `/informace-pro-rodice/` | Stránky → Informace pro rodiče | `index.php` |
-| 4917 | Kontakt | `/kontakt-2/` | Kontaktní formulář a text v Gitu | `page-kontakt-2.php` |
-| 803 | Přihlašování je aktuálně uzavřeno | `/litujeme/` | Stránky → Přihlašování je aktuálně uzavřeno | `index.php` |
-| 43 | Minulé ročníky | `/minule-rocniky/` | Stránky → Minulé ročníky | `index.php` |
 | 4372 | Obsah táborového kufru | `/obsah-taboroveho-kufru/` | Stránky → Obsah táborového kufru | `index.php` |
 | 3 | Zásady ochrany osobních údajů | `/ochrana-osobnich-udaju/` | Stránky → Zásady ochrany osobních údajů | `index.php` |
-| 2123 | Tábor 2020: Vikingové | `/tabor-2020-vikingove/` | Stránky → příslušná stránka | `index.php` |
-| 2459 | Tábor 2021: Egypt | `/tabor-2021-egypt/` | Stránky → příslušná stránka | `index.php` |
-| 2589 | Tábor 2021 — Souhrnné informace (nejen k testování) | `/tabor-2021-souhrnne-informace-nejen-k-testovani/` | Stránky → příslušná stránka | `index.php` |
-| 2473 | Táborové výzvy 2021 | `/taborove-vyzvy-2021/` | Stránky → příslušná stránka | `index.php` |
+
+Stránky, kam se z redesignu 2027 nedá dostat (4917 Kontakt, 803 Přihlašování uzavřeno, 43 Minulé ročníky, 2123, 2459, 2473 a 2589 z let 2020–2021), a 26 starých aktualit z let 2018–2022 byly 12. 11. 2026 přesunuty do koše na lokálu a na stage; postup je v `.agents/skills/tj-migrate-content/SKILL.md`.
 
 ## Příspěvky a rubriky
 
