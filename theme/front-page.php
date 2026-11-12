@@ -523,11 +523,6 @@ $archiveSeasons = array_values(array_filter(
 					<?php endif; ?>
 				</section>
 			<?php endif; ?>
-			<section class="tj-home-panel tj-home-parents__ask" aria-labelledby="ask-heading">
-				<h3 id="ask-heading">Nenašli jste odpověď?</h3>
-				<p>Zavolejte na <a class="tj-home-parents__phone" href="tel:+420605947103">605&nbsp;947&nbsp;103</a> nebo nám napište, rádi poradíme.</p>
-				<a class="tj-home-text-link" href="#kontakt">Napsat dotaz</a>
-			</section>
 		</div>
 	</section>
 

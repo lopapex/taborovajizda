@@ -556,8 +556,8 @@ function initialiseHeaderState(): void {
  * Pro rodiče: the documents card is as tall as the FAQ card with every item
  * closed. The collapsed height is computed from the current height minus what
  * open items add, so it stays correct while an item is animating. While an
- * item is open the container gets .is-faq-open and the CSS moves the
- * "Nenašli jste odpověď?" strip under the documents card.
+ * item is open the container gets .is-faq-open and the documents card keeps
+ * that closed height.
  */
 function initialiseCollapsedEqualHeight(): void {
   document.querySelectorAll<HTMLElement>('[data-collapsed-equal]').forEach((container) => {
