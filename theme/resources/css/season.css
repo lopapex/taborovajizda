@@ -538,11 +538,29 @@ body.tj-home {
   }
 }
 @media (max-width: 60rem) {
-  /* Text spans the full width on small screens: a vertical, denser wash keeps it readable. */
+  /* Small screens: the illustration stays at full strength and the text gets
+     the same paper panel as on desktop, instead of a dense wash over everything. */
   .tj-home-hero__image {
     background:
-      linear-gradient(180deg, rgb(247 241 230 / 0.9) 0%, rgb(247 241 230 / 0.84) 60%, rgb(247 241 230 / 0.6) 100%),
+      linear-gradient(180deg, rgb(247 241 230 / 0.25) 0%, rgb(247 241 230 / 0) 35%),
       url("../assets/season/hero.jpg") center / cover;
+  }
+  .tj-home-hero__content {
+    padding: 1.25rem;
+    border-radius: var(--tj-radius-card);
+    background: rgb(247 241 230 / 0.94);
+    box-shadow: 0 1.25rem 2.5rem rgb(16 34 52 / 0.28);
+  }
+}
+@media (max-width: 48rem) {
+  /* Phones: a strip of the illustration stays uncovered above the panel. */
+  .tj-home-hero__image {
+    background:
+      url("../assets/season/hero.jpg") center top / auto clamp(11rem, 50vw, 16rem) no-repeat,
+      var(--tj-afternoon);
+  }
+  .tj-home-hero__inner {
+    padding-top: clamp(9.5rem, 43vw, 14rem);
   }
 }
 .tj-home-header {
