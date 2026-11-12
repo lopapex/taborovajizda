@@ -1,92 +1,112 @@
 <?php
+declare(strict_types=1);
+
+use TaborovaJizda\Theme\Home;
+
 $season = taborovajizda_season();
 $remainingPlaces = $season->remainingPlaces();
 $acceptsRegistrations = $season->acceptsRegistrations();
 $debugForm = ! $acceptsRegistrations && taborovajizda_debug_registration_cta();
-$showForm = $acceptsRegistrations || $debugForm;
-$registrationFacts = array_filter([
-    'Termín' => $season->formattedDateRange(),
-    'Místo' => $season->location(),
-    'Věk' => $season->formattedAgeRange(),
-    'Cena' => $season->formattedPrice() ?? 'Upřesníme',
-], static fn (?string $value): bool => $value !== null);
-$required = '<span class="tj-field__required" aria-hidden="true">*</span>';
+$required = '<span class="tj:text-link" aria-hidden="true">*</span>';
+
+/** One labelled form field; $control is printf markup receiving the id (and the hint id as aria-describedby). */
+$field = static function (string $id, string $label, string $control, array $options = []) use ($required): void {
+    $hint = $options['hint'] ?? null;
+    $describedBy = $hint ? sprintf(' aria-describedby="%s-hint"', $id) : '';
+    ?>
+	<div class="tj:grid tj:min-w-0 tj:content-start tj:gap-[.4rem] <?php echo empty($options['wide']) ? '' : 'tj:col-span-full'; ?>">
+		<label class="tj:font-extrabold tj:text-ink" for="<?php echo esc_attr($id); ?>"<?php echo empty($options['date']) ? '' : ' id="' . esc_attr($id) . '-label"'; ?>><?php echo esc_html($label); ?><?php echo empty($options['required']) ? '' : ' ' . $required; ?></label>
+		<?php printf($control, esc_attr($id), $describedBy); ?>
+		<?php if ($hint) : ?><p class="tj:m-0 tj:text-[.9rem] tj:leading-[1.4] tj:text-muted" id="<?php echo esc_attr($id); ?>-hint"><?php echo esc_html($hint); ?></p><?php endif; ?>
+	</div>
+	<?php
+};
+$input = static fn (string $type, string $name, string $attributes = ''): string => '<input class="tj-input" type="' . $type . '" id="%1$s" name="' . $name . '"' . $attributes . '%2$s>';
+$select = static fn (string $name, array $options): string => '<select class="tj-input" id="%1$s" name="' . $name . '" required%2$s><option value="">Vyberte místo</option>'
+    . implode('', array_map(static fn (string $value, string $label): string => '<option value="' . esc_attr($value) . '">' . esc_html($label) . '</option>', array_keys($options), $options)) . '</select>';
+$stepNav = static function (bool $back, string $next = 'Pokračovat', string $type = 'button'): void {
+    ?>
+	<div class="tj:mt-7 tj:flex tj:flex-wrap tj:justify-between tj:gap-3 tj:[&>:only-child]:ml-auto">
+		<?php if ($back) : ?><button class="tj-btn tj-btn-quiet tj:group-[:not(.is-stepped)]/form:hidden" type="button" data-step-prev>Zpět</button><?php endif; ?>
+		<button class="tj-btn <?php echo $type === 'button' ? 'tj:group-[:not(.is-stepped)]/form:hidden' : ''; ?>" type="<?php echo $type; ?>"<?php echo $type === 'button' ? ' data-step-next' : ''; ?>><?php echo esc_html($next); ?></button>
+	</div>
+	<?php
+};
+$fieldset = 'tj-panel tj:m-0 tj:min-w-0 tj:p-[clamp(1.25rem,4vw,2.25rem)] tj:[&>legend+*]:clear-both';
+$legend = 'tj:float-left tj:m-0 tj:mb-5 tj:w-full tj:p-0 tj:text-[clamp(1.4rem,3vw,1.85rem)] tj:font-extrabold tj:leading-[1.15] tj:text-ink';
+$grid = 'tj:grid tj:grid-cols-2 tj:gap-x-5 tj:gap-y-[1.1rem] tj:max-md:grid-cols-1';
 get_header();
 ?>
-<main id="main-content" class="tj-home-main">
-	<article class="tj-registration-page">
-		<header class="tj-registration-page__header">
-			<p class="tj-home-eyebrow">Táborová jízda <?php echo esc_html((string) $season->year()); ?></p>
-			<h1>Elektronická přihláška</h1>
-			<p>Tři krátké kroky: údaje o dítěti, kontakt na Vás a doplňující informace. Kopii přihlášky i pokyny k platbě Vám pošleme na e-mail.</p>
-			<dl class="tj-home-facts tj-registration-facts" aria-label="Základní informace o táboře">
-				<?php foreach ($registrationFacts as $label => $value) : ?>
-					<div><dt><?php echo esc_html($label); ?></dt><dd><?php echo esc_html($value); ?></dd></div>
-				<?php endforeach; ?>
-			</dl>
+<main id="main-content">
+	<article class="tj:mx-auto tj:w-[min(100%-2rem,60rem)] tj:bg-paper tj:pt-[clamp(2.5rem,6vw,4.5rem)] tj:pb-[clamp(4rem,8vw,6rem)] tj:shadow-[0_0_0_100vmax_var(--tj-color-paper)] tj:[clip-path:inset(0_-100vmax)]">
+		<header class="tj:relative tj:-mt-[clamp(2.5rem,6vw,4.5rem)] tj:bg-afternoon tj:pt-[clamp(2.5rem,6vw,4.5rem)] tj:pb-10 tj:shadow-[0_0_0_100vmax_var(--tj-color-afternoon)] tj:[clip-path:inset(0_-100vmax)] tj:[--tj-eyebrow:var(--tj-color-warm-ink)] tj:after:absolute tj:after:bottom-0 tj:after:left-[calc(50%-50vw)] tj:after:h-[5px] tj:after:w-screen tj:after:bg-(image:--tj-stripe-1)">
+			<p class="tj-eyebrow">Táborová jízda <?php echo esc_html((string) $season->year()); ?></p>
+			<h1 class="tj:m-0 tj:font-display tj:text-[clamp(2.5rem,6vw,4.25rem)] tj:leading-none tj:font-normal tj:uppercase">Elektronická přihláška</h1>
+			<p class="tj:mt-4 tj:mb-0 tj:max-w-[40rem] tj:text-[1.1rem] tj:leading-[1.55] tj:text-slate">Tři krátké kroky: údaje o dítěti, kontakt na Vás a doplňující informace. Kopii přihlášky i pokyny k platbě Vám pošleme na e-mail.</p>
+			<?php get_template_part('template-parts/facts', null, ['facts' => Home::facts($season, false), 'class' => 'tj:mt-6']); ?>
 		</header>
 
-		<div class="tj-registration-page__content">
-			<?php if (! $acceptsRegistrations) : ?>
-				<div class="tj-registration-notice tj-registration-notice--closed" role="status">
-					<p><strong>Přihlášky na ročník <?php echo esc_html((string) $season->year()); ?> jsou uzavřené.</strong> Termín dalšího ročníku zveřejníme na <a href="<?php echo esc_url(home_url('/')); ?>">hlavní stránce</a>.</p>
-					<?php if ($debugForm) : ?><p class="tj-is-debug-cta">Ladicí zobrazení: formulář je vidět jen mimo produkci (lokál a stage) a odeslání se pouze simuluje.</p><?php endif; ?>
-				</div>
-			<?php elseif ($season->isFull()) : ?>
-				<div class="tj-registration-notice" role="status"><p><strong>Tábor je již obsazen.</strong> Vaše přihláška bude zařazena na seznam náhradníků. Pokud se uvolní místo, ozveme se.</p></div>
-			<?php elseif ($remainingPlaces !== null && $remainingPlaces < 20) : ?>
-				<div class="tj-registration-notice" role="status"><p><strong>Tábor se rychle plní.</strong> Počet volných míst: <?php echo esc_html((string) $remainingPlaces); ?>.</p></div>
+		<div class="tj:mt-10">
+			<?php
+			$notice = match (true) {
+				! $acceptsRegistrations => '<p><strong>Přihlášky na ročník ' . esc_html((string) $season->year()) . ' jsou uzavřené.</strong> Termín dalšího ročníku zveřejníme na <a href="' . esc_url(home_url('/')) . '">hlavní stránce</a>.</p>'
+					. ($debugForm ? '<p class="tj-debug">Ladicí zobrazení: formulář je vidět jen mimo produkci (lokál a stage) a odeslání se pouze simuluje.</p>' : ''),
+				$season->isFull() => '<p><strong>Tábor je již obsazen.</strong> Vaše přihláška bude zařazena na seznam náhradníků. Pokud se uvolní místo, ozveme se.</p>',
+				$remainingPlaces !== null && $remainingPlaces < 20 => '<p><strong>Tábor se rychle plní.</strong> Počet volných míst: ' . esc_html((string) $remainingPlaces) . '.</p>',
+				default => '',
+			};
+			?>
+			<?php if ($notice !== '') : ?>
+				<div class="tj:mb-6 tj:rounded-lg tj:border-l-4 tj:border-sun tj:bg-sun/12 tj:px-5 tj:py-4 tj:leading-[1.5] tj:text-ink tj:[&_a]:font-extrabold tj:[&_a]:text-link tj:[&_p]:m-0 tj:[&_p+p]:mt-2" role="status"><?php echo $notice; // phpcs:ignore WordPress.Security.EscapeOutput -- escaped above ?></div>
 			<?php endif; ?>
 
-			<?php if ($showForm) : ?>
-			<ol class="tj-registration-steps" data-registration-steps hidden>
-				<li><button class="tj-home-step" type="button" data-step-target="1" aria-current="step"><span>1</span> Dítě</button></li>
-				<li><button class="tj-home-step" type="button" data-step-target="2" disabled><span>2</span> Kontakt</button></li>
-				<li><button class="tj-home-step" type="button" data-step-target="3" disabled><span>3</span> Dokončení</button></li>
+			<?php if ($acceptsRegistrations || $debugForm) : ?>
+			<ol class="tj:m-0 tj:mb-6 tj:grid tj:scroll-mt-24 tj:list-none tj:grid-cols-3 tj:gap-2 tj:p-0 tj:[&[hidden]]:hidden" data-registration-steps hidden>
+				<?php foreach (['Dítě', 'Kontakt', 'Dokončení'] as $index => $step) : ?>
+					<li><button class="tj:group tj:flex tj:min-h-[52px] tj:w-full tj:cursor-pointer tj:items-center tj:gap-[.6rem] tj:rounded-lg tj:border tj:border-ink/15 tj:bg-white/80 tj:px-[.8rem] tj:py-[.55rem] tj:text-left tj:font-extrabold tj:text-muted tj:enabled:hover:border-sun-deep tj:disabled:cursor-default tj:disabled:opacity-60 tj:aria-[current=step]:border-sun-deep tj:aria-[current=step]:bg-sun-tint tj:aria-[current=step]:text-ink tj:aria-[current=step]:inset-ring tj:aria-[current=step]:inset-ring-sun-deep tj:[&.is-done]:text-ink tj:max-md:justify-center tj:max-md:p-2 tj:max-md:text-[.9rem]" type="button" data-step-target="<?php echo $index + 1; ?>"<?php echo $index === 0 ? ' aria-current="step"' : ' disabled'; ?>><span class="tj:grid tj:size-[1.9rem] tj:flex-none tj:place-items-center tj:rounded-full tj:bg-ink/8 tj:text-ink tj:group-aria-[current=step]:bg-sun tj:group-[.is-done]:bg-sun"><?php echo $index + 1; ?></span> <?php echo esc_html($step); ?></button></li>
+				<?php endforeach; ?>
 			</ol>
 
-			<form id="eprihlaska" class="eprihlaska tj-registration-form" action="<?php echo esc_url(home_url('/odeslat-dotaz/')); ?>" method="post" data-registration-form>
+			<form id="eprihlaska" class="tj:group/form tj:grid tj:gap-5" action="<?php echo esc_url(home_url('/odeslat-dotaz/')); ?>" method="post" data-registration-form>
 				<input type="hidden" name="action" value="tj_registration_submit">
 				<?php wp_nonce_field('tj_form_submit', 'tj_nonce'); ?>
-				<p class="tj-registration-form__legend">Pole označená <span class="tj-field__required">*</span> jsou povinná. Mějte prosím na paměti, že <strong>elektronická forma přihlášky je závazná</strong>.</p>
+				<p class="tj:m-0 tj:leading-[1.5] tj:text-muted">Pole označená <span class="tj:text-link">*</span> jsou povinná. Mějte prosím na paměti, že <strong>elektronická forma přihlášky je závazná</strong>.</p>
 
-				<fieldset class="tj-form-step" data-step="1">
-					<legend>Údaje o dítěti</legend>
-					<div class="tj-field-grid">
-						<div class="tj-field"><label for="jmeno">Jméno <?php echo $required; ?></label><input class="tj-registration-control" type="text" id="jmeno" name="jmeno" autocomplete="given-name" required></div>
-						<div class="tj-field"><label for="prijmeni">Příjmení <?php echo $required; ?></label><input class="tj-registration-control" type="text" id="prijmeni" name="prijmeni" autocomplete="family-name" required></div>
-						<div class="tj-field"><label for="datum_nar" id="datum_nar-label">Datum narození <?php echo $required; ?></label><input class="tj-registration-control" type="date" id="datum_nar" name="datum_nar" autocomplete="bday" required data-czech-date></div>
-						<div class="tj-field"><label for="rodne_c">Rodné číslo <?php echo $required; ?></label><input class="tj-registration-control" type="text" id="rodne_c" name="rodne_c" inputmode="numeric" aria-describedby="rodne_c-hint" required><p class="tj-field__hint" id="rodne_c-hint">S lomítkem i bez něj.</p></div>
-						<div class="tj-field tj-field--wide"><label for="adresa">Adresa bydliště <?php echo $required; ?></label><input class="tj-registration-control" type="text" id="adresa" name="adresa" autocomplete="street-address" aria-describedby="adresa-hint" required><p class="tj-field__hint" id="adresa-hint">Ulice a číslo domu, obec a PSČ.</p></div>
-						<div class="tj-field tj-field--wide"><label for="spolubydlici">S kým chci být ve stanu</label><input class="tj-registration-control" type="text" id="spolubydlici" name="spolubydlici"></div>
-						<div class="tj-field"><label for="nastup">Kde se k vám připojím <?php echo $required; ?></label>
-							<select class="tj-registration-control" id="nastup" name="nastup" required><option value="">Vyberte místo</option><option value="ŽBK">Žamberk</option><option value="HK">Hradec Králové</option><option value="MS">Malá Skála</option><option value="JINÉ">Dám ještě vědět</option></select></div>
-						<div class="tj-field"><label for="vystup">Z tábora s vámi pojedu do <?php echo $required; ?></label>
-							<select class="tj-registration-control" id="vystup" name="vystup" required><option value="">Vyberte místo</option><option value="ŽBK">Žamberk</option><option value="HK">Hradec Králové</option><option value="TÁBOR">Nikam: Budu vyzvednut na táboře</option><option value="JINÉ">Dám ještě vědět</option></select></div>
+				<fieldset class="<?php echo $fieldset; ?>" data-step="1">
+					<legend class="<?php echo $legend; ?>">Údaje o dítěti</legend>
+					<div class="<?php echo $grid; ?>">
+						<?php
+						$field('jmeno', 'Jméno', $input('text', 'jmeno', ' autocomplete="given-name" required'), ['required' => true]);
+						$field('prijmeni', 'Příjmení', $input('text', 'prijmeni', ' autocomplete="family-name" required'), ['required' => true]);
+						$field('datum_nar', 'Datum narození', $input('date', 'datum_nar', ' autocomplete="bday" required data-czech-date'), ['required' => true, 'date' => true]);
+						$field('rodne_c', 'Rodné číslo', $input('text', 'rodne_c', ' inputmode="numeric" required'), ['required' => true, 'hint' => 'S lomítkem i bez něj.']);
+						$field('adresa', 'Adresa bydliště', $input('text', 'adresa', ' autocomplete="street-address" required'), ['required' => true, 'wide' => true, 'hint' => 'Ulice a číslo domu, obec a PSČ.']);
+						$field('spolubydlici', 'S kým chci být ve stanu', $input('text', 'spolubydlici'), ['wide' => true]);
+						$field('nastup', 'Kde se k vám připojím', $select('nastup', ['ŽBK' => 'Žamberk', 'HK' => 'Hradec Králové', 'MS' => 'Malá Skála', 'JINÉ' => 'Dám ještě vědět']), ['required' => true]);
+						$field('vystup', 'Z tábora s vámi pojedu do', $select('vystup', ['ŽBK' => 'Žamberk', 'HK' => 'Hradec Králové', 'TÁBOR' => 'Nikam: Budu vyzvednut na táboře', 'JINÉ' => 'Dám ještě vědět']), ['required' => true]);
+						?>
 					</div>
-					<div class="tj-form-step__nav"><button class="tj-home-button" type="button" data-step-next>Pokračovat</button></div>
+					<?php $stepNav(false); ?>
 				</fieldset>
 
-				<fieldset class="tj-form-step" data-step="2">
-					<legend>Kontakt na zákonného zástupce</legend>
-					<p class="tj-form-step__hint">Vyplňte prosím jen <strong>jeden</strong> kontakt. Další kontakty můžete napsat do doplňujících informací.</p>
-					<div class="tj-field-grid">
-						<div class="tj-field"><label for="kontakt_jmeno">Jméno a příjmení</label><input class="tj-registration-control" type="text" id="kontakt_jmeno" name="kontakt_jmeno" autocomplete="name"></div>
-						<div class="tj-field"><label for="kontakt_tel">Telefon</label><input class="tj-registration-control" type="tel" id="kontakt_tel" name="kontakt_tel" autocomplete="tel"></div>
-						<div class="tj-field tj-field--wide"><label for="kontakt_email">E-mail <?php echo $required; ?></label><input class="tj-registration-control" type="email" id="kontakt_email" name="kontakt_email" autocomplete="email" aria-describedby="kontakt_email-hint" required><p class="tj-field__hint" id="kontakt_email-hint">Sem pošleme kopii přihlášky a pokyny k platbě.</p></div>
+				<fieldset class="<?php echo $fieldset; ?>" data-step="2">
+					<legend class="<?php echo $legend; ?>">Kontakt na zákonného zástupce</legend>
+					<p class="tj:mt-0 tj:mb-5 tj:leading-[1.5] tj:text-muted">Vyplňte prosím jen <strong>jeden</strong> kontakt. Další kontakty můžete napsat do doplňujících informací.</p>
+					<div class="<?php echo $grid; ?>">
+						<?php
+						$field('kontakt_jmeno', 'Jméno a příjmení', $input('text', 'kontakt_jmeno', ' autocomplete="name"'));
+						$field('kontakt_tel', 'Telefon', $input('tel', 'kontakt_tel', ' autocomplete="tel"'));
+						$field('kontakt_email', 'E-mail', $input('email', 'kontakt_email', ' autocomplete="email" required'), ['required' => true, 'wide' => true, 'hint' => 'Sem pošleme kopii přihlášky a pokyny k platbě.']);
+						?>
 					</div>
-					<div class="tj-form-step__nav"><button class="tj-home-button tj-home-button--quiet" type="button" data-step-prev>Zpět</button><button class="tj-home-button" type="button" data-step-next>Pokračovat</button></div>
+					<?php $stepNav(true); ?>
 				</fieldset>
 
-				<fieldset class="tj-form-step" data-step="3">
-					<legend>Doplňující informace</legend>
-					<div class="tj-field">
-						<label for="dotaz">Zdravotní potřeby, alergie, dieta a další poznámky</label>
-						<textarea class="tj-registration-control" id="dotaz" name="dotaz" rows="6" aria-describedby="dotaz-hint"></textarea>
-						<p class="tj-field__hint" id="dotaz-hint">Cokoliv, co bychom měli vědět a nenašli jste pro to kolonku. Pokud máte táborový poukaz na slevu, opište sem kód z jeho pravého dolního rohu.</p>
-					</div>
-					<p class="tj-registration-consent">Přihlášením vyjadřujete svůj souhlas se zpracováním osobních údajů. Více podrobností naleznete zde: <a href="<?php echo esc_url(home_url('/ochrana-osobnich-udaju/#menu')); ?>">Prohlášení o zpracování osobních údajů</a></p>
-					<div class="tj-form-step__nav"><button class="tj-home-button tj-home-button--quiet" type="button" data-step-prev>Zpět</button><button class="tj-home-button" type="submit">Přihlásit dítě</button></div>
+				<fieldset class="<?php echo $fieldset; ?>" data-step="3">
+					<legend class="<?php echo $legend; ?>">Doplňující informace</legend>
+					<?php $field('dotaz', 'Zdravotní potřeby, alergie, dieta a další poznámky', '<textarea class="tj-input" id="%1$s" name="dotaz" rows="6"%2$s></textarea>', ['hint' => 'Cokoliv, co bychom měli vědět a nenašli jste pro to kolonku. Pokud máte táborový poukaz na slevu, opište sem kód z jeho pravého dolního rohu.']); ?>
+					<p class="tj:mt-5 tj:mb-0 tj:text-[.95rem] tj:leading-[1.5] tj:text-muted tj:[&_a]:font-extrabold tj:[&_a]:text-link">Přihlášením vyjadřujete svůj souhlas se zpracováním osobních údajů. Více podrobností naleznete zde: <a href="<?php echo esc_url(home_url('/ochrana-osobnich-udaju/#menu')); ?>">Prohlášení o zpracování osobních údajů</a></p>
+					<?php $stepNav(true, 'Přihlásit dítě', 'submit'); ?>
 				</fieldset>
 			</form>
 			<?php endif; ?>

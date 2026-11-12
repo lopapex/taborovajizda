@@ -44,12 +44,12 @@ $currentTitle = $currentItem ? $currentItem->title : 'domů';
 	</nav>
 	<nav id="menu_mobile" class="mobile-menu tj:relative tj:z-[100] tj:mt-8 tj:block tj:md:hidden">
 		<div id="mobile_menu_container" class="tj:absolute tj:-top-4 tj:w-full" data-mobile-menu>
-			<button class="tj:cursor-pointer tj:px-2 tj:pb-[.4em] tj:pt-[.2em] tj:text-2xl" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-primary-menu">&equiv;<span> <?php echo esc_html($currentTitle); ?></span></button>
+			<button class="tj:cursor-pointer tj:px-2 tj:pb-[.4em] tj:pt-[.2em] tj:text-2xl tj:menu-open:rotate-90" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-primary-menu">&equiv;<span class="tj:menu-open:hidden"> <?php echo esc_html($currentTitle); ?></span></button>
 			<?php wp_nav_menu([
 				'theme_location' => 'menu_main_mobile',
 				'container' => false,
 				'menu_id' => 'mobile-primary-menu',
-				'menu_class' => 'tj:hidden tj:list-none tj:flex-wrap tj:m-0 tj:p-[.5vw] tj:text-center',
+				'menu_class' => 'tj:hidden tj:menu-open:flex tj:list-none tj:flex-wrap tj:m-0 tj:p-[.5vw] tj:text-center',
 			]); ?>
 		</div>
 	</nav>

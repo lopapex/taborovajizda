@@ -76,15 +76,15 @@ cd ..
 
 ```text
 theme/
-├── app/                         theme, roční data a samostatné formulářové handlery
+├── app/                         theme, roční data, data homepage (Home.php) a formulářové handlery
 ├── config/season.json           aktivní ročník
 ├── resources/
-│   ├── css/app.css              Tailwind vstup a design tokeny
-│   ├── css/compat.css           jen dynamický WordPress/plugin markup
+│   ├── css/app.css              Tailwind vstup, barevné a stínové tokeny, sdílené komponenty
+│   ├── css/content.css          jen WordPress/plugin obsah a legacy šablony
 │   ├── css/season.css           pouze aktuální roční vzhled
 │   ├── ts/                      TypeScript
 │   └── assets/season/           grafika aktivního ročníku
-├── template-parts/              pouze skutečně sdílený příspěvek a notifikace
+├── template-parts/              sdílené části: hlavička/patička, dialog, pager, nadpis sekce, fakta, sítě, formulář
 ├── public/build/                generovaný a ignorovaný build
 ├── theme.json                   WordPress design tokeny
 └── style.css                    pouze povinná hlavička šablony
@@ -130,7 +130,7 @@ Repozitářový adresář `theme/` je s LocalWP propojený přímo pomocí junct
 
 Po zavření terminálu se vývojový build zastaví. Při příští práci stačí v `theme/` znovu spustit `npm run dev`; `npm install` se neopakuje, pokud se nezměnily závislosti nebo nebyl odstraněn `node_modules`.
 
-Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup styluj přímo prefixovanými `tj:` utilitami; `@apply` nepoužívej. Sémantickou komponentní třídu přidej pouze pro stejný vzor použitý alespoň třikrát. Do `compat.css` patří jen selektory dynamického WordPress/plugin markup, který nelze opatřit třídami, a do `season.css` pouze roční fonty, grafika a efekty. React se nepoužívá.
+Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup styluj přímo prefixovanými `tj:` utilitami; `@apply` nepoužívej. Sémantickou komponentní třídu přidej pouze pro stejný vzor použitý alespoň třikrát. Barvy a stíny se zapisují pouze jako tokeny (`tj:bg-sun`, `tj:border-ink/11`, `tj:shadow-card`; v CSS `var(--tj-color-…)` a `--alpha()`), hex hodnoty jen v jejich definici. Vlastní CSS proměnné mají prefix `--tj-`. Do `content.css` patří jen selektory WordPress/plugin obsahu, který nelze opatřit třídami, a legacy šablony; do `season.css` pouze roční fonty, grafika a efekty. Třídy se v PHP nesmí skládat za běhu (Tailwind je musí najít ve zdrojáku celé). React se nepoužívá.
 
 `npm run dev` zůstává spuštěný a při každém uložení CSS nebo TypeScriptu automaticky obnoví `public/build/`. Potom stačí refresh prohlížeče. Změny PHP a `template-parts` build nepotřebují a projeví se hned po refreshi. Samostatné `npm run build` je potřeba až pro finální kontrolu, CI a release.
 

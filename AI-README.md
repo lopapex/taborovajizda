@@ -68,14 +68,14 @@ Ověř existenci `theme/public/build/manifest.json`. Build je ignorovaný; `pack
 
 ## Architektura
 
-- `app/`: malé namespaced moduly pro theme, roční data a oddělené formulářové handlery;
+- `app/`: malé namespaced moduly pro theme, roční data, data homepage (`Home.php`) a oddělené formulářové handlery;
 - `config/season.json`: aktivní roční provozní data;
 - `config/archive-seasons.json`: ověřené historické ročníky, trailery a explicitní vazby na rubriky; bez historických cen a termínů;
-- `resources/css/app.css`: Tailwind vstup; vlastní markup používá přímo `tj:` utility bez `@apply`;
-- `resources/css/compat.css`: pouze dynamický WordPress/plugin markup;
+- `resources/css/app.css`: Tailwind vstup, barevné a stínové tokeny a komponenty použité alespoň třikrát; vlastní markup používá přímo `tj:` utility bez `@apply`; barvy pouze jako tokeny a CSS proměnné;
+- `resources/css/content.css`: pouze dynamický WordPress/plugin markup a legacy šablony;
 - `resources/css/season.css`: pouze aktivní roční vzhled a efekty;
 - `resources/ts`: TypeScript bez Reactu;
-- `template-parts/`: pouze skutečně sdílené části; jednorázový markup zůstává ve WordPress entrypointu;
+- `template-parts/`: pouze skutečně sdílené části (dialog, pager, nadpis sekce, fakta, sociální sítě, formulář dotazu, hlavička a patička redesignu, legacy příspěvek); jednorázový markup zůstává ve WordPress entrypointu;
 - `theme.json`: společné design tokeny;
 - kořenové WordPress templates: pouze kompatibilní entrypointy.
 

@@ -1,0 +1,604 @@
+/*
+ * Markup that cannot carry Tailwind classes: WordPress and plugin content
+ * (.tj-prose), the JavaScript-built YouTube player and the legacy templates
+ * (#taborovajizda_body). Unlayered on purpose, so it wins over WordPress styles.
+ */
+
+html {
+  font-size: 16pt;
+  line-height: 1.3;
+}
+
+/* Redesign pages (body.tj-home) use an 18px base; legacy templates keep 16pt. */
+html:has(body.tj-home) {
+  font-size: 112.5%;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* ---------- WordPress content on redesign pages ---------- */
+
+/* Base prose in the components layer, so utilities on a .tj-prose element win. */
+@layer components {
+  .tj-prose {
+    color: var(--tj-color-muted);
+    font-size: 1.05rem;
+    line-height: 1.65;
+  }
+
+  .tj-prose p {
+    max-width: 65ch;
+  }
+
+  .tj-prose > :first-child {
+    margin-top: 0;
+  }
+
+  .tj-prose h1:first-child {
+    display: none;
+  }
+}
+
+/* Legacy content highlight (.zvyraznit) uses the sun colour, unreadable on white. */
+.tj-home .zvyraznit {
+  color: var(--tj-color-link);
+  text-shadow: none;
+}
+
+.tj-dialog .tj-prose h2 {
+  margin: 1rem 0 1.5rem;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+/* Dialog photos (news, people, activities, seasons): one ratio, whole photo visible, letterboxed. */
+.tj-dialog :is(figure.wp-block-image, .wp-block-image figure, .tj-prose figure:not([class*="gallery"])) {
+  float: none;
+  width: 100%;
+  max-width: none;
+  margin: 0 0 1.25rem;
+}
+
+.tj-dialog :is(.wp-block-image img, .tj-prose > p > img:not(.emoji), .tj-prose > p > a > img:not(.emoji)) {
+  display: block;
+  float: none;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  margin: 0 0 1.25rem;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  background: var(--tj-color-black);
+}
+
+/* About the camp: the full story keeps small headings. */
+.tj-story :is(h2, h3) {
+  color: var(--tj-color-ink);
+  font-family: inherit;
+  font-size: 1.35rem;
+  letter-spacing: 0;
+}
+
+.tj-story img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+}
+
+/* People dialog: the portrait embedded in the text is removed in app/Home.php; drop what stays behind. */
+.tj-person > p {
+  max-width: none;
+}
+
+.tj-person > :nth-child(1 of :not(p:empty, .wp-block-image:not(:has(img, video, iframe)))) {
+  margin-top: 0;
+}
+
+.tj-person :is(p:empty, :is(.wp-block-image, figure):not(:has(img, video, iframe)), .wp-block-column:not(:has(p, h2, h3, h4, ul, ol, blockquote))) {
+  display: none;
+}
+
+.tj-person .wp-block-columns {
+  display: block;
+  margin: 0;
+}
+
+.tj-person .wp-block-column {
+  flex-basis: auto !important;
+  width: auto;
+}
+
+/* Activity galleries (Envira) as an even grid. */
+.tj-activity .envira-gallery-wrap {
+  margin: 1.75rem 0;
+}
+
+.tj-activity .envira-gallery-public {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.tj-activity .envira-gallery-item {
+  width: auto !important;
+  margin: 0 !important;
+  float: none !important;
+}
+
+.tj-activity :is(.envira-gallery-item-inner, .envira-gallery-link) {
+  display: block;
+  height: 100%;
+}
+
+.tj-activity img.envira-gallery-image {
+  display: block;
+  width: 100%;
+  height: 15rem;
+  object-fit: cover;
+}
+
+@media (max-width: 48rem) {
+  .tj-activity .envira-gallery-public {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* FAQ accordions (Genesis blocks) on the parents panel. */
+.tj-faq h2 {
+  margin-top: 2rem;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+}
+
+.tj-home .gb-block-accordion {
+  margin-bottom: 0.5rem;
+}
+
+.tj-home .gb-block-accordion details summary {
+  min-height: 44px;
+  border-left: 3px solid var(--tj-color-sun);
+  background: var(--tj-color-canvas);
+  color: var(--tj-color-ink);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tj-home .gb-block-accordion :is(details[open] summary, details summary:hover) {
+  color: var(--tj-color-link);
+  background: --alpha(var(--tj-color-sun) / 14%);
+}
+
+.tj-home .gb-block-accordion .gb-accordion-text {
+  padding: 0.75rem 1rem 0.25rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports selector(::details-content) {
+    .tj-faq details::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition: block-size 0.3s ease, content-visibility 0.3s ease allow-discrete;
+    }
+
+    .tj-faq details[open]::details-content {
+      block-size: auto;
+    }
+  }
+}
+
+/* ---------- YouTube click-to-load player (resources/ts/app.ts, app/YouTubeEmbeds.php) ---------- */
+
+.youtube-player,
+.youtube-player img,
+.youtube-player iframe,
+.widget .youtube,
+.youtube img,
+.youtube iframe {
+  width: 100%;
+  min-height: 20vw;
+  cursor: pointer;
+}
+
+.youtube-player {
+  position: relative;
+}
+
+.youtube-player__button {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.youtube-player__button img,
+.youtube-player iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
+.youtube-player__button:hover .play {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+/* 16:9 box: oEmbeds in content and the trailers of the hero and past seasons. */
+.youtube-player--box {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.youtube-player--box,
+.youtube-player--box img,
+.youtube-player--box iframe {
+  min-height: 0;
+}
+
+.youtube-player--box > a {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+}
+
+.wp-block-embed__wrapper:has(> .youtube-player--box)::before {
+  display: none;
+}
+
+.play {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+}
+
+.play::before {
+  display: block;
+  border-block: 1rem solid transparent;
+  border-left: 1.6rem solid var(--tj-color-white);
+  filter: drop-shadow(0 0 0.35rem --alpha(var(--tj-color-black) / 80%));
+  content: "";
+}
+
+/* ---------- Legacy templates (header.php, template-parts/post.php) ---------- */
+
+/* They keep the original night palette while theme.json carries the 2027 palette. */
+#taborovajizda_body {
+  --wp--preset--color--background: #0b1320;
+  --wp--preset--color--surface: #132238;
+  --wp--preset--color--text: #f3f7fb;
+  --wp--preset--color--muted: #bfd0df;
+  --wp--preset--color--primary: #f5b942;
+  --wp--preset--color--accent: #c7831e;
+  --legacy-control-text: #0c1417;
+  --legacy-control-background: #fcfcfc;
+  --legacy-control-border: #aaa;
+  --legacy-control-focus: #555;
+  --legacy-control-hover: rgb(70 180 255 / 0.5);
+  --legacy-invalid: #d00;
+  --legacy-image-glow: #ffedaf;
+  color: var(--wp--preset--color--text);
+}
+
+figure.wp-block-image {
+  margin: 0;
+}
+
+.wp-block-image img {
+  height: auto;
+}
+
+.wp-block-image :is(.alignleft, .alignright) {
+  margin-block: 0.3em;
+}
+
+.wp-block-image .aligncenter {
+  text-align: center;
+}
+
+.wp-block-image figcaption {
+  margin-top: 0;
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+.wp-block-image.stin_uvnitr > figure {
+  position: relative;
+}
+
+.wp-block-image.stin_uvnitr > figure > a::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  box-shadow: inset 0 0 20px 50px var(--legacy-image-glow);
+}
+
+.blog_post {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  text-align: left;
+}
+
+.blog_post_title,
+.tj-card-title {
+  margin-top: 0;
+  padding: 0 0 0.25em 0.6em;
+  color: var(--wp--preset--color--text);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.blog_content {
+  padding: 0 1rem 0.5rem;
+}
+
+.blog_content p {
+  text-indent: 0;
+}
+
+.blog_content p.do_bloku {
+  text-align: justify;
+}
+
+.blog_content .wp-block-image img {
+  max-width: 95%;
+}
+
+.blog_content .wp-block-image.bez_ramecku img {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.blog_content summary.ab-accordion-title {
+  padding: 0.4em 1em;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.blog_content .ab-accordion-text {
+  margin-left: 1em;
+  padding: 0.3em 1em;
+}
+
+.blog_content .ab-accordion-text p {
+  margin-top: 0;
+  font-size: inherit;
+}
+
+.zakonceni,
+.clearfix,
+.wp-block-atomic-blocks-ab-accordion {
+  clear: both;
+}
+
+.serif {
+  font-family: serif;
+}
+
+.category-posts-internal {
+  margin-right: 1em;
+}
+
+img.attachment-post-thumbnail,
+img.attachment-thumbnail,
+.cat-post-format-standard img {
+  float: left;
+  margin: 0 0.9em 0.5em 0;
+}
+
+#taborovajizda_body span.cat-post-format-standard {
+  display: block;
+  width: 100px !important;
+  height: 100px !important;
+  margin: 0 0.9em 0.5em 0;
+  overflow: visible;
+}
+
+#taborovajizda_body .cat-post-format-standard img {
+  width: 100px !important;
+  height: 100px !important;
+  clip: initial !important;
+}
+
+@media (max-width: 560px) {
+  .blog_content .wp-block-image {
+    display: flex;
+    justify-content: center;
+  }
+
+  .blog_content .wp-block-image figure {
+    float: none;
+    margin: 0;
+  }
+}
+
+/* Legacy form look. */
+:where(#taborovajizda_body) :is(input, select, button, textarea) {
+  padding: 0.3em 0.5em;
+  border: 1px solid var(--legacy-control-border);
+  border-radius: 3px;
+  color: var(--legacy-control-text);
+  background: var(--legacy-control-background);
+}
+
+:where(#taborovajizda_body) :is(input, select, button, textarea):hover {
+  box-shadow: 0 0 1px 1px var(--legacy-control-hover);
+}
+
+:where(#taborovajizda_body) :is(input, select, button, textarea):focus {
+  border-color: var(--legacy-control-focus);
+  background: var(--tj-color-white);
+}
+
+:where(#taborovajizda_body) :is(input, select):user-invalid {
+  border-color: var(--legacy-invalid);
+  box-shadow: 0 0 2px var(--legacy-invalid);
+}
+
+/* Legacy menus (wp_nav_menu markup). */
+.desktop-menu li {
+  position: relative;
+  display: inline-block;
+}
+
+.desktop-menu li > a {
+  display: block;
+  padding: 0.5em;
+  white-space: nowrap;
+  font-size: 1.85vw;
+  text-decoration: none;
+}
+
+.desktop-menu .sub-menu {
+  position: absolute;
+  left: 92%;
+  display: none;
+  min-width: max-content;
+  margin: 0;
+  padding: 0.3em;
+  list-style: none;
+  transform: translateX(-50%);
+}
+
+.desktop-menu li:hover > .sub-menu {
+  display: block;
+}
+
+.desktop-menu .sub-menu li {
+  width: 100%;
+}
+
+.desktop-menu .sub-menu a {
+  width: 100%;
+  margin-top: 0.2em;
+  padding-left: 1em;
+  font-size: 1.5vw;
+}
+
+.mobile-menu ul {
+  white-space: nowrap;
+}
+
+.mobile-menu li {
+  flex: 1 1 55%;
+}
+
+.mobile-menu li > a {
+  display: block;
+  margin: 0.3vw;
+  padding: 0.5em;
+  font-size: 1.3em;
+}
+
+.mobile-menu .sub-menu {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0.5vw;
+  list-style: none;
+  text-align: left;
+}
+
+@media (min-width: 560px) {
+  .mobile-menu li {
+    flex-basis: 35%;
+  }
+}
+
+/* Legacy sidebar widgets and plugins. */
+.widget p:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.widget_block {
+  padding: 0;
+}
+
+.wp-block-social-links {
+  padding: 0.5em;
+}
+
+#taborovajizda_body a.wp-block-social-link-anchor {
+  color: inherit;
+}
+
+#taborovajizda_body img.envira-gallery-image {
+  opacity: 1;
+}
+
+#taborovajizda_body .pswp__bg {
+  opacity: 0.5 !important;
+  backdrop-filter: blur(5px);
+}
+
+#taborovajizda_body .featherlight {
+  backdrop-filter: blur(16px);
+}
+
+#taborovajizda_body .gb-block-accordion details summary {
+  background: var(--wp--preset--color--surface);
+}
+
+.carbonlite-dashboard {
+  display: flex;
+  width: auto;
+  height: auto;
+  flex-flow: wrap;
+  justify-content: center;
+  gap: 0.25em;
+  text-align: center;
+}
+
+.carbonlite-dash,
+.carbonlite-tripdash {
+  position: relative;
+  display: flex;
+  width: 4.5em;
+  height: 3.6em;
+  margin: 0 0 2px 2px;
+  padding: 10px 0 0 2px;
+  flex-flow: wrap;
+  justify-content: center;
+}
+
+:is(.carbonlite-dash, .carbonlite-tripdash) .carbonlite-dash_title {
+  position: static;
+  flex-basis: 100%;
+  color: --alpha(var(--tj-color-white) / 70%);
+  font-size: 0.8em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.carbonlite-digit {
+  position: relative;
+  display: inline-block;
+  float: none;
+  width: 0.7em;
+  font: inherit;
+  font-size: 2em;
+  text-align: center;
+}
+
+:is(.carbonlite-dash, .carbonlite-tripdash)::after {
+  position: absolute;
+  bottom: 0.25em;
+  left: 50%;
+  width: 60%;
+  height: 2px;
+  content: "";
+  transform: translateX(-50%);
+}

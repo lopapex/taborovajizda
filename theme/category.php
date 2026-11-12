@@ -1,7 +1,7 @@
 <?php
 get_header();
 ?>
-<h1 class="tj-home-visually-hidden"><?php single_cat_title(); ?></h1>
+<h1 class="tj:sr-only"><?php single_cat_title(); ?></h1>
 <?php
 while (have_posts()) {
 	the_post();
