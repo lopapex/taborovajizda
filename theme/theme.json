@@ -8,23 +8,23 @@
       "palette": [
         {
           "slug": "background",
-          "name": "Nebeské pozadí",
-          "color": "#f4f9ff"
+          "name": "Papír",
+          "color": "#f6efe2"
         },
         {
           "slug": "surface",
-          "name": "Bílá plocha",
-          "color": "#ffffff"
+          "name": "Světlá plocha",
+          "color": "#fffdf8"
         },
         {
           "slug": "text",
-          "name": "Text (námořnická modř)",
-          "color": "#17324d"
+          "name": "Text (večerní modř)",
+          "color": "#14263a"
         },
         {
           "slug": "muted",
           "name": "Vedlejší text",
-          "color": "#4a6378"
+          "color": "#4a5c6e"
         },
         {
           "slug": "primary",
@@ -33,8 +33,8 @@
         },
         {
           "slug": "accent",
-          "name": "Mandarinka",
-          "color": "#fb5607"
+          "name": "Oheň",
+          "color": "#e4572e"
         },
         {
           "slug": "secondary",
@@ -44,7 +44,7 @@
         {
           "slug": "link",
           "name": "Odkaz",
-          "color": "#b54306"
+          "color": "#a13a12"
         }
       ]
     },
@@ -53,16 +53,54 @@
       "wideSize": "1300px"
     },
     "spacing": {
-      "units": ["px", "rem", "%", "vw", "vh"],
+      "units": [
+        "px",
+        "rem",
+        "%",
+        "vw",
+        "vh"
+      ],
       "spacingSizes": [
-        { "name": "1", "slug": "1", "size": "0.25rem" },
-        { "name": "2", "slug": "2", "size": "0.5rem" },
-        { "name": "3", "slug": "3", "size": "0.75rem" },
-        { "name": "4", "slug": "4", "size": "1rem" },
-        { "name": "6", "slug": "6", "size": "1.5rem" },
-        { "name": "8", "slug": "8", "size": "2rem" },
-        { "name": "12", "slug": "12", "size": "3rem" },
-        { "name": "16", "slug": "16", "size": "4rem" }
+        {
+          "name": "1",
+          "slug": "1",
+          "size": "0.25rem"
+        },
+        {
+          "name": "2",
+          "slug": "2",
+          "size": "0.5rem"
+        },
+        {
+          "name": "3",
+          "slug": "3",
+          "size": "0.75rem"
+        },
+        {
+          "name": "4",
+          "slug": "4",
+          "size": "1rem"
+        },
+        {
+          "name": "6",
+          "slug": "6",
+          "size": "1.5rem"
+        },
+        {
+          "name": "8",
+          "slug": "8",
+          "size": "2rem"
+        },
+        {
+          "name": "12",
+          "slug": "12",
+          "size": "3rem"
+        },
+        {
+          "name": "16",
+          "slug": "16",
+          "size": "4rem"
+        }
       ]
     },
     "border": {
@@ -70,44 +108,59 @@
     },
     "shadow": {
       "presets": [
-        { "name": "Měkký", "slug": "soft", "shadow": "0 1.25rem 3rem rgb(0 0 0 / 0.25)" }
+        {
+          "name": "Měkký",
+          "slug": "soft",
+          "shadow": "0 1.25rem 3rem rgb(0 0 0 / 0.25)"
+        }
       ]
     },
     "typography": {
       "fluid": true,
       "fontSizes": [
-        { "name": "Malý", "slug": "sm", "size": "0.875rem" },
-        { "name": "Základní", "slug": "base", "size": "1rem" },
-        { "name": "Střední", "slug": "lg", "size": "1.25rem" },
-        { "name": "Nadpis", "slug": "xl", "size": "clamp(1.75rem, 4vw, 3rem)" },
-        { "name": "Hero", "slug": "hero", "size": "clamp(2.5rem, 7vw, 5.5rem)" }
+        {
+          "name": "Malý",
+          "slug": "sm",
+          "size": "0.875rem"
+        },
+        {
+          "name": "Základní",
+          "slug": "base",
+          "size": "1rem"
+        },
+        {
+          "name": "Střední",
+          "slug": "lg",
+          "size": "1.25rem"
+        },
+        {
+          "name": "Nadpis",
+          "slug": "xl",
+          "size": "clamp(1.75rem, 4vw, 3rem)"
+        },
+        {
+          "name": "Hero",
+          "slug": "hero",
+          "size": "clamp(2.5rem, 7vw, 5.5rem)"
+        }
       ],
       "fontFamilies": [
         {
-          "fontFamily": "Bariol, 'Segoe UI', sans-serif",
-          "name": "Bariol",
-          "slug": "body",
-          "fontFace": [
-            {
-              "fontFamily": "Bariol",
-              "fontStyle": "normal",
-              "fontWeight": "400",
-              "src": ["file:./fonts/bariol_regular-webfont.woff2"]
-            },
-            {
-              "fontFamily": "Bariol",
-              "fontStyle": "italic",
-              "fontWeight": "400",
-              "src": ["file:./fonts/bariol_regular_italic-webfont.woff2"]
-            }
-          ]
+          "fontFamily": "Figtree, 'Segoe UI', system-ui, sans-serif",
+          "name": "Figtree",
+          "slug": "body"
+        },
+        {
+          "fontFamily": "'Bricolage Grotesque', Figtree, 'Segoe UI', system-ui, sans-serif",
+          "name": "Bricolage Grotesque",
+          "slug": "heading"
         }
       ]
     },
     "custom": {
-      "radius": "0.75rem",
-      "content-width": "72rem",
-      "wide-width": "86rem"
+      "radius": "1rem",
+      "content-width": "68rem",
+      "wide-width": "76rem"
     }
   },
   "styles": {

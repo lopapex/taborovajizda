@@ -1,81 +1,59 @@
+/* The season face: only the season name in the hero stamp uses it. */
 @font-face {
   font-family: themed-font;
-  src: url("../../fonts/third-man.otf") format("opentype");
+  /* fonts/third-man.otf is the edited source of this file; only the woff2 ships. */
+  src: url("../../fonts/third-man.woff2") format("woff2");
   font-display: swap;
 }
 
-/* Accent of the active season (underline of the section headings). */
+/* Colour of the season stamp. */
 .season-2026 {
-  --tj-season-accent: #e6642c;
+  --tj-season-accent: #ffb703;
 }
 
-/* Solid paper behind the bands; the season illustration appears only in the hero. */
-html {
-  background: var(--tj-color-paper);
-  color: var(--tj-color-ink);
-  font-family: var(--tj-font-body);
-}
-
-body {
-  background: transparent;
-}
-
-/* Hero illustration (front-page.php); its lighter bottom edge hides under the seam stripe. */
+/* Hero illustration (front-page.php): a wide banner, the whole picture stays visible on desktop. */
 .tj-hero-art {
-  background:
-    linear-gradient(90deg, --alpha(var(--tj-color-paper) / 55%) 0%, transparent 30%),
-    url("../assets/season/hero.jpg") center / cover;
+  background: var(--tj-color-night) url("../assets/season/hero.jpg") center / cover no-repeat;
 }
 
-@media (max-width: 60rem) {
-  .tj-hero-art {
-    background:
-      linear-gradient(180deg, --alpha(var(--tj-color-paper) / 25%) 0%, transparent 35%),
-      url("../assets/season/hero.jpg") center / cover;
-  }
-}
-
-/* Phones: a strip of the illustration stays uncovered above the text panel. */
-@media (max-width: 48rem) {
-  .tj-hero-art {
-    background:
-      url("../assets/season/hero.jpg") center top / auto clamp(11rem, 50vw, 16rem) no-repeat,
-      var(--tj-color-afternoon);
-  }
+/* The season name as a rubber stamp over the lower edge of the illustration. */
+.tj-stamp {
+  display: inline-block;
+  margin: 0;
+  border: 3px solid currentColor;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.9rem 0.25rem;
+  background: var(--tj-color-night);
+  color: var(--tj-season-accent, var(--tj-color-sun));
+  font-family: var(--tj-font-season);
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  rotate: -3deg;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* The poster settles in once, then drifts slower than the page while the hero scrolls away. */
+  /* The one authored moment of the page: the illustration settles, then the stamp lands. */
   @keyframes tj-hero-settle {
     from {
-      scale: 1.06;
+      scale: 1.04;
     }
-
-    to {
-      scale: 1;
-    }
-
   }
 
-  @keyframes tj-hero-drift {
-    to {
-      translate: 0 16%;
+  @keyframes tj-stamp-in {
+    from {
+      opacity: 0;
+      scale: 1.5;
+      rotate: -9deg;
     }
-
   }
 
   .tj-hero-art {
-    animation: tj-hero-settle 1.6s var(--tj-ease-soft) both;
+    animation: tj-hero-settle 1.2s var(--tj-ease-out) both;
   }
 
-  @supports (animation-timeline: view()) {
-    .tj-hero-art {
-      animation:
-        tj-hero-settle 1.6s var(--tj-ease-soft) both,
-        tj-hero-drift linear both;
-      animation-timeline: auto, view();
-      animation-range: normal, exit;
-    }
-
+  .tj-stamp {
+    animation: tj-stamp-in 0.32s cubic-bezier(0.3, 1.3, 0.5, 1) 0.15s both;
   }
 }

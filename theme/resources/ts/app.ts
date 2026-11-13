@@ -15,9 +15,9 @@ function onScrolledPast(height: string, margin: string, callback: (past: boolean
 }
 
 /** Post or page content from app/PostContentEndpoint.php. */
-async function fetchContent(endpoint: string, query: string): Promise<{ html?: string; title?: string; file?: string }> {
+async function fetchContent(endpoint: string, query: string): Promise<{ html?: string; title?: string; meta?: string; file?: string }> {
   const response = await fetch(`${endpoint}&${query}`, { credentials: 'same-origin' });
-  const payload = await response.json() as { success: boolean; data?: { html?: string; title?: string; file?: string } };
+  const payload = await response.json() as { success: boolean; data?: { html?: string; title?: string; meta?: string; file?: string } };
   if (!response.ok || !payload.success || !payload.data) throw new Error('unavailable');
   return payload.data;
 }
@@ -25,6 +25,13 @@ async function fetchContent(endpoint: string, query: string): Promise<{ html?: s
 /** Content loaded later into a dialog gets the same enhancements as the page. */
 function enhance(root: HTMLElement): void {
   $$('.youtube-player', root).forEach(createYouTubePreview);
+  // Gallery plugins (Photonic) print thumbnails with data-src and keep them hidden until
+  // their own script runs at page load; content added later has to be woken up here.
+  $$<HTMLImageElement>('img[data-src]:not([src])', root).forEach((img) => {
+    if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+    img.src = img.dataset.src ?? '';
+    img.style.visibility = 'visible';
+  });
   markZoomable(root);
 }
 
@@ -63,13 +70,13 @@ function initialiseNavScrollSpy(): void {
   sections.forEach((section) => observer.observe(section));
 }
 
-/** Desktop navigation: one underline slides to the current section. */
+/** Desktop navigation: one underline slides to the current section (transform only). */
 function initialiseNavIndicator(): void {
   const list = $('[data-nav="desktop"]');
   if (!list) return;
   const links = $$<HTMLAnchorElement>('a', list);
   const indicator = document.createElement('span');
-  indicator.className = 'tj:pointer-events-none tj:absolute tj:bottom-[.35rem] tj:left-0 tj:h-[2px] tj:w-0 tj:rounded-[2px] tj:bg-sun tj:opacity-0 tj:transition-[translate,width,opacity] tj:duration-300 tj:ease-soft tj:[&.is-active]:opacity-100';
+  indicator.className = 'tj:pointer-events-none tj:absolute tj:bottom-[.3rem] tj:left-0 tj:h-[2px] tj:w-[100px] tj:origin-left tj:rounded-[2px] tj:bg-ember tj:opacity-0 tj:transition-[transform,opacity] tj:duration-250 tj:ease-out tj:[&.is-active]:opacity-100';
   indicator.setAttribute('aria-hidden', 'true');
   list.append(indicator);
 
@@ -79,8 +86,7 @@ function initialiseNavIndicator(): void {
     if (!current) return;
     // Same inset as the link padding, so the line sits under the text only.
     const inset = Number.parseFloat(getComputedStyle(current).paddingLeft) || 0;
-    indicator.style.translate = `${current.offsetLeft + inset}px 0`;
-    indicator.style.width = `${Math.max(0, current.offsetWidth - inset * 2)}px`;
+    indicator.style.transform = `translateX(${current.offsetLeft + inset}px) scaleX(${Math.max(0, current.offsetWidth - inset * 2) / 100})`;
   };
   const observer = new MutationObserver(place);
   links.forEach((link) => observer.observe(link, { attributes: true, attributeFilter: ['aria-current'] }));
@@ -123,144 +129,27 @@ function initialiseBackToTop(): void {
   });
 }
 
-/**
- * Blocks ease in once as they reach the viewport. Nothing is hidden without
- * JavaScript, under reduced motion or when it is already on screen.
- */
-function initialiseScrollReveal(): void {
-  if (reducedMotion()) return;
-  const reveal = (element: Element) => {
-    element.classList.add('is-revealed');
-    observer.unobserve(element);
-  };
-  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => entry.isIntersecting && reveal(entry.target)), { rootMargin: '0px 0px 10% 0px' });
-  const siblingIndex = new Map<Element, number>();
-  $$('[data-reveal]').filter((element) => !element.closest('dialog')).forEach((element) => {
-    if (element.getBoundingClientRect().top < window.innerHeight || !element.parentElement) return;
-    const index = siblingIndex.get(element.parentElement) ?? 0;
-    siblingIndex.set(element.parentElement, index + 1);
-    element.style.setProperty('--tj-delay', `${Math.min(index, 4) * 50}ms`);
-    element.classList.add('tj-reveal');
-    observer.observe(element);
-  });
-  // A jump (menu link, back button) reveals everything above the landing point at once.
-  window.addEventListener('hashchange', () => $$('.tj-reveal:not(.is-revealed)').forEach((element) => {
-    if (element.getBoundingClientRect().top < window.innerHeight) reveal(element);
-  }));
-}
-
-/* ---------- Homepage content ---------- */
-
-/**
- * Paging carousel: the arrows and dots move by the number of visible cards,
- * the track follows a drag or swipe. Off-screen cards are inert.
- */
-function initialisePagers(): void {
-  $$('[data-pager]').forEach((pager) => {
-    const track = $('[data-pager-track]', pager);
-    const viewport = $('[data-pager-viewport]', pager);
-    const previous = $<HTMLButtonElement>('[data-dir="prev"]', pager);
-    const next = $<HTMLButtonElement>('[data-dir="next"]', pager);
-    const status = $('[data-pager-status]', pager);
-    if (!track || !viewport || !previous || !next || !status) return;
-    const items = Array.from(track.children) as HTMLElement[];
-    const label = document.createElement('span');
-    label.className = 'tj:sr-only';
-    let dots: HTMLButtonElement[] = [];
-    let first = 0;
-    let shownFirst = -1;
-
-    const perView = () => Math.max(1, Math.round(Number.parseFloat(getComputedStyle(pager).getPropertyValue('--tj-per-view')) || 1));
-    const offset = () => (items[first] ? items[first].offsetLeft - items[0].offsetLeft : 0);
-    const go = (target: number) => {
-      first = Math.max(0, Math.min(target, items.length - perView()));
-      render();
-    };
-    const render = () => {
-      const visible = perView();
-      first = Math.min(first, Math.max(0, items.length - visible));
-      // After a page change the newly shown cards follow the track one by one.
-      if (shownFirst !== -1 && shownFirst !== first && !reducedMotion()) {
-        const direction = first > shownFirst ? 1 : -1;
-        items.slice(first, first + visible).forEach((item, index) => item.animate(
-          [{ opacity: 0.35, translate: `${direction * 28}px 0` }, { opacity: 1, translate: '0 0' }],
-          { duration: 420, delay: index * 45, easing: 'cubic-bezier(.2, .7, .2, 1)', fill: 'backwards' },
-        ));
-      }
-      shownFirst = first;
-      track.style.transform = `translateX(${-offset()}px)`;
-      items.forEach((item, index) => { item.inert = index < first || index >= first + visible; });
-      previous.disabled = first === 0;
-      next.disabled = first + visible >= items.length;
-
-      // One dot per page; the last page may overlap the previous one.
-      const pages = Math.max(1, Math.ceil(items.length / visible));
-      const page = first >= items.length - visible ? pages - 1 : Math.floor(first / visible);
-      status.hidden = pages < 2;
-      if (dots.length !== pages) {
-        dots = Array.from({ length: pages }, (_, index) => {
-          const dot = document.createElement('button');
-          dot.type = 'button';
-          dot.className = 'tj-pager-dot';
-          dot.setAttribute('aria-label', `Stránka ${index + 1} z ${pages}`);
-          dot.addEventListener('click', () => go(index * perView()));
-          return dot;
-        });
-        status.replaceChildren(label, ...dots);
-      }
-      dots.forEach((dot, index) => (index === page ? dot.setAttribute('aria-current', 'true') : dot.removeAttribute('aria-current')));
-      label.textContent = `Stránka ${page + 1} z ${pages}`;
-    };
-    previous.addEventListener('click', () => go(first - perView()));
-    next.addEventListener('click', () => go(first + perView()));
-
-    // Drag / swipe: horizontal movement drags the track, vertical stays a page scroll.
-    let startX = 0;
-    let startY = 0;
-    let pointerId = -1;
-    let dragging = false;
-    let moved = false;
-    viewport.addEventListener('pointerdown', (event) => {
-      if (event.pointerType === 'mouse' && event.button !== 0) return;
-      ({ clientX: startX, clientY: startY, pointerId } = event);
-      dragging = moved = false;
+/** Past seasons: phones start with the latest six; the ticker of their names can be paused. */
+function initialiseSeasons(): void {
+  const list = $('[data-seasons]');
+  const all = $<HTMLButtonElement>('[data-seasons-all]');
+  if (list && all) {
+    all.addEventListener('click', () => {
+      const first = $$<HTMLElement>(':scope > li', list).find((item) => item.offsetParent === null);
+      list.classList.add('is-all');
+      all.closest('p')?.remove();
+      first?.querySelector('a')?.focus();
     });
-    viewport.addEventListener('pointermove', (event) => {
-      if (event.pointerId !== pointerId) return;
-      const dx = event.clientX - startX;
-      if (!dragging) {
-        if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(event.clientY - startY)) return;
-        dragging = moved = true;
-        viewport.setPointerCapture(pointerId);
-        viewport.classList.add('is-dragging');
-        track.classList.add('is-dragging');
-      }
-      const resisting = (first === 0 && dx > 0) || (next.disabled && dx < 0);
-      track.style.transform = `translateX(${-offset() + (resisting ? dx * 0.35 : dx)}px)`;
-    });
-    const finishDrag = (event: PointerEvent) => {
-      if (event.pointerId !== pointerId) return;
-      pointerId = -1;
-      if (!dragging) return;
-      dragging = false;
-      viewport.classList.remove('is-dragging');
-      track.classList.remove('is-dragging');
-      const dx = event.clientX - startX;
-      const threshold = Math.min(90, viewport.clientWidth * 0.18);
-      go(dx < -threshold ? first + perView() : dx > threshold ? first - perView() : first);
-      window.setTimeout(() => { moved = false; }, 80);
-    };
-    viewport.addEventListener('pointerup', finishDrag);
-    viewport.addEventListener('pointercancel', finishDrag);
-    // A drag must not also click the card underneath.
-    viewport.addEventListener('click', (event) => {
-      if (!moved) return;
-      event.preventDefault();
-      event.stopPropagation();
-    }, true);
-    viewport.addEventListener('dragstart', (event) => event.preventDefault());
-
-    new ResizeObserver(render).observe(pager);
+    // Revealed another way (a shared season link): the button has nothing left to do.
+    new MutationObserver(() => { if (list.classList.contains('is-all')) all.closest('p')?.remove(); }).observe(list, { attributes: true, attributeFilter: ['class'] });
+  }
+  const toggle = $<HTMLButtonElement>('[data-ticker-toggle]');
+  const ticker = toggle?.parentElement && $('.tj-ticker', toggle.parentElement);
+  if (!toggle || !ticker) return;
+  toggle.addEventListener('click', () => {
+    const paused = ticker.classList.toggle('is-paused');
+    toggle.setAttribute('aria-pressed', String(paused));
+    toggle.setAttribute('aria-label', paused ? 'Spustit běžící názvy ročníků' : 'Zastavit běžící názvy ročníků');
   });
 }
 
@@ -308,40 +197,26 @@ function initialiseSeasonArticles(): void {
   });
 }
 
-/**
- * Pro rodiče: the documents card is as tall as the FAQ card with every item
- * closed, and keeps that height while an item is open.
- */
-function initialiseCollapsedEqualHeight(): void {
-  $$('[data-collapsed-equal]').forEach((container) => {
-    const main = container.firstElementChild as HTMLElement | null;
-    if (!main) return;
-    const syncOpen = () => container.classList.toggle('is-faq-open', $('details[open]', main) !== null);
-    // `toggle` does not bubble; listen in the capture phase.
-    main.addEventListener('toggle', syncOpen, true);
-    syncOpen();
-    const measure = () => {
-      if (getComputedStyle(container).gridTemplateColumns.split(' ').length < 2) {
-        container.style.removeProperty('--tj-collapsed');
-        return;
-      }
-      const extra = $$<HTMLDetailsElement>('details', main).reduce((sum, item) => {
-        const summary = $('summary', item);
-        return sum + (summary ? item.getBoundingClientRect().height - summary.getBoundingClientRect().height : 0);
-      }, 0);
-      container.style.setProperty('--tj-collapsed', `${Math.round(main.getBoundingClientRect().height - extra)}px`);
-    };
-    const observer = new ResizeObserver(measure);
-    observer.observe(container);
-    observer.observe(main);
-  });
-}
-
 /* ---------- Dialogs ---------- */
+
+/**
+ * Every open dialog has an address, so it can be shared and the Back button
+ * closes it: a dialog printed in the page uses "#<id>", the page dialog the
+ * real URL of the post it shows.
+ */
+const dialogState = (): string | null => (window.history.state as { tjDialog?: string } | null)?.tjDialog ?? null;
+const lockScroll = () => document.documentElement.classList.toggle('has-dialog', $('.tj-dialog[open]') !== null);
 
 function initialiseDialogs(): void {
   const openers = new WeakMap<HTMLDialogElement, { opener: HTMLElement; pointer: boolean }>();
-  // Openers link to the real URL, so content stays reachable without JavaScript.
+  const open = (dialog: HTMLDialogElement, push: boolean) => {
+    if (dialog.open) return;
+    dialog.showModal();
+    lockScroll();
+    if (push) window.history.pushState({ tjDialog: dialog.id }, '', `#${dialog.id}`);
+  };
+
+  // Openers link to a real URL or to "#<id>", so the content stays reachable without JavaScript.
   $$('[data-dialog-open]').forEach((opener) => {
     const dialog = document.getElementById(opener.dataset.dialogOpen ?? '');
     if (!(dialog instanceof HTMLDialogElement)) return;
@@ -351,15 +226,18 @@ function initialiseDialogs(): void {
       event.preventDefault();
       // `detail` counts pointer clicks; a keyboard-activated link reports 0.
       openers.set(dialog, { opener, pointer: event.detail > 0 });
-      dialog.showModal();
-      document.documentElement.classList.add('has-dialog');
+      open(dialog, true);
     });
   });
+
   $$<HTMLDialogElement>('.tj-dialog').forEach((dialog) => {
     dialog.addEventListener('close', () => {
-      if (!$('.tj-dialog[open]')) document.documentElement.classList.remove('has-dialog');
+      lockScroll();
       // Stop a trailer started inside the dialog by restoring its preview.
       $$('.youtube-player', dialog).forEach((player) => { if ($('iframe', player)) createYouTubePreview(player); });
+      // Closed by the button, Esc or the backdrop: leave its address too.
+      if (dialogState() === dialog.id) window.history.back();
+      else if (window.location.hash === `#${dialog.id}`) window.history.replaceState(null, '', window.location.pathname + window.location.search);
       const last = openers.get(dialog);
       openers.delete(dialog);
       // Dialogs closed with the mouse return focus without a visible ring.
@@ -367,30 +245,59 @@ function initialiseDialogs(): void {
     });
     dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
   });
-  // Close buttons of dialogs and of the form notification (template-parts/notifications.php).
-  document.addEventListener('click', (event) => {
-    const button = event.target instanceof Element ? event.target.closest('[data-dialog-close]') : null;
-    if (!button) return;
-    const dialog = button.closest('dialog');
-    if (dialog) dialog.close();
-    else button.closest('[role="dialog"]')?.remove();
+
+  // Back and Forward: the history entry decides which dialog is open.
+  window.addEventListener('popstate', () => {
+    const wanted = dialogState();
+    $$<HTMLDialogElement>('.tj-dialog[open]').forEach((dialog) => { if (dialog.id !== wanted) dialog.close(); });
+    const target = wanted ? document.getElementById(wanted) : null;
+    if (!(target instanceof HTMLDialogElement) || target.open) return;
+    // The page dialog would need its content again: load the real page instead.
+    if (target.hasAttribute('data-page-dialog')) window.location.reload();
+    else open(target, false);
   });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    target?.closest('[data-dialog-close]')?.closest('dialog')?.close();
+    // Form result banner (template-parts/notifications.php): closing it also cleans the address.
+    const notice = target?.closest('[data-notice-close]')?.closest('[data-notice]');
+    if (!notice) return;
+    notice.remove();
+    const url = new URL(window.location.href);
+    ['success', 'error'].forEach((key) => url.searchParams.delete(key));
+    window.history.replaceState(window.history.state, '', url);
+  });
+
+  // A shared "#rocnik-2025" or "#pribeh" link opens its dialog right away.
+  const openLinked = () => {
+    const linked = window.location.hash.length > 1 ? document.getElementById(decodeURIComponent(window.location.hash.slice(1))) : null;
+    if (!(linked instanceof HTMLDialogElement) || !linked.classList.contains('tj-dialog') || linked.hasAttribute('data-page-dialog')) return;
+    // A season hidden on phones must be in the page before its dialog can show.
+    linked.closest('[data-seasons]')?.classList.add('is-all');
+    open(linked, false);
+  };
+  window.addEventListener('hashchange', openLinked);
+  openLinked();
 }
 
 /**
- * Homepage: a link to another page of this site opens its content in a
- * dialog. Files, the registration form, admin and the homepage stay normal
+ * Homepage: a link to a post or page of this site (a news item, a person, an
+ * activity, the packing list) opens it in the page dialog under its real URL.
+ * Files, lists, the registration form, admin and the homepage stay normal
  * links; an attachment page opens its file; on failure the link navigates.
  */
-function initialiseInternalLinks(): void {
+function initialisePageDialog(): void {
   const dialog = $<HTMLDialogElement>('[data-page-dialog]');
   const title = $('#page-dialog-title');
+  const meta = dialog && $('[data-dialog-meta]', dialog);
   const body = $('[data-page-dialog-body]');
   const endpoint = dialog?.dataset.postContentUrl;
-  if (!dialog || !title || !body || !endpoint || !document.body.classList.contains('home')) return;
+  if (!dialog || !title || !meta || !body || !endpoint || !document.body.classList.contains('home')) return;
 
   // The homepage path is the site root ("/" in production, "/test/" on stage).
   const homePath = window.location.pathname.replace(/\/?$/, '/');
+  const homeUrl = window.location.pathname + window.location.search;
   const opensHere = (link: HTMLAnchorElement): URL | null => {
     if (link.hasAttribute('data-dialog-open') || link.hasAttribute('download') || link.closest('.tj-lightbox')) return null;
     let url: URL;
@@ -398,30 +305,71 @@ function initialiseInternalLinks(): void {
     if (url.origin !== window.location.origin || !url.pathname.startsWith(homePath)) return null;
     // Path relative to the site root, without the "index.php/" of stage permalinks.
     const path = '/' + url.pathname.slice(homePath.length).replace(/^index\.php(?:\/|$)/, '');
-    if (path === '/' || /^\/(?:wp-admin|wp-content|wp-includes|wp-json|feed|e-prihlaska|odeslat-dotaz)(?:\/|$)/.test(path) || /\.[a-z0-9]{2,5}$/i.test(path)) return null;
+    if (path === '/' || /^\/(?:wp-admin|wp-content|wp-includes|wp-json|feed|category|tag|rocnik|author|page|e-prihlaska|odeslat-dotaz)(?:\/|$)/.test(path) || /\.[a-z0-9]{2,5}$/i.test(path)) return null;
     return url;
   };
+
+  // Content is fetched once per address and as soon as the visitor shows intent
+  // (pointer rests on a link, keyboard focus, touch), so the dialog usually opens filled.
+  type Content = Awaited<ReturnType<typeof fetchContent>>;
+  const cache = new Map<string, Promise<Content>>();
+  const load = (url: URL): Promise<Content> => {
+    let pending = cache.get(url.href);
+    if (!pending) {
+      pending = fetchContent(endpoint, `url=${encodeURIComponent(url.href)}`);
+      cache.set(url.href, pending);
+      pending.catch(() => cache.delete(url.href));
+    }
+    return pending;
+  };
+  const linkOf = (event: Event) => (event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null);
+  const prefetch = (event: Event) => {
+    const link = linkOf(event);
+    const url = link && opensHere(link);
+    if (url) void load(url).catch(() => undefined);
+  };
+  let hover = 0;
+  document.addEventListener('pointerover', (event) => {
+    if (event.pointerType !== 'mouse') return;
+    window.clearTimeout(hover);
+    // A pointer only passing over a row of links fetches nothing.
+    hover = window.setTimeout(() => prefetch(event), 80);
+  });
+  document.addEventListener('pointerout', () => window.clearTimeout(hover));
+  document.addEventListener('focusin', prefetch);
+  document.addEventListener('touchstart', prefetch, { passive: true });
 
   let request = 0;
   let opener: HTMLAnchorElement | null = null;
   document.addEventListener('click', async (event) => {
     if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
+    const link = linkOf(event);
     const url = link && opensHere(link);
     if (!link || !url) return;
     event.preventDefault();
-    if (!dialog.open) {
+    const state = { tjDialog: dialog.id };
+    if (dialog.open) {
+      // A link followed inside the dialog replaces its address.
+      window.history.replaceState(state, '', url.href);
+    } else {
       opener = link;
       dialog.showModal();
-      document.documentElement.classList.add('has-dialog');
+      lockScroll();
+      window.history.pushState(state, '', url.href);
     }
     const current = ++request;
     title.textContent = link.textContent?.trim() || 'Táborová jízda';
-    body.innerHTML = '<p class="tj:text-muted">Načítám…</p>';
+    meta.textContent = '';
+    body.replaceChildren();
     body.setAttribute('aria-busy', 'true');
     dialog.scrollTop = 0;
+    // "Načítám…" appears only when the content really takes a moment.
+    const waiting = window.setTimeout(() => {
+      if (current === request && body.childElementCount === 0) body.innerHTML = '<p class="tj:text-muted">Načítám…</p>';
+    }, 250);
     try {
-      const data = await fetchContent(endpoint, `url=${encodeURIComponent(url.href)}`);
+      const data = await load(url);
+      window.clearTimeout(waiting);
       if (current !== request) return;
       if (data.file) {
         // An attachment page: open the document itself and leave the homepage as it is.
@@ -431,17 +379,22 @@ function initialiseInternalLinks(): void {
       }
       if (!data.html) throw new Error('empty');
       title.textContent = data.title || title.textContent;
+      meta.textContent = data.meta ?? '';
       body.innerHTML = data.html;
       enhance(body);
     } catch {
-      if (current === request) window.location.href = url.href;
+      window.clearTimeout(waiting);
+      // The address already is the page: load it for real.
+      if (current === request) window.location.reload();
     } finally {
       if (current === request) body.removeAttribute('aria-busy');
     }
   });
   dialog.addEventListener('close', () => {
     request++;
-    if (opener?.isConnected) opener.focus();
+    // Closed while the history entry was already left (Back): make sure the address is the homepage again.
+    if (dialogState() !== dialog.id && window.location.pathname !== homePath) window.history.replaceState(null, '', homeUrl);
+    if (opener?.isConnected) opener.focus({ preventScroll: true });
     opener = null;
   });
 }
@@ -530,13 +483,16 @@ function initialiseLightbox(): void {
   let items: HTMLImageElement[] = [];
   let index = 0;
 
-  const show = (target: number) => {
+  const show = (target: number, animate = true) => {
     index = (target + items.length) % items.length;
     const current = items[index];
     image.src = largestSource(current);
     image.classList.remove('is-swapping');
-    void image.offsetWidth;
-    image.classList.add('is-swapping');
+    // Paging with the arrow keys is instant; pointer and touch get a short fade.
+    if (animate) {
+      void image.offsetWidth;
+      image.classList.add('is-swapping');
+    }
     image.alt = current.alt;
     caption.textContent = current.closest('figure')?.querySelector('figcaption')?.textContent?.trim() || current.alt || '';
     caption.hidden = !caption.textContent;
@@ -546,11 +502,9 @@ function initialiseLightbox(): void {
     [items[index + 1], items[index - 1]].forEach((neighbour) => { if (neighbour) new Image().src = largestSource(neighbour); });
   };
   const open = (img: HTMLImageElement) => {
-    // Browsing scope: all team portraits for a profile photo, otherwise every visible
-    // photo of the surrounding dialog or section (collapsed articles are skipped).
-    const scope: ParentNode = img.closest('[data-zoom="team"]')
-      ? ($('#people-track') ?? document)
-      : (img.closest('dialog') ?? img.closest('section') ?? document);
+    // Browsing scope: every visible photo of the surrounding dialog, article or section
+    // (collapsed articles are skipped).
+    const scope: ParentNode = img.closest('dialog') ?? img.closest('article') ?? img.closest('section') ?? document;
     items = $$<HTMLImageElement>(zoomableSelector, scope).filter((candidate) => isZoomable(candidate) && !candidate.closest('details:not([open])'));
     if (!items.includes(img)) items = [img];
     show(items.indexOf(img));
@@ -577,8 +531,8 @@ function initialiseLightbox(): void {
   $('[data-dir="close"]', viewer)?.addEventListener('click', () => viewer.close());
   viewer.addEventListener('click', (event) => { if (event.target === viewer || event.target === stage) viewer.close(); });
   viewer.addEventListener('keydown', (event) => {
-    if (event.key === 'ArrowLeft') show(index - 1);
-    if (event.key === 'ArrowRight') show(index + 1);
+    if (event.key === 'ArrowLeft') show(index - 1, false);
+    if (event.key === 'ArrowRight') show(index + 1, false);
   });
   let startX: number | null = null;
   viewer.addEventListener('pointerdown', (event) => { startX = event.clientX; });
@@ -683,7 +637,7 @@ function initialisePersonalIdValidation(): void {
   input.addEventListener('blur', validate);
 }
 
-/** Three validated steps; without JavaScript the whole form stays on one page. */
+/** Validated steps and a final review of everything entered; without JavaScript the whole form stays on one page. */
 function initialiseRegistrationSteps(): void {
   const form = $<HTMLFormElement>('[data-registration-form]');
   const indicator = $('[data-registration-steps]');
@@ -697,7 +651,53 @@ function initialiseRegistrationSteps(): void {
   form.classList.add('is-stepped');
   indicator.hidden = false;
 
+  // Review step: what was entered in each earlier step, with a way back to it.
+  const summary = $('[data-registration-summary]', form);
+  const fieldValue = (field: HTMLElement): string => {
+    if (field instanceof HTMLSelectElement && field.closest('[role="group"]')) {
+      const [year, month, day] = ($<HTMLInputElement>(`#${field.id}-value`, form)?.value ?? '').split('-');
+      return year ? `${Number(day)}. ${Number(month)}. ${year}` : '';
+    }
+    if (field instanceof HTMLSelectElement) return field.value ? field.selectedOptions[0]?.textContent?.trim() ?? '' : '';
+    return field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement ? field.value.trim() : '';
+  };
+  const buildSummary = () => {
+    if (!summary) return;
+    summary.replaceChildren(...steps.slice(0, -1).map((step, stepIndex) => {
+      const section = document.createElement('section');
+      section.className = 'tj:border-t tj:border-ink/14 tj:pt-4';
+      const head = document.createElement('div');
+      head.className = 'tj:flex tj:items-center tj:justify-between tj:gap-4';
+      const heading = document.createElement('h3');
+      heading.className = 'tj:m-0 tj:text-[1.1rem] tj:font-bold tj:text-ink';
+      heading.textContent = $('legend', step)?.textContent?.trim() ?? '';
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'tj-link tj:cursor-pointer tj:border-0 tj:bg-transparent tj:p-0';
+      edit.textContent = 'Upravit';
+      edit.addEventListener('click', () => show(stepIndex));
+      head.append(heading, edit);
+      const list = document.createElement('dl');
+      list.className = 'tj:m-0 tj:mt-3 tj:grid tj:gap-x-6 tj:gap-y-2 tj:sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]';
+      $$<HTMLLabelElement>('label[for]', step).forEach((label) => {
+        const field = document.getElementById(label.htmlFor);
+        const value = field ? fieldValue(field) : '';
+        if (!value) return;
+        const term = document.createElement('dt');
+        term.className = 'tj:text-[.95rem] tj:text-muted';
+        term.textContent = (label.textContent ?? '').replace('*', '').trim();
+        const detail = document.createElement('dd');
+        detail.className = 'tj:m-0 tj:font-semibold tj:whitespace-pre-line tj:text-ink tj:max-sm:mb-2';
+        detail.textContent = value;
+        list.append(term, detail);
+      });
+      section.append(head, list);
+      return section;
+    }));
+  };
+
   const show = (index: number, focus = true) => {
+    if (index === steps.length - 1) buildSummary();
     current = index;
     reached = Math.max(reached, index);
     steps.forEach((step, stepIndex) => { step.hidden = stepIndex !== index; });
@@ -709,7 +709,7 @@ function initialiseRegistrationSteps(): void {
     });
     if (focus) {
       indicator.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' });
-      formFields(steps[index])[0]?.focus({ preventScroll: true });
+      (formFields(steps[index])[0] ?? $<HTMLButtonElement>('button[type="submit"]', steps[index]))?.focus({ preventScroll: true });
     }
   };
   const firstInvalid = (index: number) => formFields(steps[index]).find((field) => !field.checkValidity());
@@ -743,14 +743,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initialiseNavIndicator();
   initialiseHeader();
   initialiseBackToTop();
-  initialisePagers();
+  initialiseSeasons();
   initialiseExclusiveDetails();
   initialiseSeasonArticles();
-  initialiseCollapsedEqualHeight();
   initialiseLightbox();
-  initialiseScrollReveal();
+  initialisePageDialog();
   initialiseDialogs();
-  initialiseInternalLinks();
   initialiseExternalLinks();
   initialiseCzechDateInputs();
   initialisePersonalIdValidation();

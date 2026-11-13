@@ -32,6 +32,23 @@ final class Home
         return $season->isFull() ? 'Přihlásit náhradníka' : 'Přihlásit dítě';
     }
 
+    /**
+     * Typographic dashes for display: "7-17 let" and "Zombie Land - Splzov" are
+     * stored with hyphens. A number range gets a word joiner, so it never wraps.
+     */
+    public static function dashes(string $text): string
+    {
+        return preg_replace(['/ - /u', '/(?<=\d)-(?=\d)/u'], [' – ', "–\u{2060}"], $text) ?? $text;
+    }
+
+    /** The homepage h1 says what the site is; the season name lives in the hero stamp. */
+    public static function heroTitle(Season $season): string
+    {
+        $age = $season->formattedAgeRange();
+
+        return $age ? sprintf('Letní tábor pro děti %s u Jizery', self::dashes($age)) : 'Letní tábor pro děti u Jizery';
+    }
+
     public static function registrationUrl(): string
     {
         return home_url('/e-prihlaska/#menu');
@@ -220,6 +237,49 @@ final class Home
             '#<p>\s*(?:<a\b[^>]*>\s*)?<img\b[^>]*>(?:\s*</a>)?\s*</p>#is',
             '#(?:<a\b[^>]*>\s*)?<img\b[^>]*>(?:\s*</a>)?#is',
         ], '', $content) ?? $content;
+    }
+
+    /**
+     * One post or page as it is shown on its own page and in the homepage
+     * dialog: a person gets the portrait beside the profile, other posts their
+     * featured image when the text has no photo of its own.
+     *
+     * @return array{title: string, meta: string, html: string}
+     */
+    public static function article(WP_Post $post): array
+    {
+        $previous = $GLOBALS['post'] ?? null;
+        $GLOBALS['post'] = $post;
+        setup_postdata($post);
+        $content = apply_filters('the_content', $post->post_content);
+        wp_reset_postdata();
+        $GLOBALS['post'] = $previous;
+
+        $title = html_entity_decode(wp_strip_all_tags(get_the_title($post)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        if ($post->post_type === 'post' && has_category('lide', $post)) {
+            $person = self::person($post);
+            $portrait = has_post_thumbnail($post)
+                ? '<figure class="tj:m-0 tj:aspect-4/5 tj:overflow-hidden tj:rounded-2xl tj:bg-sand tj:max-sm:w-[min(70%,15rem)] tj:[&_img]:block tj:[&_img]:size-full tj:[&_img]:object-cover" data-zoom>' . get_the_post_thumbnail($post, 'medium_large', ['alt' => $person['name']]) . '</figure>'
+                : '';
+
+            return [
+                'title' => $person['name'],
+                'meta' => $person['role'] !== '' ? $person['role'] : 'Náš tým',
+                'html' => '<div class="tj:grid tj:items-start tj:gap-6 tj:sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] tj:[&>:only-child]:col-span-full">' . $portrait
+                    . '<div class="tj-prose tj-person">' . self::personContent($post) . '</div></div>',
+            ];
+        }
+
+        $lead = has_post_thumbnail($post) && ! str_contains($content, '<img')
+            ? '<figure class="tj:m-0 tj:mb-6 tj:[&_img]:block tj:[&_img]:h-auto tj:[&_img]:w-full tj:[&_img]:rounded-2xl" data-zoom>' . get_the_post_thumbnail($post, 'large') . '</figure>'
+            : '';
+        $meta = match (true) {
+            $post->post_type !== 'post' => '',
+            has_category('taborove_aktivity', $post) => 'Program tábora',
+            default => get_the_date('', $post),
+        };
+
+        return ['title' => $title, 'meta' => $meta, 'html' => $lead . '<div class="tj-prose">' . $content . '</div>'];
     }
 
     /** @return array<string, array{label: string, posts: WP_Post[], content: array<int, string>, cover: string}> */

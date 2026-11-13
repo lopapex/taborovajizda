@@ -19,41 +19,38 @@
   --color-ink: var(--wp--preset--color--text);
   --color-muted: var(--wp--preset--color--muted);
   --color-sun: var(--wp--preset--color--primary);
-  --color-tangerine: var(--wp--preset--color--accent);
+  --color-ember: var(--wp--preset--color--accent);
   --color-sky: var(--wp--preset--color--secondary);
   --color-link: var(--wp--preset--color--link);
   --font-body: var(--wp--preset--font-family--body);
+  --font-heading: var(--wp--preset--font-family--heading);
 }
 
 @theme static {
   --breakpoint-sm: 35rem;
   --breakpoint-md: 48rem;
-  --font-display: themed-font, var(--wp--preset--font-family--body);
-  --ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* The season face is used only for the season name (hero stamp). */
+  --font-season: themed-font, var(--wp--preset--font-family--heading);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
+  /* Palette "Večer u ohně": warm paper, deep evening blue, the fire of the logo. */
+  --color-paper: #f6efe2;
+  --color-sand: #ede2cc;
   --color-sun-deep: #d99a00;
   --color-sun-light: #ffc83d;
   --color-grass: #2db37a;
-  --color-sun-tint: #fff0bf;
-  --color-sky-tint: #dff2fb;
-  --color-grass-tint: #e2f6eb;
-  --color-tangerine-tint: #ffe3d6;
+  /* Full-colour bands: the four colours of the logo stripe, each dark enough for night text (WCAG AA). */
+  --color-band-sun: #ffb703;
+  --color-band-ember: #ff6b2c;
+  /* Bright rather than deep, so the long reading in the parents section keeps a high contrast. */
+  --color-band-sky: #56ccf2;
+  --color-band-grass: #3ddc97;
+  --color-dusk: #1c3a55;
+  --color-night: #0f2133;
+  --color-on-night: #f6efe2;
+  --color-on-night-muted: #b5c3d1;
 
-  /* Palette "Den na táboře": the section bands follow a camp day down the page. */
-  --color-paper: #f7f1e6;
-  --color-morning: #ffe39a;
-  --color-afternoon: #ffc68a;
-  --color-dusk: #2b4766;
-  --color-night: #102234;
-  --color-on-night: #f4efe6;
-  --color-on-night-muted: #b9c6d3;
-
-  /* Darker inks for small text on the warm bands (WCAG AA). */
-  --color-warm-ink: #7a2c02;
-  --color-slate: #3d5366;
-  --color-burnt: #963604;
-
-  --color-error: #c0392b;
+  --color-error: #b3261e;
   --color-debug: #ff4fd8;
   --color-youtube: #c4302b;
   --color-facebook: #1868d8;
@@ -61,35 +58,20 @@
   --color-instagram-2: #c9324f;
   --color-instagram-3: #7a3fb0;
 
-  /* Shadows; ink is the text colour, night the darkest band. */
-  --shadow-divide: 1px 0 0 --alpha(var(--tj-color-ink) / 11%), 0 1px 0 --alpha(var(--tj-color-ink) / 11%);
-  --shadow-ring: 0 0 0 2px var(--tj-color-sun);
-  --shadow-soft: 0 0.8rem 2.2rem --alpha(var(--tj-color-ink) / 6%);
-  --shadow-tile: 0 0.8rem 2rem --alpha(var(--tj-color-ink) / 11%);
-  --shadow-panel: 0 1rem 2.5rem --alpha(var(--tj-color-ink) / 11%);
-  --shadow-lift: 0 1.15rem 2.5rem --alpha(var(--tj-color-ink) / 16%);
-  --shadow-ring-lift: 0 0 0 2px var(--tj-color-sun), 0 1.15rem 2.5rem --alpha(var(--tj-color-ink) / 16%);
-  --shadow-menu: 0 1rem 2rem --alpha(var(--tj-color-ink) / 16%);
-  --shadow-header: 0 0.75rem 2rem --alpha(var(--tj-color-ink) / 16%);
-  --shadow-header-scrolled: 0 0.75rem 2rem --alpha(var(--tj-color-ink) / 20%);
-  --shadow-media: 0 1.25rem 3rem --alpha(var(--tj-color-ink) / 14%);
-  --shadow-play: 0 0.5rem 1.5rem --alpha(var(--tj-color-ink) / 20%);
-  --shadow-dialog: 0 1.5rem 5rem --alpha(var(--tj-color-ink) / 25%);
-  --shadow-card: 0 1rem 2.2rem --alpha(var(--tj-color-night) / 10%);
-  --shadow-pill: 0 0.25rem 0.75rem --alpha(var(--tj-color-night) / 25%);
-  --shadow-hero: 0 1.5rem 3rem --alpha(var(--tj-color-night) / 28%);
-  --shadow-trailer: 0 1.5rem 3rem --alpha(var(--tj-color-night) / 35%);
+  /* Three depth levels plus the header and the dialog. */
+  --shadow-soft: 0 0.5rem 1.5rem --alpha(var(--tj-color-night) / 8%);
+  --shadow-lift: 0 1rem 2.25rem --alpha(var(--tj-color-night) / 16%);
   --shadow-deep: 0 1.25rem 2.5rem --alpha(var(--tj-color-black) / 35%);
-  --shadow-button: 0 4px 0 var(--tj-color-sun-deep);
-  --shadow-float: 0 4px 0 var(--tj-color-sun-deep), 0 0.5rem 1.25rem --alpha(var(--tj-color-ink) / 25%);
+  --shadow-header: 0 0.25rem 1rem --alpha(var(--tj-color-night) / 8%);
+  --shadow-header-scrolled: 0 0.5rem 1.5rem --alpha(var(--tj-color-night) / 16%);
+  --shadow-dialog: 0 1.5rem 5rem --alpha(var(--tj-color-night) / 35%);
 }
 
 :root {
-  /* The logo's four-colour stripe; each section seam shifts it by one place. */
-  --tj-stripe-1: linear-gradient(90deg, var(--tj-color-sun) 0 25%, var(--tj-color-tangerine) 25% 50%, var(--tj-color-sky) 50% 75%, var(--tj-color-grass) 75%);
-  --tj-stripe-2: linear-gradient(90deg, var(--tj-color-tangerine) 0 25%, var(--tj-color-sky) 25% 50%, var(--tj-color-grass) 50% 75%, var(--tj-color-sun) 75%);
-  --tj-stripe-3: linear-gradient(90deg, var(--tj-color-sky) 0 25%, var(--tj-color-grass) 25% 50%, var(--tj-color-sun) 50% 75%, var(--tj-color-tangerine) 75%);
-  --tj-stripe-4: linear-gradient(90deg, var(--tj-color-grass) 0 25%, var(--tj-color-sun) 25% 50%, var(--tj-color-tangerine) 50% 75%, var(--tj-color-sky) 75%);
+  /* The logo's four-colour stripe: the brand signature of the header and the footer. */
+  --tj-stripe: linear-gradient(90deg, var(--tj-color-sun) 0 25%, var(--tj-color-ember) 25% 50%, var(--tj-color-sky) 50% 75%, var(--tj-color-grass) 75%);
+  accent-color: var(--tj-color-ember);
+  caret-color: var(--tj-color-ember);
 }
 
 @layer base {
@@ -99,6 +81,11 @@
     box-sizing: border-box;
   }
 
+  ::selection {
+    background: var(--tj-color-sun);
+    color: var(--tj-color-night);
+  }
+
   button,
   input,
   select,
@@ -106,8 +93,14 @@
     font: inherit;
   }
 
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
   :focus-visible {
-    outline: 3px solid var(--tj-color-tangerine);
+    outline: 3px solid var(--tj-color-ember);
     outline-offset: 3px;
   }
 
@@ -139,88 +132,153 @@
       interpolate-size: allow-keywords;
     }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      scroll-behavior: auto !important;
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
 }
 
 /* Components: only patterns used at least three times, or markup created by JavaScript. */
 @layer components {
   .tj-container {
-    width: min(100% - 2rem, 82rem);
+    width: min(100% - 2rem, 76rem);
     margin-inline: auto;
   }
 
-  /* Full-bleed homepage band with the logo stripe on its top seam; set --tj-band and --tj-stripe per section. */
+  /*
+   * Full-bleed band; set --tj-band per section. Its rounded top edge lies over
+   * the end of the previous band, so the page reads as one flowing stack.
+   */
   .tj-section {
+    --tj-curve: clamp(1.5rem, 4vw, 3.25rem);
     position: relative;
-    width: min(100% - 2rem, 82rem);
+    isolation: isolate;
+    width: min(100% - 2rem, 76rem);
     margin-inline: auto;
-    padding-block: clamp(4rem, 8vw, 6.5rem);
-    background: var(--tj-band, var(--tj-color-white));
-    box-shadow: 0 0 0 100vmax var(--tj-band, var(--tj-color-white));
-    clip-path: inset(0 -100vmax);
+    padding-block: clamp(3rem, 6vw, 5rem) calc(clamp(3.5rem, 7vw, 6rem) + var(--tj-curve));
   }
 
   .tj-section::before {
     position: absolute;
-    top: 0;
+    top: calc(var(--tj-curve) * -1);
+    bottom: 0;
     left: calc(50% - 50vw);
-    z-index: 1;
+    z-index: -1;
     width: 100vw;
-    height: 5px;
-    background: var(--tj-stripe, var(--tj-stripe-1));
-    pointer-events: none;
+    border-radius: var(--tj-curve) var(--tj-curve) 0 0;
+    background: var(--tj-band, var(--tj-color-paper));
     content: "";
+  }
+
+  /* A band in one of the logo colours: night text, and everything muted or linked follows it. */
+  .tj-vivid {
+    /* Utilities read the theme.json presets, components the tj tokens: set both. */
+    --wp--preset--color--muted: color-mix(in srgb, var(--tj-color-night) 84%, var(--tj-band));
+    --wp--preset--color--link: var(--tj-color-night);
+    --tj-color-muted: var(--wp--preset--color--muted);
+    --tj-color-link: var(--tj-color-night);
+    color: var(--tj-color-night);
+  }
+
+  .tj-vivid :focus-visible {
+    outline-color: var(--tj-color-night);
+  }
+
+  /* One heading scale for the whole site. */
+  .tj-h1,
+  .tj-h2,
+  .tj-h3 {
+    margin: 0;
+    color: inherit;
+    font-family: var(--tj-font-heading);
+  }
+
+  .tj-h1 {
+    font-size: clamp(2.5rem, 5.6vw, 4.75rem);
+    font-weight: 800;
+    line-height: 1.03;
+    letter-spacing: -0.03em;
+  }
+
+  .tj-h2 {
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  /* A hand-drawn wave under every section heading. */
+  .tj-h2::after {
+    display: block;
+    width: 4.5rem;
+    height: 1rem;
+    margin-top: 0.8rem;
+    background: currentColor;
+    content: "";
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 16'%3E%3Cpath d='M2 8c6-8 11-8 17 0s11 8 17 0 11-8 17 0 11 8 17 0' fill='none' stroke='%23000' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E") left center / 100% 100% no-repeat;
+  }
+
+  .tj-dialog .tj-h2::after {
+    display: none;
+  }
+
+  .tj-h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /* Intro sentence under a section heading. */
+  .tj-lead {
+    max-width: 38rem;
+    margin: 1.1rem 0 0;
+    /* Follows the band: muted ink on paper, soft light on the night bands. */
+    color: color-mix(in srgb, currentColor 78%, transparent);
+    font-size: 1.1rem;
+    line-height: 1.55;
   }
 
   .tj-btn {
     display: inline-flex;
-    min-height: 44px;
+    min-height: 48px;
     align-items: center;
     justify-content: center;
+    gap: 0.55rem;
     border: 0;
-    border-radius: 0.5rem;
-    padding: 0.7rem 1.05rem;
+    border-radius: 999px;
+    padding: 0.75rem 1.5rem;
     background: var(--tj-color-sun);
-    color: var(--tj-color-ink);
-    font-weight: 800;
+    color: var(--tj-color-night);
+    font-weight: 700;
     white-space: nowrap;
     text-decoration: none;
-    box-shadow: var(--tj-shadow-button);
     cursor: pointer;
-    transition: transform 0.15s ease, background-color 0.15s ease;
-  }
-
-  .tj-btn:hover {
-    background: var(--tj-color-sun-light);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 0 var(--tj-color-sun-deep);
+    transition: transform 0.16s var(--tj-ease-out), background-color 0.16s ease, box-shadow 0.16s ease;
   }
 
   .tj-btn:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 var(--tj-color-sun-deep);
+    transform: scale(0.97);
   }
 
+  /* Outline button; follows the text colour, so it works on paper and on the night bands. */
   .tj-btn-quiet {
-    border: 1px solid --alpha(var(--tj-color-ink) / 30%);
-    background: var(--tj-color-white);
-    box-shadow: 0 4px 0 --alpha(var(--tj-color-ink) / 14%);
+    background: transparent;
+    color: inherit;
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, currentColor 35%, transparent);
   }
 
-  .tj-btn-quiet:hover {
-    border-color: var(--tj-color-sun-deep);
-    background: var(--tj-color-sun-tint);
-    box-shadow: 0 6px 0 --alpha(var(--tj-color-ink) / 14%);
+  @media (hover: hover) and (pointer: fine) {
+    .tj-btn:hover {
+      background: var(--tj-color-sun-light);
+      box-shadow: var(--tj-shadow-soft);
+      transform: translateY(-2px) rotate(-1.5deg);
+    }
+
+    .tj-btn-quiet:hover {
+      background: color-mix(in srgb, currentColor 9%, transparent);
+      box-shadow: inset 0 0 0 1.5px currentColor;
+    }
+
+    .tj-btn:active {
+      transform: scale(0.97);
+    }
   }
 
   /* Local-only debug display of a registration CTA (taborovajizda_debug_registration_cta). */
@@ -229,52 +287,26 @@
     outline-offset: 3px;
   }
 
-  /* Text link with an arrow; the warm bands set --tj-link to a darker ink. */
-  .tj-link {
-    display: inline-flex;
-    min-height: 44px;
-    align-items: center;
-    gap: 0.35rem;
-  }
-
+  /* Text link; dark bands set --tj-link to a light ink. */
   .tj-link,
   .tj-prose a {
     color: var(--tj-link, var(--tj-color-link));
-    font-weight: 800;
-    text-decoration: underline 2px --alpha(var(--tj-color-sun) / 45%);
+    font-weight: 700;
+    text-decoration: underline 1.5px color-mix(in srgb, currentColor 40%, transparent);
     text-underline-offset: 0.22em;
-    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+    transition: text-decoration-color 0.15s ease;
   }
 
   .tj-link:hover,
   .tj-prose a:hover {
-    color: var(--tj-color-ink);
     text-decoration-color: currentColor;
-  }
-
-  .tj-link::after {
-    content: "→";
-    transition: transform 0.15s ease;
-  }
-
-  .tj-link:hover::after {
-    transform: translateX(3px);
-  }
-
-  .tj-eyebrow {
-    margin: 0 0 0.7rem;
-    color: var(--tj-eyebrow, var(--tj-color-link));
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
   }
 
   .tj-meta {
     margin: 0 0 0.5rem;
     color: var(--tj-color-muted);
     font-size: 0.9rem;
-    font-weight: 700;
+    font-weight: 600;
   }
 
   /* Form controls of the registration and question forms. */
@@ -282,16 +314,17 @@
     width: 100%;
     min-height: 48px;
     margin: 0;
-    border: 1px solid --alpha(var(--tj-color-ink) / 32%);
-    border-radius: 0.5rem;
+    border: 1px solid --alpha(var(--tj-color-ink) / 35%);
+    border-radius: 0.6rem;
     padding: 0.7rem 0.85rem;
     background: var(--tj-color-white);
     color: var(--tj-color-ink);
+    transition: border-color 0.15s ease;
   }
 
   .tj-input:focus {
-    border-color: var(--tj-color-sun);
-    outline: 3px solid --alpha(var(--tj-color-sun) / 55%);
+    border-color: var(--tj-color-ember);
+    outline: 3px solid --alpha(var(--tj-color-ember) / 30%);
     outline-offset: 1px;
   }
 
@@ -315,60 +348,100 @@
     resize: vertical;
   }
 
-  /* Card lift on hover and keyboard focus (news, past seasons). */
+  /* The one card of the site: linked content with a picture (news, lists, registration steps). */
   .tj-card {
     overflow: hidden;
-    border: 1px solid --alpha(var(--tj-color-ink) / 6%);
-    border-radius: 0.75rem;
+    border: 1px solid --alpha(var(--tj-color-ink) / 9%);
+    border-radius: 1rem;
     background: var(--tj-color-surface);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: var(--tj-shadow-soft);
+    transition: transform 0.2s var(--tj-ease-out), box-shadow 0.2s ease;
   }
 
-  .tj-card:has(:focus-visible) {
-    transform: translateY(-0.2rem);
-    box-shadow: var(--tj-shadow-ring-lift);
+  .tj-card:has(a:focus-visible) {
+    box-shadow: var(--tj-shadow-lift);
   }
 
-  @media (hover: hover) {
-    .tj-card:hover {
-      border-color: --alpha(var(--tj-color-sun) / 55%);
-      transform: translateY(-4px);
+  @media (hover: hover) and (pointer: fine) {
+    .tj-card:has(a):hover {
+      transform: translateY(-2px);
       box-shadow: var(--tj-shadow-lift);
     }
   }
 
-  /* White panel with a coloured top edge (parents section, registration steps); set --tj-panel. */
-  .tj-panel {
-    padding: clamp(1.25rem, 3vw, 2rem);
-    border: 1px solid --alpha(var(--tj-color-ink) / 7%);
-    border-top: 4px solid var(--tj-panel, var(--tj-color-sun));
-    border-radius: 0.75rem;
-    background: --alpha(var(--tj-color-white) / 92%);
-    box-shadow: var(--tj-shadow-panel);
+  /* Picture frame of a linked item: the photo zooms slightly inside it. */
+  .tj-frame {
+    display: block;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: var(--tj-color-sand);
   }
 
-  /* Playful colour rotation of cards: sun, sky, grass, tangerine. */
-  .tj-rotate > :nth-child(4n + 1) {
-    --tj-card: var(--tj-color-sun);
-    --tj-tint: var(--tj-color-sun-tint);
+  .tj-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.45s var(--tj-ease-out);
   }
 
-  .tj-rotate > :nth-child(4n + 2) {
-    --tj-card: var(--tj-color-sky);
-    --tj-tint: var(--tj-color-sky-tint);
+  @media (hover: hover) and (pointer: fine) {
+    a:hover .tj-frame img,
+    a.tj-frame:hover img {
+      transform: scale(1.04);
+    }
   }
 
-  .tj-rotate > :nth-child(4n + 3) {
-    --tj-card: var(--tj-color-grass);
-    --tj-tint: var(--tj-color-grass-tint);
+  /* Photo wall: every picture hangs a little crooked and straightens under the pointer. */
+  .tj-tilt > * {
+    transition: rotate 0.35s var(--tj-ease-out), translate 0.35s var(--tj-ease-out);
   }
 
-  .tj-rotate > :nth-child(4n + 4) {
-    --tj-card: var(--tj-color-tangerine);
-    --tj-tint: var(--tj-color-tangerine-tint);
+  .tj-tilt > :nth-child(3n + 1) {
+    rotate: -1.6deg;
   }
 
-  /* Round yellow arrow button (pager, lightbox). */
+  .tj-tilt > :nth-child(3n + 2) {
+    rotate: 1.2deg;
+  }
+
+  .tj-tilt > :nth-child(3n) {
+    rotate: -0.6deg;
+  }
+
+  .tj-tilt > :focus-within {
+    rotate: 0deg;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tj-tilt > :hover {
+      rotate: 0deg;
+      translate: 0 -0.3rem;
+    }
+  }
+
+  /* Ticker (past season names): one slow endless row, paused under the pointer or keyboard focus. */
+  .tj-ticker {
+    display: flex;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .tj-ticker > * {
+    display: flex;
+    flex: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @keyframes tj-ticker {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* Round arrow button of the photo viewer. */
   .tj-arrow {
     position: relative;
     z-index: 1;
@@ -379,11 +452,11 @@
     border-radius: 50%;
     place-items: center;
     background: var(--tj-color-sun);
-    color: var(--tj-color-ink);
+    color: var(--tj-color-night);
     font-size: 0;
-    box-shadow: 0 0.3rem 0.9rem --alpha(var(--tj-color-ink) / 22%);
+    box-shadow: 0 0.3rem 0.9rem --alpha(var(--tj-color-black) / 30%);
     cursor: pointer;
-    transition: transform 0.15s ease, opacity 0.15s ease, background-color 0.15s ease;
+    transition: transform 0.16s var(--tj-ease-out), background-color 0.15s ease;
   }
 
   .tj-arrow::before {
@@ -405,175 +478,18 @@
     rotate: -45deg;
   }
 
-  .tj-arrow:not(:disabled):hover {
-    background: var(--tj-color-sun-light);
-    transform: scale(1.06);
+  @media (hover: hover) and (pointer: fine) {
+    .tj-arrow:hover {
+      background: var(--tj-color-sun-light);
+    }
   }
 
   .tj-arrow:active {
-    scale: 0.92;
-  }
-
-  .tj-arrow:disabled {
-    opacity: 0.35;
-    pointer-events: none;
+    transform: scale(0.94);
   }
 
   .tj-arrow[hidden] {
     display: none;
-  }
-
-  /* Paging carousel (template-parts/pager.php): arrows move by one visible page. */
-  .tj-pager {
-    --tj-per-view: 6;
-    --tj-gap: 1rem;
-    position: relative;
-    display: grid;
-    margin-top: 1.5rem;
-    grid-template-areas:
-      "view view view view view"
-      ". prev status next .";
-    grid-template-columns: minmax(0, 1fr) auto max-content auto minmax(0, 1fr);
-    align-items: center;
-    gap: 0.5rem 0.75rem;
-  }
-
-  .tj-pager > [data-pager-viewport] {
-    grid-area: view;
-  }
-
-  .tj-pager > [data-dir="prev"] {
-    grid-area: prev;
-  }
-
-  .tj-pager > [data-dir="next"] {
-    grid-area: next;
-  }
-
-  .tj-pager > [data-pager-status] {
-    grid-area: status;
-    display: flex;
-    min-width: 0;
-    margin: 0;
-    justify-self: center;
-    align-items: center;
-    justify-content: center;
-    color: var(--tj-dot-label, inherit);
-  }
-
-  .tj-pager > [data-pager-status][hidden] {
-    display: none;
-  }
-
-  html.js .tj-pager > [data-pager-viewport] {
-    overflow: hidden;
-    margin-inline: -0.5rem;
-    padding: 0.5rem;
-    touch-action: pan-y;
-  }
-
-  html.js .tj-pager [data-pager-viewport] img {
-    -webkit-user-drag: none;
-    user-select: none;
-  }
-
-  html.js .tj-pager [data-pager-track] {
-    display: flex;
-    margin: 0;
-    gap: var(--tj-gap);
-    transition: transform 0.45s var(--tj-ease-soft);
-  }
-
-  html.js .tj-pager [data-pager-track] > * {
-    min-width: 0;
-    flex: 0 0 calc((100% - (var(--tj-per-view) - 1) * var(--tj-gap)) / var(--tj-per-view));
-  }
-
-  html:not(.js) .tj-pager > :is(button, [data-pager-status]) {
-    display: none;
-  }
-
-  .tj-pager .is-dragging {
-    cursor: grabbing;
-    user-select: none;
-    transition: none !important;
-  }
-
-  /* On the night band the dots and the page label switch to light ink. */
-  .tj-pager-night {
-    --tj-dot: --alpha(var(--tj-color-on-night) / 35%);
-    --tj-dot-label: var(--tj-color-on-night);
-  }
-
-  .tj-pager-dot {
-    position: relative;
-    width: 1.75rem;
-    height: 2.5rem;
-    flex: 0 1 auto;
-    border: 0;
-    padding: 0;
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .tj-pager-dot::before {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: min(0.6rem, 70%);
-    height: 0.6rem;
-    border-radius: 999px;
-    background: var(--tj-dot, --alpha(var(--tj-color-ink) / 28%));
-    content: "";
-    translate: -50% -50%;
-    transition: width 0.25s ease, background-color 0.2s ease;
-  }
-
-  .tj-pager-dot:focus-visible {
-    outline: none;
-  }
-
-  .tj-pager-dot:focus-visible::before {
-    outline: 3px solid var(--tj-color-tangerine);
-    outline-offset: 3px;
-  }
-
-  .tj-pager-dot:hover::before {
-    background: --alpha(var(--tj-color-ink) / 55%);
-  }
-
-  .tj-pager-dot[aria-current="true"]::before {
-    width: min(1.6rem, 92%);
-    background: var(--tj-color-tangerine);
-  }
-
-  @media (max-width: 64rem) {
-    .tj-pager {
-      --tj-per-view: 4;
-    }
-  }
-
-  @media (max-width: 48rem) {
-    .tj-pager {
-      --tj-per-view: 2;
-      grid-template-areas:
-        "view view view"
-        "prev status next";
-      grid-template-columns: auto minmax(0, 1fr) auto;
-    }
-
-    .tj-pager > .tj-arrow {
-      width: 2.75rem;
-      height: 2.75rem;
-    }
-
-    .tj-pager > [data-pager-status] {
-      justify-self: stretch;
-    }
-
-    .tj-pager-dot {
-      width: 1.5rem;
-    }
   }
 
   /* Photo viewer (initialiseLightbox): full-screen modal above everything. */
@@ -585,7 +501,7 @@
     margin: 0;
     padding: 0;
     border: 0;
-    background: --alpha(var(--tj-color-night) / 94%);
+    background: --alpha(var(--tj-color-night) / 95%);
     color: var(--tj-color-white);
     overscroll-behavior: contain;
   }
@@ -636,7 +552,8 @@
     left: 50%;
     margin: 0;
     color: --alpha(var(--tj-color-white) / 80%);
-    font-weight: 800;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
     transform: translateX(-50%);
   }
 
@@ -645,7 +562,6 @@
     top: calc(50% - 1.625rem);
     width: 3.25rem;
     height: 3.25rem;
-    box-shadow: 0 0.4rem 1.2rem --alpha(var(--tj-color-black) / 35%);
   }
 
   .tj-lightbox [data-dir="prev"] {
@@ -697,140 +613,98 @@
     }
   }
 
-  /* Reading progress: the logo stripe under the header fills as the homepage scrolls. */
-  @supports (animation-timeline: scroll()) {
-    @keyframes tj-progress {
-      to {
-        scale: 0 1;
-      }
-    }
-
-    .home [data-site-header]::before {
-      position: absolute;
-      right: 0;
-      bottom: -5px;
-      left: 0;
-      z-index: 1;
-      height: 5px;
-      background: --alpha(var(--tj-color-white) / 90%);
-      content: "";
-      transform-origin: right;
-      animation: tj-progress linear both;
-      animation-timeline: scroll(root);
+  /*
+   * Motion. Everything is visible by default; nothing waits for a scroll.
+   * The hero enters once on load, dialogs and the photo viewer fade in, and
+   * controls answer the pointer. Under reduced motion only opacity changes.
+   */
+  @keyframes tj-fade-in {
+    from {
+      opacity: 0;
     }
   }
 
-  /* Motion: transform and opacity only, none under reduced motion. */
+  /* Movement only: the text is readable from the first frame, even if the animation never runs. */
+  @keyframes tj-rise {
+    from {
+      transform: translateY(1rem);
+    }
+  }
+
+  @keyframes tj-dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem) scale(0.98);
+    }
+  }
+
+  .tj-dialog[open],
+  .tj-dialog[open]::backdrop,
+  .tj-lightbox[open] {
+    animation: tj-fade-in 0.2s ease-out;
+  }
+
+  /* Pointer and touch only: paging with the arrow keys stays instant. */
+  .tj-lightbox img.is-swapping {
+    animation: tj-fade-in 0.14s ease-out;
+  }
+
+  @keyframes tj-flow-in {
+    from {
+      opacity: 0;
+      transform: translateY(2.5rem) scale(0.98);
+    }
+  }
+
   @media (prefers-reduced-motion: no-preference) {
-    @keyframes tj-rise {
-      from {
-        opacity: 0.01;
-        transform: translateY(1rem);
-      }
+    .tj-ticker > * {
+      animation: tj-ticker 60s linear infinite;
+    }
 
-      to {
-        opacity: 1;
-        transform: none;
+    .tj-ticker:is(:hover, .is-paused) > * {
+      animation-play-state: paused;
+    }
+
+    /*
+     * Blocks glide in with the scroll itself (no script, no waiting): the
+     * animation is tied to the block's way into the viewport, so a block that
+     * is on screen is always fully shown, also after a jump from the menu.
+     */
+    @supports (animation-timeline: view()) {
+      .tj-flow {
+        animation: tj-flow-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 55%;
       }
     }
 
-    @keyframes tj-fade-in {
-      from {
-        opacity: 0;
-      }
-
-      to {
-        opacity: 1;
-      }
+    .tj-enter > * {
+      animation: tj-rise 0.5s var(--tj-ease-out) both;
     }
 
-    @keyframes tj-zoom-in {
-      from {
-        opacity: 0;
-        scale: 0.96;
-      }
-
-      to {
-        opacity: 1;
-        scale: 1;
-      }
-    }
-
-    @keyframes tj-dialog-in {
-      from {
-        opacity: 0;
-        transform: translateY(0.75rem) scale(0.98);
-      }
-
-      to {
-        opacity: 1;
-        transform: none;
-      }
-    }
-
-    .tj-rise,
-    .tj-stagger > * {
-      animation: tj-rise 0.5s var(--tj-ease-soft) both;
-    }
-
-    .tj-stagger > :nth-child(2) {
+    .tj-enter > :nth-child(2) {
       animation-delay: 60ms;
     }
 
-    .tj-stagger > :nth-child(3) {
+    .tj-enter > :nth-child(3) {
       animation-delay: 120ms;
     }
 
-    .tj-stagger > :nth-child(4) {
+    .tj-enter > :nth-child(n + 4) {
       animation-delay: 180ms;
     }
 
-    .tj-stagger > :nth-child(n + 5) {
-      animation-delay: 240ms;
-    }
-
     .tj-dialog[open] {
-      animation: tj-dialog-in 0.2s ease-out;
-    }
-
-    .tj-dialog[open]::backdrop,
-    .tj-lightbox[open] {
-      animation: tj-fade-in 0.2s ease-out;
-    }
-
-    .tj-lightbox img.is-swapping {
-      animation: tj-zoom-in 0.25s ease-out;
-    }
-
-    /* Blocks ease in once as they reach the viewport (initialiseScrollReveal). */
-    .tj-reveal {
-      opacity: 0;
-      translate: 0 0.75rem;
-      transition:
-        opacity 0.35s ease-out var(--tj-delay, 0ms),
-        translate 0.4s var(--tj-ease-soft) var(--tj-delay, 0ms);
-    }
-
-    .tj-reveal.is-revealed {
-      opacity: 1;
-      translate: 0 0;
-    }
-
-    .tj-reveal h2::after {
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.55s var(--tj-ease-soft) 0.3s;
-    }
-
-    .tj-reveal.is-revealed h2::after {
-      transform: none;
+      animation: tj-dialog-in 0.2s var(--tj-ease-out);
     }
   }
 
-  @media print {
-    .tj-reveal {
-      opacity: 1;
-      translate: none;
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-property: opacity, color, background-color, border-color, text-decoration-color, box-shadow !important;
     }
   }
 }

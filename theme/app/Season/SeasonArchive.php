@@ -67,6 +67,7 @@ final class SeasonArchive
             && is_string($season['youtubeId'] ?? null)
             && preg_match('/^[A-Za-z0-9_-]{11}$/', $season['youtubeId']) === 1
             && in_array($season['thumbnail'] ?? null, ['maxresdefault', 'sddefault', 'hqdefault'], true)
+            && (! isset($season['thumbnailZoom']) || (is_numeric($season['thumbnailZoom']) && $season['thumbnailZoom'] >= 1 && $season['thumbnailZoom'] <= 2))
             && (($season['categorySlug'] ?? null) === null || is_string($season['categorySlug']));
     }
 }

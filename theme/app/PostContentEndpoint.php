@@ -50,18 +50,25 @@ final class PostContentEndpoint
             wp_send_json_error(['message' => 'Obsah není dostupný.'], 404);
         }
 
-        $previous = $GLOBALS['post'] ?? null;
-        $GLOBALS['post'] = $post;
-        setup_postdata($post);
-        $html = apply_filters('the_content', $post->post_content);
-        wp_reset_postdata();
-        $GLOBALS['post'] = $previous;
+        // Lookup by URL feeds the page dialog (designed article); lookup by id feeds
+        // the season accordions, which need the bare content.
+        if ($byUrl) {
+            $article = Home::article($post);
+        } else {
+            $previous = $GLOBALS['post'] ?? null;
+            $GLOBALS['post'] = $post;
+            setup_postdata($post);
+            $article = [
+                'html' => apply_filters('the_content', $post->post_content),
+                'title' => html_entity_decode(get_the_title($post), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+                'meta' => '',
+            ];
+            wp_reset_postdata();
+            $GLOBALS['post'] = $previous;
+        }
 
         header('Cache-Control: public, max-age=300');
-        wp_send_json_success([
-            'html' => $html,
-            'title' => html_entity_decode(get_the_title($post), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
-        ]);
+        wp_send_json_success($article);
     }
 
     /** Only URLs of this site; the path is looked up as a page, post or attachment slug (permalinks are /%postname%/). */

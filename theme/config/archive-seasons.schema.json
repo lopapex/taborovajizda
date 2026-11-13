@@ -19,6 +19,7 @@
           "title": { "type": "string", "minLength": 1 },
           "youtubeId": { "type": "string", "pattern": "^[A-Za-z0-9_-]{11}$" },
           "thumbnail": { "enum": ["maxresdefault", "sddefault", "hqdefault"] },
+          "thumbnailZoom": { "type": "number", "minimum": 1, "maximum": 2, "description": "Zoom of the poster when the video thumbnail has black bars baked in." },
           "categorySlug": {
             "anyOf": [
               { "type": "string", "pattern": "^[a-z0-9-]+$" },
