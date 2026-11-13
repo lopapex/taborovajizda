@@ -239,7 +239,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 			<?php endforeach; ?>
 		</div>
 		</div>
-		<?php // Phones show the six latest seasons; the button (or a shared "#rocnik-…" link) reveals the rest. ?>
+		<?php // Phones show the six latest seasons; the button reveals the rest and hides it again (a shared "#rocnik-…" link reveals it too). ?>
 		<ul class="tj-flow tj-tilt tj:m-0 tj:mt-10 tj:grid tj:list-none tj:grid-cols-2 tj:gap-x-5 tj:gap-y-8 tj:p-0 tj:md:grid-cols-3 tj:lg:grid-cols-4" id="rocniky" data-seasons>
 			<?php foreach ($pastSeasons as $index => $past) :
 				$dialogId = 'rocnik-' . $past['year'];
@@ -280,7 +280,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 			<?php endforeach; ?>
 		</ul>
 		<?php if (count($pastSeasons) > 6) : ?>
-			<p class="tj:mt-8 tj:mb-0 tj:md:hidden tj:nojs:hidden"><button class="tj-btn tj-btn-quiet" type="button" data-seasons-all aria-controls="rocniky"><?php echo esc_html(sprintf('Zobrazit všech %d ročníků', count($pastSeasons))); ?></button></p>
+			<p class="tj:mt-8 tj:mb-0 tj:md:hidden tj:nojs:hidden"><button class="tj-btn tj-btn-quiet" type="button" data-seasons-all data-less="Zobrazit jen posledních 6" aria-controls="rocniky"><?php echo esc_html(sprintf('Zobrazit všech %d ročníků', count($pastSeasons))); ?></button></p>
 		<?php endif; ?>
 	</section>
 	<?php endif; ?>

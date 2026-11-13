@@ -134,14 +134,22 @@ function initialiseSeasons(): void {
   const list = $('[data-seasons]');
   const all = $<HTMLButtonElement>('[data-seasons-all]');
   if (list && all) {
+    const more = all.textContent ?? '';
+    const less = all.dataset.less ?? more;
     all.addEventListener('click', () => {
       const first = $$<HTMLElement>(':scope > li', list).find((item) => item.offsetParent === null);
-      list.classList.add('is-all');
-      all.closest('p')?.remove();
-      first?.querySelector('a')?.focus();
+      if (list.classList.toggle('is-all')) first?.querySelector('a')?.focus();
+      // Hiding shortens the page above the button: bring it back into view (a smooth scroll gets cancelled by the layout change).
+      else all.scrollIntoView({ block: 'center', behavior: 'instant' });
     });
-    // Revealed another way (a shared season link): the button has nothing left to do.
-    new MutationObserver(() => { if (list.classList.contains('is-all')) all.closest('p')?.remove(); }).observe(list, { attributes: true, attributeFilter: ['class'] });
+    // The button follows the list, also when a shared season link revealed it.
+    const sync = () => {
+      const shown = list.classList.contains('is-all');
+      all.textContent = shown ? less : more;
+      all.setAttribute('aria-expanded', String(shown));
+    };
+    new MutationObserver(sync).observe(list, { attributes: true, attributeFilter: ['class'] });
+    sync();
   }
   const toggle = $<HTMLButtonElement>('[data-ticker-toggle]');
   const ticker = toggle?.parentElement && $('.tj-ticker', toggle.parentElement);

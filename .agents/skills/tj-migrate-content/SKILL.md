@@ -149,9 +149,9 @@ All In One Login "Change Login URL" is switched off on stage: its custom slug (t
 
 Production is untouched. Do the same there only on a separate request, after a backup, together with the production theme release. Check every table and option prefix against the installed plugins of that environment first.
 
-## Redesign copy round (13. 11. 2026, local only)
+## Redesign copy round (13. 11. 2026, local and stage)
 
-Together with the theme redesign (branch `change/2026-11-13-redesign`), two editorial changes were made in LocalWP (backup `pre-redesign-copy-20261113-*.sql`). They are not on stage or production yet; apply them there as exact old → new replacements after confirmation:
+Together with the theme redesign (branch `change/2026-11-13-redesign`), two editorial changes were made in LocalWP (backup `pre-redesign-copy-20261113-*.sql`). Stage got both on 13. 11. 2026 as exact old → new replacements (page 432 and all 39 titles matched and were read back). Production does not have them yet; apply them there the same way after confirmation:
 
 - Page 432 homepage, first sentence: "Doputovali jste na stránky Táborové jízdy. Již od roku 2014 pořádáme tradiční letní tábory pro děti." → "Táborová jízda pořádá letní tábory pro děti už od roku 2014." (still inside `<em>`, the rest of the paragraph unchanged).
 - 39 post titles: the spaced em dash " — " became a spaced en dash " – " (Egypt 2021, Strážci Galaxie 2022, Tábor 2023–2026, La Puerta 2024, post 4690). Slugs and content are unchanged.
