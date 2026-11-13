@@ -84,7 +84,7 @@ theme/
 │   ├── css/season.css           pouze aktuální roční vzhled
 │   ├── ts/                      TypeScript
 │   └── assets/season/           grafika aktivního ročníku
-├── template-parts/              sdílené části: dialog, pager, nadpis sekce, fakta, sítě, formulář, notifikace
+├── template-parts/              sdílené části: dialog, nadpis sekce, fakta, sítě, formulář, notifikace
 ├── public/build/                generovaný a ignorovaný build
 ├── theme.json                   WordPress design tokeny
 └── style.css                    pouze povinná hlavička šablony

@@ -71,13 +71,15 @@ Ověř existenci `theme/public/build/manifest.json`. Build je ignorovaný; `pack
 - `app/`: malé namespaced moduly pro theme, roční data, data homepage (`Home.php`) a oddělené formulářové handlery;
 - `config/season.json`: aktivní roční provozní data;
 - `config/archive-seasons.json`: ověřené historické ročníky, trailery a explicitní vazby na rubriky; bez historických cen a termínů;
-- `resources/css/app.css`: Tailwind vstup, barevné a stínové tokeny a komponenty použité alespoň třikrát; vlastní markup používá přímo `tj:` utility bez `@apply`; barvy pouze jako tokeny a CSS proměnné;
-- `resources/css/content.css`: pouze dynamický WordPress/plugin markup;
-- `resources/css/season.css`: pouze aktivní roční vzhled a efekty;
+- `resources/css/app.css`: Tailwind vstup, barevné a stínové tokeny a komponenty použité alespoň třikrát; vlastní markup používá přímo `tj:` utility bez `@apply`; barvy pouze jako tokeny a CSS proměnné. Paleta „Večer u ohně“: papír, večerní modř a čtyři barvy loga jako plné pruhy sekcí (`.tj-vivid` + `--tj-band`). Jedna nadpisová škála `.tj-h1`–`.tj-h3`, jedna karta `.tj-card`, jeden rámeček fotky `.tj-frame`;
+- `resources/css/content.css`: písma (Figtree pro text, Bricolage Grotesque pro nadpisy, obě variabilní z `fonts/`, licence OFL) a dynamický WordPress/plugin markup;
+- `resources/css/season.css`: pouze aktivní roční vzhled: ilustrace hera, razítko s názvem ročníku (`.tj-stamp`) a roční písmo, které se používá jen pro názvy ročníků;
 - `resources/ts`: TypeScript bez Reactu;
-- `template-parts/`: pouze skutečně sdílené části (dialog, pager, nadpis sekce, fakta, sociální sítě, formulář dotazu, notifikace formulářů); jednorázový markup zůstává ve WordPress entrypointu;
+- `template-parts/`: pouze skutečně sdílené části (dialog, nadpis sekce, fakta, sociální sítě, formulář dotazu, notifikace formulářů); jednorázový markup zůstává ve WordPress entrypointu;
+- obsah příspěvku (aktualita, člověk, aktivita, stránka) vykresluje `Home::article()` stejně na vlastní stránce (`index.php`) i v dialogu homepage; dialog má vždy vlastní adresu (skutečná URL příspěvku, nebo `#rocnik-2025`, `#trailer`, `#pribeh`) a zavírá ho tlačítko Zpět;
+- pohyb: nic nečeká na scroll skriptem. Hero vstoupí jednou, bloky s `.tj-flow` najíždějí přes CSS `animation-timeline: view()`, hover efekty jsou jen pro myš, při omezeném pohybu zůstává jen prolínání. Karusely ani scroll reveal přes JavaScript nevracej;
 - `theme.json`: společné design tokeny;
-- kořenové WordPress templates: `front-page.php`, `page-e-prihlaska.php`, `index.php` (vše ostatní včetně rubrik a 404), `header.php`, `footer.php`. Legacy layout, sidebar, menu, widgety, odpočet ani newsletter už neexistují; nevracej je.
+- kořenové WordPress templates: `front-page.php`, `page-e-prihlaska.php`, `index.php` (vše ostatní včetně rubrik a 404), `header.php`, `footer.php`. Legacy layout, sidebar, menu, widgety, odpočet ani newsletter už neexistují; nevracej je. Homepage: hero, aktuality aktuálního roku (vždy hned pod herem, všechny), o táboře, program, lidé (mřížka všech), pro rodiče, minulé ročníky, kontakt.
 
 PHP 8.2 a WordPress 6.5 jsou minimum. Používej namespace `TaborovaJizda\Theme`. Nevytvářej globální legacy soubor, vlastní image pipeline ani kopie jednorázových templates.
 
