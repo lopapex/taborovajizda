@@ -34,7 +34,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 	<section class="tj-section tj-vivid tj:[--tj-band:var(--tj-color-band-sun)]" aria-labelledby="news-heading">
 		<?php $part('section-heading', ['anchor' => 'aktuality', 'id' => 'news-heading', 'title' => 'Aktuality ' . $year]); ?>
 		<?php if ($lead) : ?>
-			<div class="tj-flow tj:mt-9 tj:grid tj:items-start tj:gap-x-12 tj:gap-y-8 tj:lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] tj:lg:items-stretch">
+			<div class="tj-flow tj:mt-9 tj:grid tj:items-start tj:gap-x-12 tj:gap-y-8 tj:lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] tj:lg:items-stretch" data-dialog-sequence>
 				<?php
 				$image = Home::newsCardImage($lead, apply_filters('the_content', $lead->post_content));
 				// Without a photo the lead story fills the height of the list beside it and speaks through type.
@@ -42,7 +42,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 				?>
 				<?php // The lead story is a night card: on the yellow band it reads as part of the hero above, not as a white box. ?>
 				<article class="tj-card tj:border-0 tj:bg-night tj:text-on-night tj:[&_:focus-visible]:outline-sun tj:[--tj-color-muted:var(--tj-color-on-night-muted)] tj:[--wp--preset--color--muted:var(--tj-color-on-night-muted)] <?php echo $leadCard; ?>">
-					<a class="tj:flex tj:h-full tj:flex-col tj:text-inherit tj:no-underline" href="<?php echo esc_url(get_permalink($lead)); ?>">
+					<a class="tj:flex tj:h-full tj:flex-col tj:text-inherit tj:no-underline" href="<?php echo esc_url(get_permalink($lead)); ?>" data-sequence-title="<?php echo esc_attr($plain(get_the_title($lead))); ?>">
 						<?php if ($image) : ?><span class="tj-frame tj:aspect-16/9 tj:rounded-none"><?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput -- core image markup ?></span><?php endif; ?>
 						<span class="tj:flex tj:flex-1 tj:flex-col tj:justify-center tj:p-[clamp(1.25rem,3vw,2.25rem)]">
 							<span class="tj-meta tj:block"><?php echo esc_html(get_the_date('', $lead)); ?><?php echo in_array($lead->ID, $pinned, true) ? ' · důležité' : ''; ?></span>
@@ -56,7 +56,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 						<ul class="tj:m-0 tj:list-none tj:p-0">
 							<?php foreach ($rest as $post) : ?>
 								<li class="tj:border-b tj:border-ink/12 tj:first:border-t">
-									<a class="tj:group tj:grid tj:min-h-[56px] tj:gap-x-5 tj:py-4 tj:text-inherit tj:no-underline tj:sm:grid-cols-[6.5rem_minmax(0,1fr)] tj:sm:items-baseline" href="<?php echo esc_url(get_permalink($post)); ?>">
+									<a class="tj:group tj:grid tj:min-h-[56px] tj:gap-x-5 tj:py-4 tj:text-inherit tj:no-underline tj:sm:grid-cols-[6.5rem_minmax(0,1fr)] tj:sm:items-baseline" href="<?php echo esc_url(get_permalink($post)); ?>" data-sequence-title="<?php echo esc_attr($plain(get_the_title($post))); ?>">
 										<span class="tj:text-[.9rem] tj:font-semibold tj:text-muted tj:tabular-nums"><?php echo esc_html(get_the_date('j. n. Y', $post)); ?></span>
 										<span class="tj:text-[1.1rem] tj:leading-snug tj:font-bold tj:transition-colors tj:duration-150 tj:group-hover:text-link"><?php echo esc_html($plain(get_the_title($post))); ?></span>
 									</a>
@@ -144,7 +144,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 	<section class="tj-section tj-vivid tj:[--tj-band:var(--tj-color-band-ember)]" aria-labelledby="program-heading">
 		<?php $part('section-heading', ['anchor' => 'program', 'id' => 'program-heading', 'title' => 'Co na táboře zažijeme', 'lead' => 'Dva týdny, kdy se pořád něco děje: od celotáborové hry po večerní táborák.']); ?>
 		<?php if ($groups = Home::activityGroups()) : ?>
-			<ul class="tj-flow tj:m-0 tj:mt-10 tj:grid tj:list-none tj:gap-x-12 tj:gap-y-10 tj:p-0 tj:md:grid-cols-2">
+			<ul class="tj-flow tj:m-0 tj:mt-10 tj:grid tj:list-none tj:gap-x-12 tj:gap-y-10 tj:p-0 tj:md:grid-cols-2" data-dialog-sequence>
 				<?php foreach ($groups as $group) : ?>
 					<li class="tj:grid tj:min-w-0 tj:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] tj:items-start tj:gap-5 tj:max-sm:grid-cols-[6.5rem_minmax(0,1fr)] tj:max-sm:gap-4">
 						<a class="tj-frame tj:aspect-4/3 tj:max-sm:aspect-square" href="<?php echo esc_url(get_permalink($group['posts'][0])); ?>" tabindex="-1" aria-hidden="true"><?php echo $group['cover']; // phpcs:ignore WordPress.Security.EscapeOutput -- core image markup ?></a>
@@ -167,7 +167,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 	<section class="tj-section" aria-labelledby="people-heading">
 		<?php $part('section-heading', ['anchor' => 'lide', 'id' => 'people-heading', 'title' => 'Lidé, kteří tábor tvoří', 'lead' => 'Vedoucí, kteří sami začínali jako táborové děti. Klikněte na kohokoli a přečtěte si, kdo to je.']); ?>
 		<?php if ($people = Home::people()) : ?>
-			<ul class="tj-flow tj-tilt tj:m-0 tj:mt-10 tj:grid tj:list-none tj:grid-cols-3 tj:gap-x-3 tj:gap-y-6 tj:p-0 tj:max-sm:text-[.85rem] tj:sm:gap-x-5 tj:sm:gap-y-8 tj:md:grid-cols-4 tj:lg:grid-cols-6">
+			<ul class="tj-flow tj-tilt tj:m-0 tj:mt-10 tj:grid tj:list-none tj:grid-cols-3 tj:gap-x-3 tj:gap-y-6 tj:p-0 tj:max-sm:text-[.85rem] tj:sm:gap-x-5 tj:sm:gap-y-8 tj:md:grid-cols-4 tj:lg:grid-cols-6" data-dialog-sequence>
 				<?php foreach ($people as $post) :
 					$person = Home::person($post);
 					if ($person['initials'] === null) : ?>
@@ -175,7 +175,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 						<?php continue;
 					endif; ?>
 					<li class="tj:min-w-0">
-						<a class="tj:group tj:block tj:text-inherit tj:no-underline" href="<?php echo esc_url(get_permalink($post)); ?>">
+						<a class="tj:group tj:block tj:text-inherit tj:no-underline" href="<?php echo esc_url(get_permalink($post)); ?>" data-sequence-title="<?php echo esc_attr($person['name']); ?>">
 							<span class="tj-frame tj:grid tj:aspect-4/5 tj:place-items-center">
 								<?php if (has_post_thumbnail($post)) : ?>
 									<?php echo get_the_post_thumbnail($post, 'medium', ['loading' => 'lazy', 'alt' => '']); ?>
@@ -240,13 +240,13 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 		</div>
 		</div>
 		<?php // Phones show the six latest seasons; the button reveals the rest and hides it again (a shared "#rocnik-…" link reveals it too). ?>
-		<ul class="tj-flow tj-tilt tj:m-0 tj:mt-10 tj:grid tj:list-none tj:grid-cols-2 tj:gap-x-5 tj:gap-y-8 tj:p-0 tj:md:grid-cols-3 tj:lg:grid-cols-4" id="rocniky" data-seasons>
+		<ul class="tj-flow tj-tilt tj:m-0 tj:mt-10 tj:grid tj:list-none tj:grid-cols-2 tj:gap-x-5 tj:gap-y-8 tj:p-0 tj:md:grid-cols-3 tj:lg:grid-cols-4" id="rocniky" data-seasons data-dialog-sequence>
 			<?php foreach ($pastSeasons as $index => $past) :
 				$dialogId = 'rocnik-' . $past['year'];
 				$title = Home::dashes($past['title']);
 				?>
 				<li class="tj:min-w-0 <?php echo $index >= 6 ? 'tj:max-md:[html.js_[data-seasons]:not(.is-all)_&]:hidden' : ''; ?>">
-					<a class="tj:group tj:block tj:text-inherit tj:no-underline" href="#<?php echo esc_attr($dialogId); ?>" data-dialog-open="<?php echo esc_attr($dialogId); ?>">
+					<a class="tj:group tj:block tj:text-inherit tj:no-underline" href="#<?php echo esc_attr($dialogId); ?>" data-dialog-open="<?php echo esc_attr($dialogId); ?>" data-sequence-title="<?php echo esc_attr($past['year'] . ' – ' . $title); ?>">
 						<span class="tj-frame tj:relative tj:aspect-video tj:bg-night tj:shadow-deep">
 							<img src="<?php echo esc_url($youtubeThumbnail($past)); ?>" alt="" loading="lazy" width="480" height="270"<?php echo isset($past['thumbnailZoom']) ? ' style="scale:' . esc_attr((string) $past['thumbnailZoom']) . '"' : ''; ?>>
 						</span>

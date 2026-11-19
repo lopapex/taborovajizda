@@ -492,6 +492,41 @@
     display: none;
   }
 
+  /* Sideways swipes belong to the stepping (initialiseDialogSequences), and a slide
+     on its way out is clipped by the card instead of adding a horizontal scrollbar. */
+  .tj-dialog {
+    overflow-x: hidden;
+    touch-action: pan-y pinch-zoom;
+  }
+
+  /* In a dialog header the arrows are quiet, like the Zavřít button next to them. */
+  .tj-dialog .tj-arrow {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    color: inherit;
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, currentColor 35%, transparent);
+  }
+
+  .tj-dialog .tj-arrow::before {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-width: 2.5px;
+  }
+
+  .tj-dialog .tj-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+    transform: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tj-dialog .tj-arrow:not(:disabled):hover {
+      background: color-mix(in srgb, currentColor 9%, transparent);
+      box-shadow: inset 0 0 0 1.5px currentColor;
+    }
+  }
+
   /* Photo viewer (initialiseLightbox): full-screen modal above everything. */
   .tj-lightbox {
     width: 100vw;
@@ -697,6 +732,12 @@
     .tj-dialog[open] {
       animation: tj-dialog-in 0.2s var(--tj-ease-out);
     }
+  }
+
+  /* Stepping to the next season swaps dialogs: no new entrance, only the content slides (initialiseDialogSequences). */
+  .tj-dialog.is-switching[open],
+  .tj-dialog.is-switching[open]::backdrop {
+    animation: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
