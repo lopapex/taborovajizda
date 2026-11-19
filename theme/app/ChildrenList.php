@@ -12,10 +12,49 @@ namespace TaborovaJizda\Theme;
 final class ChildrenList
 {
     private const PAGE = 'tj-seznam-deti';
+    private const CSV_ACTION = 'tj_children_csv';
+    private const COLUMNS = [
+        'number' => '#', 'lastName' => 'Příjmení', 'firstName' => 'Jméno', 'age' => 'Věk', 'gender' => 'Holka / kluk',
+        'arrival' => 'Nástup', 'departure' => 'Výstup', 'roommate' => 'Ve stanu s', 'contactName' => 'Kontakt',
+        'contactPhone' => 'Telefon', 'email' => 'E-mail', 'note' => 'Poznámka',
+    ];
 
     public function register(): void
     {
         add_action('admin_menu', [$this, 'addPage']);
+        add_action('admin_post_' . self::CSV_ACTION, [$this, 'downloadCsv']);
+    }
+
+    /** The same columns as the table, in registration order. */
+    public function downloadCsv(): never
+    {
+        if (! current_user_can('manage_options')) {
+            wp_die('Nemáte oprávnění stáhnout seznam dětí.', '', ['response' => 403]);
+        }
+        check_admin_referer(self::CSV_ACTION);
+
+        try {
+            $registrations = new Registrations();
+            $seasons = $registrations->seasons();
+            $selected = $registrations->selectedSeason($seasons, false);
+            $children = $selected === null ? [] : $registrations->children($selected, $seasons[$selected]['start']);
+        } catch (\Throwable $error) {
+            error_log('[taborovajizda] Children list unavailable: ' . $error->getMessage());
+            wp_die('Databáze přihlášek není v tomto prostředí dostupná.');
+        }
+
+        $header = self::COLUMNS;
+        $header['number'] = 'Číslo';
+        $rows = [];
+        foreach ($children as $index => $child) {
+            $rows[] = [
+                $index + 1, $child['lastName'], $child['firstName'], $child['age'] ?? '', $child['gender'] ?? '',
+                $child['arrival'], $child['departure'], $child['roommate'], $child['contactName'],
+                $child['contactPhone'], $child['email'], $child['note'],
+            ];
+        }
+        $year = $selected === null ? 'rocnik' : (string) ($seasons[$selected]['year'] ?? $selected);
+        Registrations::sendCsv("seznam-deti-$year.csv", array_values($header), $rows);
     }
 
     public function addPage(): void
@@ -61,17 +100,15 @@ final class ChildrenList
         if ($ages !== []) {
             $summary[] = min($ages) === max($ages) ? sprintf('věk %d', min($ages)) : sprintf('věk %d–%d', min($ages), max($ages));
         }
-        $columns = [
-            'number' => '#', 'lastName' => 'Příjmení', 'firstName' => 'Jméno', 'age' => 'Věk', 'gender' => 'Holka / kluk',
-            'arrival' => 'Nástup', 'departure' => 'Výstup', 'roommate' => 'Ve stanu s', 'contactName' => 'Kontakt',
-            'contactPhone' => 'Telefon', 'email' => 'E-mail', 'note' => 'Poznámka',
-        ];
+        $columns = self::COLUMNS;
+        $csvUrl = wp_nonce_url(add_query_arg(['action' => self::CSV_ACTION, 'tabor' => $selected], admin_url('admin-post.php')), self::CSV_ACTION);
         ?>
         <h2><?php echo esc_html(implode(' · ', $summary)); ?></h2>
         <p class="description">
             Věk je počítaný k prvnímu dni tábora<?php echo $start ? esc_html(' (' . $start->format('j. n. Y') . ')') : ''; ?>, pohlaví podle rodného čísla.
             Řadit jde kliknutím na název sloupce; výchozí pořadí je podle data přihlášení.
         </p>
+        <p><a class="button" href="<?php echo esc_url($csvUrl); ?>">Stáhnout CSV</a> <span class="description">Stejné sloupce jako tabulka, v pořadí přihlášení; otevře se v Excelu.</span></p>
         <div style="overflow-x:auto">
             <table class="widefat striped" id="tj-children">
                 <thead>

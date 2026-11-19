@@ -107,23 +107,9 @@ final class ParentContacts
         }
 
         $year = $selected === null ? 'vsechny-rocniky' : (string) ($seasons[$selected]['year'] ?? $selected);
-        nocache_headers();
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename="kontakty-rodicu-' . $year . '.csv"');
-        $output = fopen('php://output', 'wb');
-        // BOM and semicolons: Czech Excel opens the file with the right encoding and columns.
-        fwrite($output, "\xEF\xBB\xBF");
-        fputcsv($output, ['email', 'jmeno', 'deti'], ';');
-        foreach ($contacts as $contact) {
-            fputcsv($output, array_map([$this, 'safeCell'], [$contact['email'], $contact['name'], $contact['children']]), ';');
-        }
-        fclose($output);
-        exit;
-    }
-
-    /** Spreadsheet apps run cells that start with = + - @ as formulas. */
-    private function safeCell(string $value): string
-    {
-        return preg_match('/^[=+\-@]/', $value) ? "'" . $value : $value;
+        Registrations::sendCsv("kontakty-rodicu-$year.csv", ['email', 'jmeno', 'deti'], array_map(
+            static fn (array $contact): array => [$contact['email'], $contact['name'], $contact['children']],
+            $contacts
+        ));
     }
 }

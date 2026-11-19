@@ -41,4 +41,19 @@ if (Registrations::ageAt(null, $camp) !== null) {
     exit(1);
 }
 
+$phones = [
+    ['+420777111222', '777 111 222'],
+    ['00420777111222', '777 111 222'],
+    ['777111222', '777 111 222'],
+    ['777 111 222', '777 111 222'],
+    ['+4915112345678', '+4915112345678'],
+    ['', ''],
+];
+foreach ($phones as [$phone, $expected]) {
+    if (Registrations::phone($phone) !== $expected) {
+        fwrite(STDERR, "Unexpected phone format for: $phone\n");
+        exit(1);
+    }
+}
+
 fwrite(STDOUT, "Registrations tests passed.\n");

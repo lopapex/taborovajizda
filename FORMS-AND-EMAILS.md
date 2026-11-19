@@ -30,7 +30,7 @@ Web hromadně nic nerozesílá. Adresy rodičů dává administrátorům stránk
 
 ## Seznam dětí
 
-Nástroje → Seznam dětí (`app/ChildrenList.php`) ukazuje přihlášené děti jednoho ročníku v pořadí přihlášení: číslo, jméno, věk k prvnímu dni tábora (`tabory.termin_od`), holka/kluk podle rodného čísla (u dívek je k měsíci přičteno 50, od roku 2004 případně 70), nástup, výstup, spolubydlící, kontakt a poznámku. Všechny sloupce se řadí kliknutím v prohlížeči. Rodné číslo ani adresa se nezobrazují. Společný přístup k databázi obou stránek je v `app/Registrations.php` (název ročníku bere z `tabory.nazev`).
+Nástroje → Seznam dětí (`app/ChildrenList.php`) ukazuje přihlášené děti jednoho ročníku v pořadí přihlášení: číslo, jméno, věk k prvnímu dni tábora (`tabory.termin_od`), holka/kluk podle rodného čísla (u dívek je k měsíci přičteno 50, od roku 2004 případně 70), nástup, výstup, spolubydlící, kontakt a poznámku. Všechny sloupce se řadí kliknutím v prohlížeči. Stáhnout CSV dá stejné sloupce v pořadí přihlášení (UTF-8 s BOM, středníky, české telefony jako „777 111 222“). Rodné číslo ani adresa se nezobrazují ani nestahují. Společný přístup k databázi obou stránek je v `app/Registrations.php` (název ročníku bere z `tabory.nazev`).
 
 ## Newsletter
 

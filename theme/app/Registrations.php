@@ -117,7 +117,7 @@ final class Registrations
                 'arrival' => (string) ($row['nastup'] ?? ''),
                 'departure' => (string) ($row['vystup'] ?? ''),
                 'contactName' => (string) ($row['kontakt_jmeno'] ?? ''),
-                'contactPhone' => (string) ($row['kontakt_tel'] ?? ''),
+                'contactPhone' => self::phone((string) ($row['kontakt_tel'] ?? '')),
                 'email' => (string) ($row['kontakt_email'] ?? ''),
                 'note' => (string) ($row['poznamka'] ?? ''),
             ];
@@ -140,6 +140,17 @@ final class Registrations
             $month >= 51 && $month <= 62, $month >= 71 && $month <= 82 => 'holka',
             default => null,
         };
+    }
+
+    /** Czech numbers as "777 111 222" (the form stores them without spaces, often with +420), which Excel keeps as text. */
+    public static function phone(string $phone): string
+    {
+        $digits = preg_replace('/[\s\/-]/', '', $phone) ?? '';
+        if (preg_match('/^(?:\+420|00420)?(\d{3})(\d{3})(\d{3})$/', $digits, $parts)) {
+            return "$parts[1] $parts[2] $parts[3]";
+        }
+
+        return trim($phone);
     }
 
     /** Full years on the given day. */
@@ -170,6 +181,23 @@ final class Registrations
     public static function unavailableNotice(): void
     {
         echo '<div class="notice notice-warning inline"><p>Databáze přihlášek není v tomto prostředí dostupná. Údaje jsou k dispozici v administraci webu, který má připojení k databázi (produkce, případně stage).</p></div>';
+    }
+
+    /** Sends a CSV download and ends the request: UTF-8 with BOM and semicolons, so Czech Excel opens it with the right encoding and columns. */
+    public static function sendCsv(string $filename, array $header, array $rows): never
+    {
+        nocache_headers();
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        $output = fopen('php://output', 'wb');
+        fwrite($output, "\xEF\xBB\xBF");
+        fputcsv($output, $header, ';');
+        foreach ($rows as $row) {
+            // Spreadsheet apps run cells that start with = + - @ as formulas.
+            fputcsv($output, array_map(static fn ($value): string => preg_match('/^[=+\-@]/', (string) $value) ? "'" . $value : (string) $value, $row), ';');
+        }
+        fclose($output);
+        exit;
     }
 
     public static function plural(int $count, string $one, string $few, string $many): string
