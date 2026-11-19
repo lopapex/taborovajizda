@@ -39,6 +39,17 @@ $heading = 'tj:m-0 tj:mb-3 tj:font-heading tj:text-[1.1rem] tj:font-bold tj:text
 		<a href="<?php echo esc_url(home_url('/ochrana-osobnich-udaju/')); ?>">Ochrana osobních údajů</a>
 	</div>
 </footer>
+<?php
+// Social rail in the bottom left corner, paired with the back-to-top button on the right (that edge has the scrollbar); low, so it stays off the lines being read. A slim night tab with the logo stripe.
+// The icons need no caption; a mouse or keyboard reveals the network name beside the rail. It slides away while the footer (with its own icons) is in view.
+?>
+<aside class="tj:fixed tj:left-0 tj:bottom-3 tj:z-15 tj:rounded-r-2xl tj:bg-night tj:py-1 tj:pl-1 tj:pr-[calc(.25rem+6px)] tj:shadow-[var(--tj-shadow-lift),0_0_0_1px_--alpha(var(--tj-color-on-night)/14%)] tj:transition-[translate,opacity,visibility] tj:duration-500 tj:ease-out tj:starting:-translate-x-full tj:starting:opacity-0 tj:motion-reduce:transition-[opacity,visibility] tj:before:absolute tj:before:inset-y-3 tj:before:right-[4px] tj:before:w-[3px] tj:before:rounded-full tj:before:bg-[linear-gradient(180deg,var(--tj-color-sun)_0_25%,var(--tj-color-ember)_25%_50%,var(--tj-color-sky)_50%_75%,var(--tj-color-grass)_75%)] tj:md:bottom-4 tj:[&.is-away]:invisible tj:[&.is-away]:-translate-x-full tj:[&.is-away]:opacity-0" data-social-rail aria-label="Sledujte nás">
+	<ul class="tj:m-0 tj:grid tj:list-none tj:gap-0.5 tj:p-0">
+		<?php foreach (taborovajizda_social_links() as $label => $url) : ?>
+			<li><a class="tj:group tj:relative tj:grid tj:size-10 tj:place-items-center tj:rounded-[.65rem] tj:text-on-night! tj:no-underline tj:transition-[color,background-color,scale] tj:duration-150 tj:hover:bg-on-night/10 tj:hover:text-sun! tj:focus-visible:text-sun! tj:active:scale-92 tj:[&_svg]:size-5 tj:[&_svg]:fill-current" href="<?php echo esc_url($url); ?>" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr($label); ?>"><?php echo taborovajizda_social_icon($label); // phpcs:ignore WordPress.Security.EscapeOutput -- core block SVG ?><span class="tj:pointer-events-none tj:absolute tj:top-1/2 tj:left-[calc(100%+1rem)] tj:-translate-x-1 tj:-translate-y-1/2 tj:rounded-md tj:bg-night tj:px-2.5 tj:py-1 tj:text-[.85rem] tj:font-semibold tj:whitespace-nowrap tj:text-on-night tj:opacity-0 tj:shadow-lift tj:transition-[opacity,translate] tj:duration-150 tj:ease-out tj:group-hover:translate-x-0 tj:group-hover:opacity-100 tj:group-focus-visible:translate-x-0 tj:group-focus-visible:opacity-100" aria-hidden="true"><?php echo esc_html($label); ?></span></a></li>
+		<?php endforeach; ?>
+	</ul>
+</aside>
 <a class="tj:fixed tj:right-3 tj:bottom-3 tj:z-15 tj:grid tj:size-10 tj:place-items-center tj:md:right-4 tj:md:bottom-4 tj:md:size-12 tj:rounded-full tj:bg-sun tj:text-night tj:opacity-0 tj:shadow-lift tj:pointer-events-none tj:translate-y-2 tj:transition-[opacity,translate,background-color] tj:duration-200 tj:ease-out tj:hover:bg-sun-light tj:active:scale-95 tj:[&.is-shown]:pointer-events-auto tj:[&.is-shown]:translate-y-0 tj:[&.is-shown]:opacity-100 tj:nojs:hidden" href="#main-content" data-to-top aria-label="Zpět nahoru"><span class="tj:mt-[.3rem] tj:size-3 tj:rotate-45 tj:rounded-[2px] tj:border-t-3 tj:border-l-3 tj:border-current" aria-hidden="true"></span></a>
 <?php wp_footer(); ?>
 </body>

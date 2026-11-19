@@ -129,6 +129,14 @@ function initialiseBackToTop(): void {
   });
 }
 
+/** The social rail steps aside while the footer, which has the same links, is on screen. */
+function initialiseSocialRail(): void {
+  const rail = $('[data-social-rail]');
+  const footer = $('body > footer');
+  if (!rail || !footer) return;
+  new IntersectionObserver(([entry]) => rail.classList.toggle('is-away', entry.isIntersecting)).observe(footer);
+}
+
 /** Past seasons: phones start with the latest six; the ticker of their names can be paused. */
 function initialiseSeasons(): void {
   const list = $('[data-seasons]');
@@ -751,6 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initialiseNavIndicator();
   initialiseHeader();
   initialiseBackToTop();
+  initialiseSocialRail();
   initialiseSeasons();
   initialiseExclusiveDetails();
   initialiseSeasonArticles();
