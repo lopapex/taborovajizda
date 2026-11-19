@@ -249,7 +249,6 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 					<a class="tj:group tj:block tj:text-inherit tj:no-underline" href="#<?php echo esc_attr($dialogId); ?>" data-dialog-open="<?php echo esc_attr($dialogId); ?>">
 						<span class="tj-frame tj:relative tj:aspect-video tj:bg-night tj:shadow-deep">
 							<img src="<?php echo esc_url($youtubeThumbnail($past)); ?>" alt="" loading="lazy" width="480" height="270"<?php echo isset($past['thumbnailZoom']) ? ' style="scale:' . esc_attr((string) $past['thumbnailZoom']) . '"' : ''; ?>>
-							<span class="play" aria-hidden="true"></span>
 						</span>
 						<span class="tj:mt-3 tj:block tj:text-[.9rem] tj:font-semibold tj:text-on-night-muted tj:tabular-nums"><?php echo esc_html((string) $past['year']); ?></span>
 						<span class="tj:block tj:font-heading tj:text-[1.15rem] tj:leading-[1.2] tj:font-bold tj:underline tj:decoration-transparent tj:decoration-[1.5px] tj:underline-offset-[.22em] tj:transition-colors tj:duration-150 tj:group-hover:decoration-current"><?php echo esc_html($title); ?></span>

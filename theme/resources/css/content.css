@@ -334,7 +334,7 @@ img {
   display: none;
 }
 
-/* Play badge: the trailer buttons and the posters of past seasons. */
+/* Play badge of the trailer players. */
 .play {
   position: absolute;
   inset: 50% auto auto 50%;
