@@ -43,6 +43,9 @@ final class Theme
         (new PostContentEndpoint())->register();
         (new IndexPermalinks())->register();
         (new GoogleGalleries())->register();
+        if (is_admin()) {
+            (new ParentContacts())->register();
+        }
     }
 
     public static function setup(): void

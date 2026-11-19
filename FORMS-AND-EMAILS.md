@@ -24,6 +24,10 @@ Na produkci má být `externalSeasonKey` nastaven explicitně. Hodnota `null` po
 
 E-mail v současnosti obsahuje údaje z přihlášky včetně rodného čísla a adresy. Kvůli ochraně osobních údajů je vhodné v další změně citlivé hodnoty z e-mailu odstranit a ponechat je pouze v zabezpečené databázi.
 
+## Hromadné e-maily rodičům
+
+Web hromadně nic nerozesílá. Adresy rodičů dává administrátorům stránka Nástroje → Kontakty rodičů (`app/ParentContacts.php`): výběr ročníku z tabulky `tabory` (výchozí je aktivní ročník), nebo všechny ročníky; sourozenci se stejným e-mailem jsou sloučení do jedné adresy. Tlačítko Kopírovat adresy je pro pole Skrytá kopie (Bcc) při organizačních zprávách; Stáhnout CSV (`email;jmeno;deti`, UTF-8 s BOM) je pro import do rozesílací služby u pozvánek, které musí mít odkaz na odhlášení. Stránka jen čte a funguje tam, kde jsou definované konstanty `TJ_DB_*`; jinde ukáže, že databáze není dostupná.
+
 ## Newsletter
 
 Newsletter byl 12. 11. 2026 zrušen: web už adresy nesbírá, při publikaci aktuality nic nerozesílá a staré ověřovací ani odhlašovací odkazy nefungují. Tabulka `newsletter` v externí databázi zůstala beze změny; její smazání je samostatný krok správce databáze.
