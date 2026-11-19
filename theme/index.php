@@ -43,7 +43,7 @@ $back = match (true) {
 					<a class="tj:flex tj:flex-1 tj:flex-col tj:text-inherit tj:no-underline" href="<?php the_permalink(); ?>">
 						<?php if (has_post_thumbnail()) : ?><span class="tj-frame tj:aspect-16/10 tj:rounded-none"><?php the_post_thumbnail('medium_large', ['loading' => 'lazy', 'alt' => '']); ?></span><?php endif; ?>
 						<span class="tj:flex tj:flex-1 tj:flex-col tj:p-5">
-							<span class="tj-meta"><?php echo esc_html(get_the_date()); ?></span>
+							<span class="tj-meta tj:whitespace-nowrap"><?php echo esc_html(get_the_date()); ?></span>
 							<span class="tj-h3"><?php the_title(); ?></span>
 							<span class="tj:mt-2 tj:leading-normal tj:text-muted"><?php echo esc_html(wp_trim_words(get_the_excerpt(), 22)); ?></span>
 						</span>

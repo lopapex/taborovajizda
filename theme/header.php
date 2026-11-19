@@ -39,6 +39,8 @@ $cta = $season->acceptsRegistrations() || taborovajizda_debug_registration_cta()
 			</button>
 			<ul id="home-mobile-menu" class="tj:absolute tj:inset-x-0 tj:top-full tj:m-0 tj:hidden tj:list-none tj:flex-col tj:border-b tj:border-ink/10 tj:bg-paper tj:px-4 tj:pt-3 tj:pb-4 tj:shadow-lift tj:transition-[opacity,translate] tj:duration-180 tj:ease-out tj:starting:-translate-y-2 tj:starting:opacity-0 tj:menu-open:block tj:nojs:static tj:nojs:flex tj:nojs:flex-row tj:nojs:flex-wrap tj:nojs:justify-end tj:nojs:gap-x-4 tj:nojs:gap-y-1 tj:nojs:bg-transparent tj:nojs:p-0 tj:nojs:shadow-none" data-nav="mobile">
 				<?php foreach ($nav as $id => $label) : ?><li><a class="<?php echo $navLink; ?> tj:w-full tj:text-[1.1rem]" href="<?php echo esc_url(Home::anchor($id)); ?>"><?php echo esc_html($label); ?></a></li><?php endforeach; ?>
+				<?php // Phones have no social rail (footer.php): its icons close the menu. Without JavaScript the footer has them. ?>
+				<li class="tj:mt-3 tj:border-t tj:border-ink/10 tj:px-[.7rem] tj:pt-4 tj:md:hidden tj:nojs:hidden"><?php get_template_part('template-parts/social-links', null, ['attributes' => ' aria-label="Sociální sítě"']); ?></li>
 			</ul>
 		</div>
 		<?php if ($cta) : ?>

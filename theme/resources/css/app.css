@@ -119,6 +119,11 @@
     overflow: hidden;
   }
 
+  /* Out of sight behind an open dialog: skips rendering, keeps its measured height (restPage in app.ts). */
+  .is-resting {
+    content-visibility: hidden;
+  }
+
   [data-zoomable] {
     cursor: zoom-in;
   }
@@ -497,9 +502,11 @@
   .tj-dialog {
     overflow-x: hidden;
     touch-action: pan-y pinch-zoom;
+    /* Long and short items keep the same width when stepping: the scrollbar always has its place. */
+    scrollbar-gutter: stable;
   }
 
-  /* In a dialog header the arrows are quiet, like the Zavřít button next to them. */
+  /* In a dialog header the arrows and the close cross are quiet. */
   .tj-dialog .tj-arrow {
     width: 44px;
     height: 44px;
@@ -613,8 +620,9 @@
     background: --alpha(var(--tj-color-white) / 92%);
   }
 
-  .tj-lightbox [data-dir="close"]::before,
-  .tj-lightbox [data-dir="close"]::after {
+  /* Close cross of the photo viewer and of the dialogs. */
+  :is(.tj-lightbox, .tj-dialog) [data-dir="close"]::before,
+  :is(.tj-lightbox, .tj-dialog) [data-dir="close"]::after {
     position: absolute;
     width: 1.2rem;
     height: 3px;
@@ -625,8 +633,15 @@
     rotate: 45deg;
   }
 
-  .tj-lightbox [data-dir="close"]::after {
+  :is(.tj-lightbox, .tj-dialog) [data-dir="close"]::after {
     rotate: -45deg;
+  }
+
+  /* In the dialog header the cross has the stroke and reach of the chevrons beside it. */
+  .tj-dialog [data-dir="close"]::before,
+  .tj-dialog [data-dir="close"]::after {
+    width: 0.8rem;
+    height: 2px;
   }
 
   @media (max-width: 48rem) {

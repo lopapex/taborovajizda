@@ -276,7 +276,8 @@ final class Home
         $meta = match (true) {
             $post->post_type !== 'post' => '',
             has_category('taborove_aktivity', $post) => 'Program tábora',
-            default => get_the_date('', $post),
+            // A date never wraps (non-breaking spaces), also in the dialog header next to its buttons.
+            default => str_replace(' ', "\u{00A0}", get_the_date('', $post)),
         };
 
         return ['title' => $title, 'meta' => $meta, 'html' => $lead . '<div class="tj-prose">' . $content . '</div>'];

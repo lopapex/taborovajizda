@@ -45,7 +45,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 					<a class="tj:flex tj:h-full tj:flex-col tj:text-inherit tj:no-underline" href="<?php echo esc_url(get_permalink($lead)); ?>" data-sequence-title="<?php echo esc_attr($plain(get_the_title($lead))); ?>">
 						<?php if ($image) : ?><span class="tj-frame tj:aspect-16/9 tj:rounded-none"><?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput -- core image markup ?></span><?php endif; ?>
 						<span class="tj:flex tj:flex-1 tj:flex-col tj:justify-center tj:p-[clamp(1.25rem,3vw,2.25rem)]">
-							<span class="tj-meta tj:block"><?php echo esc_html(get_the_date('', $lead)); ?><?php echo in_array($lead->ID, $pinned, true) ? ' · důležité' : ''; ?></span>
+							<span class="tj-meta tj:block"><span class="tj:whitespace-nowrap"><?php echo esc_html(get_the_date('', $lead)); ?></span><?php echo in_array($lead->ID, $pinned, true) ? ' · důležité' : ''; ?></span>
 							<span class="tj-h3 tj:block <?php echo $image ? 'tj:text-[1.5rem]' : 'tj:text-[clamp(1.6rem,2.8vw,2.4rem)] tj:leading-[1.1]'; ?>"><?php echo esc_html($plain(get_the_title($lead))); ?></span>
 							<span class="tj:mt-3 tj:block tj:leading-[1.55] tj:text-muted"><?php echo esc_html(wp_trim_words(get_the_excerpt($lead), $image ? 30 : 50)); ?></span>
 						</span>
@@ -57,7 +57,7 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 							<?php foreach ($rest as $post) : ?>
 								<li class="tj:border-b tj:border-ink/12 tj:first:border-t">
 									<a class="tj:group tj:grid tj:min-h-[56px] tj:gap-x-5 tj:py-4 tj:text-inherit tj:no-underline tj:sm:grid-cols-[6.5rem_minmax(0,1fr)] tj:sm:items-baseline" href="<?php echo esc_url(get_permalink($post)); ?>" data-sequence-title="<?php echo esc_attr($plain(get_the_title($post))); ?>">
-										<span class="tj:text-[.9rem] tj:font-semibold tj:text-muted tj:tabular-nums"><?php echo esc_html(get_the_date('j. n. Y', $post)); ?></span>
+										<span class="tj:text-[.9rem] tj:font-semibold tj:whitespace-nowrap tj:text-muted tj:tabular-nums"><?php echo esc_html(get_the_date('j. n. Y', $post)); ?></span>
 										<span class="tj:text-[1.1rem] tj:leading-snug tj:font-bold tj:transition-colors tj:duration-150 tj:group-hover:text-link"><?php echo esc_html($plain(get_the_title($post))); ?></span>
 									</a>
 								</li>

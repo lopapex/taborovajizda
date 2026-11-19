@@ -221,7 +221,46 @@ function initialiseSeasonArticles(): void {
  * real URL of the post it shows.
  */
 const dialogState = (): string | null => (window.history.state as { tjDialog?: string } | null)?.tjDialog ?? null;
-const lockScroll = () => document.documentElement.classList.toggle('has-dialog', $('.tj-dialog[open]') !== null);
+
+/**
+ * While a dialog covers the page, the sections fully out of sight skip rendering.
+ * Otherwise every change in the dialog (a step, content arriving, a slide) repaints
+ * the whole page behind it: 50–120 ms per step on a phone. Each keeps its measured
+ * height, the scroll is locked, and the sections on screen render as before, so
+ * nothing visible changes. The section holding the open dialog always renders.
+ */
+const resting = new Set<HTMLElement>();
+function restPage(rest: boolean): void {
+  if (!rest) {
+    resting.forEach((section) => {
+      section.classList.remove('is-resting');
+      section.style.containIntrinsicSize = '';
+    });
+    resting.clear();
+    return;
+  }
+  if (resting.size > 0) return;
+  const open = $$('dialog[open]');
+  // A band's curve reaches a little above its section.
+  const margin = 200;
+  $$<HTMLElement>('main > section, body > footer').forEach((section) => {
+    if (open.some((dialog) => section.contains(dialog))) return;
+    const box = section.getBoundingClientRect();
+    if (box.bottom > -margin && box.top < window.innerHeight + margin) return;
+    const style = getComputedStyle(section);
+    const edges = ['paddingTop', 'paddingBottom', 'borderTopWidth', 'borderBottomWidth'] as const;
+    const content = box.height - edges.reduce((sum, edge) => sum + (Number.parseFloat(style[edge]) || 0), 0);
+    section.style.containIntrinsicSize = `none ${Math.max(0, content)}px`;
+    section.classList.add('is-resting');
+    resting.add(section);
+  });
+}
+
+const lockScroll = () => {
+  const open = $('.tj-dialog[open]') !== null;
+  document.documentElement.classList.toggle('has-dialog', open);
+  restPage(open);
+};
 
 /**
  * Sequences: a dialog opened from a list marked data-dialog-sequence (program,
@@ -252,6 +291,8 @@ function updatePager(dialog: HTMLDialogElement, link: HTMLAnchorElement | null, 
   const shown = items.length > 1 && index >= 0;
   const pager = $('[data-dialog-pager]', dialog);
   if (pager) pager.hidden = !shown;
+  const bottom = $('[data-dialog-pager-bottom]', dialog);
+  if (bottom) bottom.hidden = !shown;
   if (!shown) {
     sequences.delete(dialog);
     return;
@@ -265,24 +306,42 @@ function updatePager(dialog: HTMLDialogElement, link: HTMLAnchorElement | null, 
     const word = direction < 0 ? 'Předchozí' : 'Další';
     button.setAttribute('aria-label', neighbour ? `${word}: ${sequenceTitle(neighbour)}` : word);
     button.disabled = !neighbour;
+    // The bottom pager names the neighbour and leaves out the side that has none.
+    const name = $('[data-step-title]', button);
+    if (!name) return;
+    name.textContent = neighbour ? sequenceTitle(neighbour) : '';
+    button.hidden = !neighbour;
   });
 }
 
 const slideOf = (dialog: HTMLDialogElement) => $<HTMLElement>('[data-dialog-slide]', dialog);
 const slideEasing = 'cubic-bezier(0.2, 0.8, 0.2, 1)';
 
-/** Where a dragged slide is now, so the next animation starts there instead of jumping. */
-function releaseSlide(slide: HTMLElement): Keyframe {
-  const style = getComputedStyle(slide);
-  const from = { transform: style.transform, opacity: style.opacity };
+/** Where a dragged slide is now (its inline drag offset), so the next animation starts there instead of jumping. */
+function releaseSlide(slide: HTMLElement): { frame: Keyframe; x: number } {
+  const x = Number.parseFloat(slide.style.transform.replace('translateX(', '')) || 0;
+  const frame = { transform: `translateX(${x}px)`, opacity: slide.style.opacity || '1' };
   slide.style.transform = '';
   slide.style.opacity = '';
-  return from;
+  return { frame, x };
+}
+
+/**
+ * The item that slid out stays hidden (fill: forwards) until its neighbour slides in,
+ * so the old content never flashes back while the next one is still loading.
+ */
+const slidOut = new WeakMap<HTMLElement, Animation>();
+function clearSlideOut(slide: HTMLElement | null): void {
+  if (!slide) return;
+  slidOut.get(slide)?.cancel();
+  slidOut.delete(slide);
 }
 
 /** The new item slides in from the side it comes from; under reduced motion it only fades. */
 function slideIn(dialog: HTMLDialogElement, direction: number): void {
-  slideOf(dialog)?.animate(
+  const slide = slideOf(dialog);
+  clearSlideOut(slide);
+  slide?.animate(
     reducedMotion() ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: `translateX(${direction * 3}rem)` }, { opacity: 1, transform: 'none' }],
     { duration: 300, easing: slideEasing },
   );
@@ -297,7 +356,8 @@ function focusStep(dialog: HTMLDialogElement, direction: number): void {
 /** An element between `target` and the dialog that scrolls sideways keeps the swipe for itself. */
 function scrollsSideways(target: EventTarget | null, dialog: HTMLDialogElement): boolean {
   for (let element = target instanceof Element ? target : null; element && element !== dialog; element = element.parentElement) {
-    if (element.scrollWidth > element.clientWidth + 1 && /auto|scroll/.test(getComputedStyle(element).overflowX)) return true;
+    // The overflow style first: only a real scroller is worth measuring (scrollWidth needs a layout).
+    if (/auto|scroll/.test(getComputedStyle(element).overflowX) && element.scrollWidth > element.clientWidth + 1) return true;
   }
   return false;
 }
@@ -316,23 +376,33 @@ function initialiseDialogSequences(): void {
       sequence.step(neighbour, direction);
       return true;
     }
+    // A button or key starts from rest and accelerates away; a swipe keeps going the way
+    // the finger moved (never back towards the centre) and eases out of its speed.
+    const { frame, x } = releaseSlide(slide);
+    const dragged = x !== 0;
+    const target = -direction * Math.max(48, Math.abs(x) + 64);
+    clearSlideOut(slide);
     const out = slide.animate(
-      [releaseSlide(slide), { opacity: 0, transform: `translateX(${direction * -3}rem)` }],
-      { duration: 160, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' },
+      [frame, { opacity: 0, transform: `translateX(${target}px)` }],
+      dragged ? { duration: 180, easing: 'cubic-bezier(0.2, 0.6, 0.35, 1)', fill: 'forwards' } : { duration: 160, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' },
     );
+    slidOut.set(slide, out);
     leaving.add(dialog);
     void out.finished.then(() => {
       leaving.delete(dialog);
       sequence.step(neighbour, direction);
-      // The neighbour's slide-in already covers this item (or the dialog is closed).
-      out.cancel();
+      // The neighbour's slide-in shows the item again; this only guards a step that never got there.
+      window.setTimeout(() => { if (slidOut.get(slide) === out) clearSlideOut(slide); }, 1200);
     }, () => leaving.delete(dialog));
     return true;
   };
   document.addEventListener('click', (event) => {
     const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[data-dialog-step]') : null;
     const dialog = button?.closest('dialog');
-    if (button && dialog) go(dialog, Number(button.dataset.dialogStep));
+    if (!button || !dialog) return;
+    const direction = Number(button.dataset.dialogStep);
+    // From the bottom pager the next item starts at its top: focus goes to the header arrow there.
+    if (go(dialog, direction) && button.closest('[data-dialog-pager-bottom]')) focusStep(dialog, direction);
   });
   document.addEventListener('keydown', (event) => {
     if ((event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
@@ -347,9 +417,14 @@ function initialiseDialogSequences(): void {
   // Phones: the item follows the finger sideways and goes to its neighbour past a quarter
   // of the width or on a quick flick; at the ends it only gives a little and springs back.
   $$<HTMLDialogElement>('.tj-dialog').forEach((dialog) => {
+    // A dialog closed mid-step opens with its item shown next time.
+    dialog.addEventListener('close', () => clearSlideOut(slideOf(dialog)));
     let start: { x: number; y: number; time: number } | null = null;
     let dragging = false;
-    const reset = () => { start = null; dragging = false; };
+    // Read once per drag: reading the layout on every move after writing the transform forces a restyle each time.
+    let width = 1;
+    let frame = 0;
+    const reset = () => { start = null; dragging = false; window.cancelAnimationFrame(frame); };
     dialog.addEventListener('pointerdown', (event) => {
       reset();
       if (event.pointerType !== 'touch' || !event.isPrimary || !sequences.has(dialog) || leaving.has(dialog)) return;
@@ -368,11 +443,17 @@ function initialiseDialogSequences(): void {
         // Mostly vertical: the dialog scrolls and the swipe is off.
         if (Math.abs(dx) < Math.abs(dy) * 1.3) { reset(); return; }
         dragging = true;
+        width = slide.offsetWidth || 1;
       }
       const neighbour = sequence.items[sequence.index + (dx < 0 ? 1 : -1)];
-      const offset = neighbour ? dx : dx * 0.2;
-      slide.style.transform = `translateX(${offset}px)`;
-      slide.style.opacity = String(1 - Math.min(Math.abs(offset) / slide.offsetWidth, 0.5));
+      // At the ends the item resists more the further it is pulled.
+      const offset = neighbour ? dx : Math.sign(dx) * Math.sqrt(Math.abs(dx)) * 4;
+      // One write per frame, however often the pointer reports.
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        slide.style.transform = `translateX(${offset}px)`;
+        slide.style.opacity = String(1 - Math.min(Math.abs(offset) / width, 0.6) * 0.6);
+      });
     });
     const end = (event: PointerEvent) => {
       const slide = slideOf(dialog);
@@ -382,9 +463,9 @@ function initialiseDialogSequences(): void {
       if (!was || !moved || !slide) return;
       const dx = event.clientX - was.x;
       const quick = Math.abs(dx) > 30 && Math.abs(dx) / Math.max(event.timeStamp - was.time, 1) > 0.5;
-      const far = Math.abs(dx) > slide.offsetWidth / 4;
+      const far = Math.abs(dx) > width / 4;
       if (event.type === 'pointerup' && (far || quick) && go(dialog, dx < 0 ? 1 : -1)) return;
-      slide.animate([releaseSlide(slide), { opacity: 1, transform: 'none' }], { duration: 260, easing: slideEasing });
+      slide.animate([releaseSlide(slide).frame, { opacity: 1, transform: 'none' }], { duration: 260, easing: slideEasing });
     };
     dialog.addEventListener('pointerup', end);
     dialog.addEventListener('pointercancel', end);
@@ -403,10 +484,12 @@ function initialiseDialogs(): void {
     window.history.replaceState({ tjDialog: to.id }, '', `#${to.id}`);
     // A season hidden on phones must be in the page before its dialog can show.
     to.closest('[data-seasons]')?.classList.add('is-all');
-    from.close();
     to.classList.add('is-switching');
     to.scrollTop = 0;
+    // Open the neighbour on top first, then close this one: the page behind stays inert the
+    // whole time, so the browser restyles it once instead of twice (each costs tens of ms).
     to.showModal();
+    from.close();
     lockScroll();
     openers.set(to, { opener: link, pointer: last?.pointer ?? true });
     updatePager(to, link, stepFrom(to));
@@ -633,6 +716,8 @@ function initialisePageDialog(): void {
     request++;
     // Closed while the history entry was already left (Back): make sure the address is the homepage again.
     if (dialogState() !== dialog.id && window.location.pathname !== homePath) window.history.replaceState(null, '', homeUrl);
+    // The page renders fully again before focus returns to a link in it.
+    lockScroll();
     if (opener?.isConnected) opener.focus({ preventScroll: true });
     opener = null;
   });

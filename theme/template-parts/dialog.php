@@ -22,13 +22,27 @@
 						<button class="tj-arrow" data-dir="next" type="button" data-dialog-step="1" aria-label="Další"></button>
 					</div>
 				</div>
-				<button class="tj-btn tj-btn-quiet tj:min-h-[44px] tj:px-4 tj:py-2 tj:text-[.95rem]" type="button" data-dialog-close aria-label="<?php echo esc_attr($args['close'] ?? 'Zavřít'); ?>" autofocus>Zavřít</button>
+				<?php // A cross in the same quiet circle as the arrows; the name comes from aria-label. ?>
+				<button class="tj-arrow" data-dir="close" type="button" data-dialog-close aria-label="<?php echo esc_attr($args['close'] ?? 'Zavřít'); ?>" autofocus></button>
 			</div>
 		</div>
 		<?php // Title and content slide out and in when stepping; the header with the arrows stays put. ?>
 		<div data-dialog-slide>
 			<h2 class="tj-h2 tj:mt-3 tj:mb-6 tj:text-[clamp(1.6rem,3.4vw,2.4rem)]" id="<?php echo esc_attr($args['id'] . '-title'); ?>"><?php echo esc_html($args['title']); ?></h2>
 			<?php ($args['content'])(); ?>
+			<?php
+			// After the content, where the header arrows are out of sight: previous left and next right like the arrows; wider screens add the neighbour's name and an arrow, at the outer edges (initialiseDialogSequences fills them; hidden outside a list).
+			// On phones the name would only wrap into a stub: two equal halves with the word centred; screen readers hear the name from aria-label.
+			$step = 'tj:flex tj:min-h-12 tj:w-full tj:min-w-0 tj:cursor-pointer tj:flex-col tj:justify-center tj:gap-1 tj:rounded-xl tj:border tj:border-solid tj:border-ink/14 tj:bg-transparent tj:px-4 tj:py-2 tj:sm:min-h-[4.5rem] tj:sm:px-4 tj:sm:py-3 tj:font-[inherit] tj:text-inherit tj:transition-[border-color,background-color,scale] tj:duration-150 tj:hover:border-ink/35 tj:hover:bg-ink/4 tj:active:scale-[.98] tj:[&[hidden]]:hidden';
+			$stepLabel = 'tj:font-bold tj:sm:text-[.85rem] tj:sm:font-semibold tj:sm:text-muted';
+			$stepTitle = 'tj:line-clamp-2 tj:text-[1.05rem] tj:leading-snug tj:font-bold tj:max-sm:hidden';
+			?>
+			<div class="tj:mt-10 tj:border-t tj:border-ink/12 tj:pt-6 tj:[&[hidden]]:hidden" data-dialog-pager-bottom hidden>
+				<div class="tj:grid tj:grid-cols-2 tj:gap-2 tj:sm:gap-3">
+					<button class="<?php echo $step; ?> tj:text-center tj:sm:text-left" type="button" data-dialog-step="-1" hidden><span class="<?php echo $stepLabel; ?>"><span class="tj:max-sm:hidden" aria-hidden="true">←&nbsp;</span>Předchozí</span><span class="<?php echo $stepTitle; ?>" data-step-title></span></button>
+					<button class="<?php echo $step; ?> tj:col-start-2 tj:text-center tj:sm:text-right" type="button" data-dialog-step="1" hidden><span class="<?php echo $stepLabel; ?>">Další<span class="tj:max-sm:hidden" aria-hidden="true">&nbsp;→</span></span><span class="<?php echo $stepTitle; ?>" data-step-title></span></button>
+				</div>
+			</div>
 		</div>
 	</div>
 </dialog>
