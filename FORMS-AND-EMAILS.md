@@ -28,6 +28,10 @@ E-mail v současnosti obsahuje údaje z přihlášky včetně rodného čísla a
 
 Web hromadně nic nerozesílá. Adresy rodičů dává administrátorům stránka Nástroje → Kontakty rodičů (`app/ParentContacts.php`): výběr ročníku z tabulky `tabory` (výchozí je aktivní ročník), nebo všechny ročníky; sourozenci se stejným e-mailem jsou sloučení do jedné adresy. Tlačítko Kopírovat adresy je pro pole Skrytá kopie (Bcc) při organizačních zprávách; Stáhnout CSV (`email;jmeno;deti`, UTF-8 s BOM) je pro import do rozesílací služby u pozvánek, které musí mít odkaz na odhlášení. Stránka jen čte a funguje tam, kde jsou definované konstanty `TJ_DB_*`; jinde ukáže, že databáze není dostupná.
 
+## Seznam dětí
+
+Nástroje → Seznam dětí (`app/ChildrenList.php`) ukazuje přihlášené děti jednoho ročníku v pořadí přihlášení: číslo, jméno, věk k prvnímu dni tábora (`tabory.termin_od`), holka/kluk podle rodného čísla (u dívek je k měsíci přičteno 50, od roku 2004 případně 70), nástup, výstup, spolubydlící, kontakt a poznámku. Všechny sloupce se řadí kliknutím v prohlížeči. Rodné číslo ani adresa se nezobrazují. Společný přístup k databázi obou stránek je v `app/Registrations.php` (název ročníku bere z `tabory.nazev`).
+
 ## Newsletter
 
 Newsletter byl 12. 11. 2026 zrušen: web už adresy nesbírá, při publikaci aktuality nic nerozesílá a staré ověřovací ani odhlašovací odkazy nefungují. Tabulka `newsletter` v externí databázi zůstala beze změny; její smazání je samostatný krok správce databáze.

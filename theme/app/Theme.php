@@ -44,6 +44,7 @@ final class Theme
         (new IndexPermalinks())->register();
         (new GoogleGalleries())->register();
         if (is_admin()) {
+            (new ChildrenList())->register();
             (new ParentContacts())->register();
         }
     }
