@@ -41,13 +41,15 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 				$leadCard = $image ? 'tj:lg:sticky tj:lg:top-26' : 'tj:lg:h-full';
 				?>
 				<?php // The lead story is a night card: on the yellow band it reads as part of the hero above, not as a white box. ?>
-				<article class="tj-card tj:border-0 tj:bg-night tj:text-on-night tj:[&_:focus-visible]:outline-sun tj:[--tj-color-muted:var(--tj-color-on-night-muted)] tj:[--wp--preset--color--muted:var(--tj-color-on-night-muted)] <?php echo $leadCard; ?>">
-					<a class="tj:flex tj:h-full tj:flex-col tj:text-inherit tj:no-underline" href="<?php echo esc_url(get_permalink($lead)); ?>" data-sequence-title="<?php echo esc_attr($plain(get_the_title($lead))); ?>">
+				<?php // Hover: the card lifts and tips a little like a picked-up note, the title lights up in sun and "Číst dál" slides its arrow. ?>
+				<article class="tj-card tj:border-0 tj:bg-night tj:text-on-night tj:[&_:focus-visible]:outline-sun tj:[--tj-color-muted:var(--tj-color-on-night-muted)] tj:[--wp--preset--color--muted:var(--tj-color-on-night-muted)] tj:transition-[transform,box-shadow] tj:duration-300 tj:ease-(--tj-ease-out) tj:hover:shadow-[0_1.25rem_2.5rem_rgb(15_33_51/.35)] tj:motion-safe:hover:[transform:translateY(-6px)_rotate(-.6deg)] tj:active:[transform:translateY(-2px)_scale(.99)] <?php echo $leadCard; ?>">
+					<a class="tj:group/lead tj:flex tj:h-full tj:flex-col tj:text-inherit tj:no-underline" href="<?php echo esc_url(get_permalink($lead)); ?>" data-sequence-title="<?php echo esc_attr($plain(get_the_title($lead))); ?>">
 						<?php if ($image) : ?><span class="tj-frame tj:aspect-16/9 tj:rounded-none"><?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput -- core image markup ?></span><?php endif; ?>
 						<span class="tj:flex tj:flex-1 tj:flex-col tj:justify-center tj:p-[clamp(1.25rem,3vw,2.25rem)]">
 							<span class="tj-meta tj:block"><span class="tj:whitespace-nowrap"><?php echo esc_html(get_the_date('', $lead)); ?></span><?php echo in_array($lead->ID, $pinned, true) ? ' · důležité' : ''; ?></span>
-							<span class="tj-h3 tj:block <?php echo $image ? 'tj:text-[1.5rem]' : 'tj:text-[clamp(1.6rem,2.8vw,2.4rem)] tj:leading-[1.1]'; ?>"><?php echo esc_html($plain(get_the_title($lead))); ?></span>
+							<span class="tj-h3 tj:block tj:transition-colors tj:duration-200 tj:group-hover/lead:text-sun <?php echo $image ? 'tj:text-[1.5rem]' : 'tj:text-[clamp(1.6rem,2.8vw,2.4rem)] tj:leading-[1.1]'; ?>"><?php echo esc_html($plain(get_the_title($lead))); ?></span>
 							<span class="tj:mt-3 tj:block tj:leading-[1.55] tj:text-muted"><?php echo esc_html(wp_trim_words(get_the_excerpt($lead), $image ? 30 : 50)); ?></span>
+							<span class="tj:mt-5 tj:inline-flex tj:items-center tj:gap-2 tj:self-start tj:font-bold tj:text-sun" aria-hidden="true">Číst dál<svg class="tj:size-5 tj:transition-transform tj:duration-200 tj:ease-(--tj-ease-out) tj:motion-safe:group-hover/lead:translate-x-1.5" viewBox="0 0 20 20" fill="none"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
 						</span>
 					</a>
 				</article>
