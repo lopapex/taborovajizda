@@ -1,31 +1,43 @@
 [CmdletBinding()]
-param([string]$OutputDirectory)
+param(
+    [Parameter(Mandatory)]
+    [ValidateSet('main', 'stage')]
+    [string]$SourceBranch,
+
+    [string]$OutputDirectory
+)
 
 $ErrorActionPreference = 'Stop'
+$ProgressPreference = 'SilentlyContinue'
 Set-StrictMode -Version Latest
 
 $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$themeRoot = Join-Path $repositoryRoot 'theme'
-if (-not (Test-Path -LiteralPath (Join-Path $themeRoot 'style.css') -PathType Leaf)) {
-    throw "Repository theme is incomplete: '$themeRoot\style.css' does not exist."
-}
-
 $status = & git -C $repositoryRoot status --porcelain --untracked-files=all
 if ($LASTEXITCODE -ne 0) { throw 'Unable to read Git working tree status.' }
 if ($status) { throw "Release requires a clean Git working tree.`n$($status -join "`n")" }
 
-$forbidden = Get-ChildItem -LiteralPath $themeRoot -File -Recurse -Force | Where-Object {
-    $_.Name -eq '.tags' -or $_.Name -like '.env*' -or $_.Name -like 'wp-config*.php' -or
-    $_.Name -match '\.(sql|sql\.gz|log|wpress|bm|tar|tar\.gz|tgz)$' -or
-    $_.Name -match '(?i)backup.*\.zip$'
+$sourceRef = "refs/heads/$SourceBranch"
+& git -C $repositoryRoot show-ref --verify --quiet $sourceRef
+if ($LASTEXITCODE -ne 0) { throw "Local source branch '$SourceBranch' does not exist." }
+
+$commit = (& git -C $repositoryRoot rev-parse "$sourceRef^{commit}").Trim()
+$shortCommit = (& git -C $repositoryRoot rev-parse --short=8 $commit).Trim()
+$trackedThemeFiles = @(& git -C $repositoryRoot -c core.quotepath=false ls-tree -r --name-only $commit -- theme)
+if ($LASTEXITCODE -ne 0) { throw "Unable to inspect theme files in '$SourceBranch'." }
+if ($trackedThemeFiles -notcontains 'theme/style.css') {
+    throw "Source branch '$SourceBranch' does not contain theme/style.css."
+}
+$forbidden = $trackedThemeFiles | Where-Object {
+    $name = [System.IO.Path]::GetFileName($_)
+    $name -eq '.tags' -or $name -like '.env*' -or $name -like 'wp-config*.php' -or
+    $name -match '\.(sql|sql\.gz|log|wpress|bm|tar|tar\.gz|tgz)$' -or
+    $name -match '(?i)backup.*\.zip$'
 }
 if ($forbidden) {
-    throw "Release refused because forbidden files exist in theme/:`n$($forbidden.FullName -join "`n")"
+    throw "Release refused because forbidden files are tracked in theme/:`n$($forbidden -join "`n")"
 }
 
-$commit = (& git -C $repositoryRoot rev-parse HEAD).Trim()
-$shortCommit = (& git -C $repositoryRoot rev-parse --short=8 HEAD).Trim()
-$tags = @(& git -C $repositoryRoot tag --points-at HEAD | Where-Object { $_ })
+$tags = @(& git -C $repositoryRoot tag --points-at $commit | Where-Object { $_ })
 $tagText = if ($tags.Count) { $tags -join ', ' } else { '(none)' }
 $date = Get-Date -Format 'yyyy-MM-dd'
 $createdAt = Get-Date -Format 'o'
@@ -36,7 +48,7 @@ if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
 $OutputDirectory = [System.IO.Path]::GetFullPath($OutputDirectory)
 New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 
-$baseName = "taborovajizda-theme-$date-$shortCommit"
+$baseName = "taborovajizda-theme-$SourceBranch-$date-$shortCommit"
 $zipPath = Join-Path $OutputDirectory "$baseName.zip"
 $manifestPath = Join-Path $OutputDirectory "$baseName-manifest.txt"
 if (Test-Path -LiteralPath $zipPath) { Remove-Item -LiteralPath $zipPath -Force }
@@ -44,12 +56,62 @@ if (Test-Path -LiteralPath $manifestPath) { Remove-Item -LiteralPath $manifestPa
 
 $temporaryRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("tj-release-" + [guid]::NewGuid().ToString('N'))
 $packageTheme = Join-Path $temporaryRoot 'taborovajizda'
+$sourceArchive = Join-Path $temporaryRoot 'source.zip'
+$sourceRoot = Join-Path $temporaryRoot 'source'
+$sourceTheme = Join-Path $sourceRoot 'theme'
 try {
-    New-Item -ItemType Directory -Path $packageTheme -Force | Out-Null
-    Get-ChildItem -LiteralPath $themeRoot -Force | ForEach-Object {
-        Copy-Item -LiteralPath $_.FullName -Destination $packageTheme -Recurse -Force
+    New-Item -ItemType Directory -Path $sourceRoot -Force | Out-Null
+    & git -C $repositoryRoot archive --format=zip --output=$sourceArchive $commit theme
+    if ($LASTEXITCODE -ne 0) { throw 'Unable to export the committed theme source.' }
+    Expand-Archive -LiteralPath $sourceArchive -DestinationPath $sourceRoot -Force
+
+    Push-Location $sourceTheme
+    try {
+        & npm ci
+        if ($LASTEXITCODE -ne 0) { throw 'npm ci failed while preparing the release.' }
+        & npm run build
+        if ($LASTEXITCODE -ne 0) { throw 'The production theme build failed.' }
     }
-    Compress-Archive -LiteralPath $packageTheme -DestinationPath $zipPath -CompressionLevel Optimal
+    finally {
+        Pop-Location
+    }
+
+    New-Item -ItemType Directory -Path $packageTheme -Force | Out-Null
+
+    Get-ChildItem -LiteralPath $sourceTheme -File -Filter '*.php' | ForEach-Object {
+        Copy-Item -LiteralPath $_.FullName -Destination $packageTheme -Force
+    }
+    foreach ($file in @('style.css', 'theme.json')) {
+        Copy-Item -LiteralPath (Join-Path $sourceTheme $file) -Destination $packageTheme -Force
+    }
+    foreach ($directory in @('app', 'config', 'fonts', 'template-parts', 'web_images', 'public\build')) {
+        $source = Join-Path $sourceTheme $directory
+        if (Test-Path -LiteralPath $source) {
+            $destination = Join-Path $packageTheme $directory
+            New-Item -ItemType Directory -Path (Split-Path $destination -Parent) -Force | Out-Null
+            Copy-Item -LiteralPath $source -Destination $destination -Recurse -Force
+        }
+    }
+
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $zipArchive = [System.IO.Compression.ZipFile]::Open(
+        $zipPath,
+        [System.IO.Compression.ZipArchiveMode]::Create
+    )
+    try {
+        Get-ChildItem -LiteralPath $packageTheme -File -Recurse | Sort-Object FullName | ForEach-Object {
+            $entryName = $_.FullName.Substring($temporaryRoot.Length).TrimStart([char[]]@('\', '/')).Replace('\', '/')
+            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+                $zipArchive,
+                $_.FullName,
+                $entryName,
+                [System.IO.Compression.CompressionLevel]::Optimal
+            ) | Out-Null
+        }
+    }
+    finally {
+        $zipArchive.Dispose()
+    }
 }
 finally {
     if (Test-Path -LiteralPath $temporaryRoot) { Remove-Item -LiteralPath $temporaryRoot -Recurse -Force }
@@ -59,8 +121,14 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 $archive = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
 try {
     $entries = @($archive.Entries)
-    if (@($entries | Where-Object { $_.FullName -notlike 'taborovajizda/*' }).Count) {
+    if (@($entries | Where-Object { $_.FullName.Replace('\', '/') -notlike 'taborovajizda/*' }).Count) {
         throw 'Release ZIP contains entries outside the taborovajizda/ root directory.'
+    }
+    if (@($entries | Where-Object { $_.FullName.Contains('\') }).Count) {
+        throw 'Release ZIP contains Windows path separators that WordPress cannot install reliably.'
+    }
+    if (@($entries | Where-Object { $_.FullName -ceq 'taborovajizda/style.css' }).Count -ne 1) {
+        throw 'Release ZIP must contain exactly one taborovajizda/style.css entry.'
     }
     $entryCount = $entries.Count
 }
@@ -74,6 +142,7 @@ $manifest = @"
 Taborova jizda - WordPress theme release
 
 Created: $createdAt
+Source branch: $SourceBranch
 Commit: $commit
 Tag: $tagText
 ZIP: $($zipInfo.Name)
@@ -81,6 +150,7 @@ Size: $($zipInfo.Length) bytes
 SHA-256: $sha256
 Archive entries: $entryCount
 Archive root: taborovajizda/
+Build: npm ci + npm run build from committed source
 
 Deployment
 1. WordPress -> Vzhled -> Sablony -> Instalovat sablonu -> Nahrat sablonu.
@@ -96,6 +166,6 @@ Upload the previously working theme ZIP in the same way, or use the verified pre
 Set-Content -LiteralPath $manifestPath -Value $manifest -Encoding UTF8
 
 [pscustomobject]@{
-    Zip = $zipPath; Manifest = $manifestPath; Commit = $commit; Tags = $tagText
+    SourceBranch = $SourceBranch; Zip = $zipPath; Manifest = $manifestPath; Commit = $commit; Tags = $tagText
     Bytes = $zipInfo.Length; SHA256 = $sha256; Entries = $entryCount
 } | Format-List

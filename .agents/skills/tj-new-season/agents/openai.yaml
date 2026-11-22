@@ -1,0 +1,6 @@
+interface:
+  display_name: "TJ New Season"
+  short_description: "Prepare and validate the next camp season"
+  default_prompt: "Use $tj-new-season to prepare the next Táborová jízda season without inventing missing data."
+policy:
+  allow_implicit_invocation: true

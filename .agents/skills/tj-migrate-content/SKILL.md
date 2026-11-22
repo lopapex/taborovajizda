@@ -1,0 +1,159 @@
+---
+name: tj-migrate-content
+description: Migrate WordPress content edits (pages, posts, featured images, SEO descriptions, documents) from the LocalWP copy of Táborová jízda to stage (`/test/`) or production, together with a theme release. Use when a redesign or editorial round made in LocalWP must reach stage or production without copying the database.
+---
+
+# Migrate content and theme release
+
+Content lives in the WordPress database, the theme in Git. Never copy a whole database between environments (`WORDPRESS-CONTENT.md`): the targets have their own posts, plugins, users, form data and media. Migrate only the reviewed difference, object by object, and keep everything reversible through WordPress revisions and a fresh backup.
+
+Read `AI-README.md` first. Production is changed only after a separate explicit request; show the full change list and wait for confirmation before every write to stage or production.
+
+## Environments
+
+| | LocalWP | Stage | Production |
+| --- | --- | --- | --- |
+| Home URL | `http://taborovajizda-local.local` | `https://taborovajizda.cz/test` | `https://taborovajizda.cz` |
+| Admin | `/wp-admin/` | `/test/wp-admin/` (WP Staging login first) | `/65e43gerg534e/` |
+| `WP_ENVIRONMENT_TYPE` | `local` | `staging` | `production` |
+| Permalinks | `/%postname%/` | `/index.php/%postname%/` | `/%postname%/` |
+| Uploads | local disk, missing files proxied read-only from production by LocalWP nginx | own copy from the WP Staging clone | origin |
+| Forms | simulated | simulated | real e-mails and external DB |
+
+Stage uses index.php permalinks because the server nginx sends every non-existing path under `/test/` to the production WordPress, and only `/test/index.php/...` reaches stage PHP. Nobody on the project has access to that nginx config. The theme (`app/IndexPermalinks.php`) adds `index.php/` to template, content, menu and widget links while those permalinks are active; on production it does nothing. Never change stage back to "Post name" permalinks, and never set index.php permalinks on production.
+
+Credentials are never typed by the agent. The user signs in to stage or production in the built-in browser pane; the agent then works in that session. Read `WP_ENVIRONMENT_TYPE` in Tools → Site Health → Info before any form test.
+
+## 1. Inventory the local change
+
+1. Use the LocalWP MySQL from `%APPDATA%\Local\sites.json` (port, `root`/`root`, database `local`, prefix `wp_`).
+2. Pick the baseline: the last `Local Sites/taborovajizda-local/backups-claude/pre-*.sql` taken before the editorial round. Load it into a temporary database, e.g. `tj_baseline`, and drop it at the end.
+3. Diff against the live local database:
+   - `wp_posts` (excluding `revision`, `auto-draft`): `post_content`, `post_title`, `post_status`, `post_excerpt`;
+   - `wp_postmeta`: new or changed rows, ignoring `_edit_lock`, `_edit_last`, `stackable_optimized_css*`; `_thumbnail_id` and `ssp_meta_description` matter;
+   - `wp_term_relationships`, `wp_terms`;
+   - `wp_options`: `widget_*`, `sidebars_widgets`, `nav_menu*`, `sticky_posts`, `page_on_front`, SEO options.
+4. Drop local artefacts from the list: changes that only repair the LocalWP restore (e.g. `facebook.com/taborovajizda-local.local`, `@taborovajizda-local.local` e-mails, `http://category/...`). Check the target instead; it usually has the right value already.
+5. Write the list as a table: object, ID, what changes, target status. Show it to the user.
+
+## 2. Check the target before overwriting
+
+Read every object on the target through the REST API in the signed-in browser (`/?rest_route=/wp/v2/pages/<id>&context=edit`; nonce from `wp-admin/admin-ajax.php?action=rest-nonce`, header `X-WP-Nonce`). The plain `/wp-json/` path is blocked.
+
+- Normalise URLs (target home ↔ local home) and compare the target with the **baseline**, not with the new local version.
+- Target equals baseline → safe to overwrite.
+- Target differs → someone edited it there. Do not overwrite; show the difference and let the user decide. Keep target-only edits (for example a renamed title) unless told otherwise.
+- Already equal to the new local version → skip.
+- Confirm all referenced attachment IDs (featured images, `wp-image-*`, `data-id`) exist on the target (`/wp/v2/media&include=...`).
+
+## 3. Map URLs
+
+- Replace `http(s)://taborovajizda-local.local` with the target home URL. For stage that is `https://taborovajizda.cz/test` (the theme adds `index.php/` at render time); for production `https://taborovajizda.cz`.
+- Root-relative links (`/wp-content/...`, `/e-prihlaska/`) break on stage because `/` is production. Store absolute target URLs.
+- Documents link straight to the PDF in uploads, never to an attachment page.
+- After mapping, the payload must contain no `taborovajizda-local`, no `href="/`, and no link to another environment.
+
+## 4. Documents
+
+The parents' documents (zmocnění, bezinfekčnost a souhlas, potvrzení lékaře) are attachments with `_wp_attached_file` under `uploads/`. LocalWP does not have the files; it proxies them from production.
+
+1. Download every non-image attachment from production into a fresh temporary folder and copy the missing ones into the local `wp-content/uploads/`. Uploads are not in Git.
+2. Check the local site serves them from disk: response `ETag` differs from production.
+3. On stage the files exist from the clone; verify each linked PDF returns 200 with the stage `ETag`, not the production one.
+4. A new document is uploaded to the target media library by the user (file pickers cannot be filled by the agent). Then use its target URL in the content.
+
+## 5. Apply
+
+Before production: the user makes a backup (Backup Migration plugin) and keeps the previous theme ZIP for rollback.
+
+- Page and post content and titles: `POST /wp/v2/pages/<id>` or `/wp/v2/posts/<id>` with `content` / `title` / `status`. WordPress stores a revision, which is the rollback.
+- Featured images: `POST /wp/v2/posts/<id>` with `featured_media`.
+- SEO SIMPLE PACK description (`ssp_meta_description`) is not in REST: post the block editor meta-box form (`metabox-base-form` and `metabox-location-*` inputs, override `ssp_meta_description`) to the edit page's meta-box loader URL, then re-read the field. Check the post content length did not change.
+- Widgets and menus: apply only real content changes, through Appearance in the admin or `/wp/v2/widgets`.
+- Read every object back and compare it with the payload.
+
+## 6. Theme
+
+1. Merge the tested theme into the source branch, then use `$tj-create-release` (`stage` for stage, `main` for production).
+2. The user uploads the ZIP in Appearance → Themes → Add → Upload and chooses "Replace current with uploaded". The agent cannot attach the file.
+3. Verify the target loads the CSS asset name from the release manifest's build (`public/build/assets/app-*.css`).
+4. Production: purge LiteSpeed Cache and the browser cache.
+
+## 7. Verify
+
+On the target, logged in:
+
+- homepage, `#dokumenty`, Dokumenty, Informace pro rodiče, Kontakt, Přihláška, one category and one post return 200 without `Fatal error`;
+- stage: no link on these pages leads outside `https://taborovajizda.cz/test/` (except external sites); pages open under `/test/index.php/...`;
+- every PDF link returns 200 from the target itself;
+- stage only: the registration form is visible (debug display) and a test submit shows the simulated success; production forms are tested only with one controlled real registration agreed with the user (`FORMS-AND-EMAILS.md`);
+- desktop and 360 px.
+
+Report the migrated objects, skipped objects with the reason, release ZIP and SHA-256, verification results, and what is left for the user.
+
+## Redesign 2027 content set
+
+The 11. 11. 2026 editorial round in LocalWP (baseline `pre-content-redesign-20261111-140339.sql`) changed:
+
+| Object | Change | Stage (12. 11. 2026) |
+| --- | --- | --- |
+| Page 432 homepage | timeless intro text, group photo, no 2026/2025 blocks | migrated; stage title "…VERZE 2" kept |
+| Page 20 Dokumenty | working links to bezinfekčnost, potvrzení lékaře, zmocnění 2026 | migrated |
+| Page 289 Informace pro rodiče | FAQ links to `#dokumenty`, `#kontakt`, přihláška, PDFs; hlavní vedoucí Matěj Vašek | migrated |
+| Page 4917 Kontakt | hlavní vedoucí Matěj Vašek | migrated |
+| Page 28, 4917 | `ssp_meta_description` | migrated |
+| 12 activity posts (313–341) | featured image from their gallery | migrated |
+| 12 people posts (239, 345, 368, 419, 421, 442, 3629, 3643, 4138, 4396, 5064, 5086) | featured photo | migrated |
+| Post 3616 Matěj Vašek | title "(hlavní vedoucí)" | already on stage |
+| Post 219 Martin Vojtěch | hidden (local draft) | already private on stage |
+| Posts 2309, 5325, 5708 | local restore artefacts only | not needed |
+
+A Czech proofreading round on 12. 11. 2026 (baseline `pre-proofread-20261112-071008.sql`) then fixed spelling, punctuation and typography in pages 3, 20, 43, 289, 432, 4372, 4917, the people posts (239, 345, 368, 419, 421, 442, 829, 2261, 3616, 3629, 3643, 3660, 4138, 4396, 5064, 5086, 5106; quotes „…“ and lowercase role in six titles), the activity posts (311, 313, 317, 324, 331, 334, 336) and the 2026 posts (5572, 5603, 5613, 5701, 5708). The homepage line "A baví nás to (snad je to vidět)" became "A baví nás to. Přesvědčte se sami v ohlédnutí za minulými ročníky." with a link to `#minule-rocniky`. A second round (baseline `pre-proofread2-20261112-073100.sql`) ran a Hunspell cs_CZ check over all published content and fixed the real misspellings in posts 1555, 1986, 2123, 2309, 2346, 2379, 2856, 2894, 3835, 4396, 4760, 5136, 5327, 5528 and 5538. Historical posts got only this dictionary check, not a full manual read. Stage got all changes as exact old → new replacements applied to its own content; do the same on production and report any replacement that is not found instead of overwriting the post.
+
+Later feedback rounds on 12. 11. 2026 also changed (local and stage): capital "Vás/Vám/Vaše" for parents in pages 289 and 4372 and posts 5572 and 5603; the 1085-character `aria-label` removed from the document links in page 289; post 368 (Matěj Novotný): "Od té doby nenastal rok…", "Stal se součástí…" and "jsem ročník ’98 a pracuji jako webový vývojář." Profile texts contain non-breaking spaces, so match `[\s\xa0]+` between words instead of plain spaces.
+
+Photonic galleries from Google Photos (51 posts, 2019–2026) are gone for good: Google closed the API and the original albums are no longer available. `app/GoogleGalleries.php` hides their dead "Zobrazit galerii" button and empty stream; do not try to restore or migrate them.
+
+The season font `theme/fonts/third-man.otf` originally drew "Ě/ě" exactly like "É/é" (homepage showed "SPOLEČNÉ"). Its Ecaron/ecaron glyphs were rebuilt from E/e plus the caron of Č/č; the change ships with the theme release, no content migration is needed.
+
+For production, run steps 2–7 for this set against production: compare with the production state, map URLs to `https://taborovajizda.cz`, then apply after confirmation.
+
+## Unreachable content cleanup (12. 11. 2026)
+
+Everything the redesign no longer links to was moved to the trash (not deleted permanently), locally (backup `pre-cleanup-20261112-122516.sql`) and on stage:
+
+- pages 43 Minulé ročníky, 803 Přihlašování uzavřeno, 2123, 2459, 2473, 2589 (2020–2021 season pages) and 4917 Kontakt (`/kontakt-2/`); the theme no longer has `page-kontakt-2.php` or `page-minule-rocniky.php`, and its footer and archive links point to the homepage anchors;
+- 26 old news posts: 1194, 1352, 1518, 1535, 1852, 2068, 2145, 2270, 2292, 2304, 2309, 2346, 2379, 2527, 2538, 2560, 2604, 2628, 2669, 2985, 2988, 3220, 3576, 3670, 3741, 4090;
+- plugins deactivated and deleted: fluentform, jquery-t-countdown-widget, insert-php-code-snippet, gutenberg, copy-delete-posts, wow-media-library-fix, ajax-thumbnail-rebuild, media-library-organizer, svg-vector-icon-plugin (WP SVG Icons). Fluent Forms has no uninstall routine, so its `wp_fluentform_*` tables with the old submissions stay in the database.
+
+Photonic stays: the 2025 and 2026 posts (5251, 5257, 5259, 5355, 5440, 5581, 5613, 5701) show galleries of their own media through `wp:photonic/gallery` blocks. Do not remove it until those blocks are converted to core galleries.
+
+On production, check each ID and title first, then trash with `POST /?rest_route=/wp/v2/<pages|posts>/<id>&_method=DELETE` (the server nginx answers a real `DELETE` with 405), and deactivate (`POST /wp/v2/plugins/<plugin>` with `{"status":"inactive"}`) before deleting each plugin (`POST …/plugins/<plugin>&_method=DELETE`). Keep `wp-staging` and any plugin not listed here. Release the theme together with the cleanup, so no template links to a trashed page.
+
+## Legacy removal (12. 11. 2026, local only)
+
+The theme no longer has the legacy layout (sidebar, menus, widgets, countdown, newsletter). Locally (full dump before the cleanup in the session scratchpad, not in Git) WordPress was cleaned to match:
+
+- all sidebar widgets and the `sidebars_widgets` assignment, the menu "Hlavní menu" with its 15 items, its theme locations and the `wp_navigation` post;
+- the trash emptied permanently (including the 26 news posts and 8 pages trashed in the previous cleanup), all revisions and auto-drafts;
+- posts of unregistered types left by removed plugins (NextGEN, FooGallery, Advanced Gutenberg, …);
+- tables of removed plugins (`wp_fluentform_*` with the old submissions, `wp_yoast_*`, `wp_ngg_*`, `wp_bwg_*`, `wp_modula*`, `wp_unitegallery_*`, `wp_gdgallery*`, `wp_gg_*`, `wp_easy_gallery*`, `wp_xcloner_*`, `wp_tm_task*`, `wp_way2enjoy_*`, `wp_ewwwio_*`, `wp_ff_*`) and the unused old `tj_*` table set;
+- options of removed plugins (Yoast, W3 Total Cache, UpdraftPlus, Smush, TinyPNG, EWWW, XCloner, Fluent Forms, …) and all transients;
+- plugins Query Monitor and WP Crontrol.
+
+Stage (12. 11. 2026, after a Backup Migration backup of the database and plugins and with release `taborovajizda-theme-stage-2026-11-12-91f39278.zip` installed) got the same cleanup through the REST API: all 11 widgets, menu 2 "Hlavní menu", navigation 4892, the trash (26 posts, pages 43, 803, 2123, 2459, 2473, 2589, 4917, 5606) and the plugins Query Monitor, WP Crontrol and the inactive WPvivid Backup. A crawl of all 146 public stage URLs afterwards found no link leaving `/test/index.php/` and no PHP error.
+
+Not possible without database access, so still on stage: 575 revisions (REST answers `rest_cannot_delete`, nginx refuses a real `DELETE`), the old `tj_*` tables and the options of removed plugins.
+
+All In One Login "Change Login URL" is switched off on stage: its custom slug (the production `65e43gerg534e`) is not a real file under `/test/`, so nginx sent it, and every login link of WP Staging, to the production site. Stage login is now `/test/wp-login.php`, still behind the WP Staging login. Production keeps the custom slug; do not switch it off there.
+
+Production is untouched. Do the same there only on a separate request, after a backup, together with the production theme release. Check every table and option prefix against the installed plugins of that environment first.
+
+## Redesign copy round (13. 11. 2026, local and stage)
+
+Together with the theme redesign (branch `change/2026-11-13-redesign`), two editorial changes were made in LocalWP (backup `pre-redesign-copy-20261113-*.sql`). Stage got both on 13. 11. 2026 as exact old → new replacements (page 432 and all 39 titles matched and were read back). Production does not have them yet; apply them there the same way after confirmation:
+
+- Page 432 homepage, first sentence: "Doputovali jste na stránky Táborové jízdy. Již od roku 2014 pořádáme tradiční letní tábory pro děti." → "Táborová jízda pořádá letní tábory pro děti už od roku 2014." (still inside `<em>`, the rest of the paragraph unchanged).
+- 39 post titles: the spaced em dash " — " became a spaced en dash " – " (Egypt 2021, Strážci Galaxie 2022, Tábor 2023–2026, La Puerta 2024, post 4690). Slugs and content are unchanged.
+
+The capital "Vás/Vám/Vaše" for parents stays (feedback of 12. 11. 2026); the theme's own texts follow it.

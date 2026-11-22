@@ -1,0 +1,766 @@
+@import "tailwindcss/theme.css" prefix(tj);
+@import "tailwindcss/utilities.css" prefix(tj);
+@source "../../**/*.php";
+@source "../ts/*.ts";
+@import "./content.css";
+@import "./season.css";
+
+/* Page state set by resources/ts/app.ts. */
+@custom-variant js (html.js &);
+@custom-variant nojs (html:not(.js) &);
+@custom-variant compact (.is-compact &);
+@custom-variant scrolled (.is-scrolled &);
+@custom-variant menu-open (.is-open &);
+
+/* Colours that exist in theme.json follow it. */
+@theme inline {
+  --color-canvas: var(--wp--preset--color--background);
+  --color-surface: var(--wp--preset--color--surface);
+  --color-ink: var(--wp--preset--color--text);
+  --color-muted: var(--wp--preset--color--muted);
+  --color-sun: var(--wp--preset--color--primary);
+  --color-ember: var(--wp--preset--color--accent);
+  --color-sky: var(--wp--preset--color--secondary);
+  --color-link: var(--wp--preset--color--link);
+  --font-body: var(--wp--preset--font-family--body);
+  --font-heading: var(--wp--preset--font-family--heading);
+}
+
+@theme static {
+  --breakpoint-sm: 35rem;
+  --breakpoint-md: 48rem;
+  /* The season face is used only for the season name (hero stamp). */
+  --font-season: themed-font, var(--wp--preset--font-family--heading);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Palette "Večer u ohně": warm paper, deep evening blue, the fire of the logo. */
+  --color-paper: #f6efe2;
+  --color-sand: #ede2cc;
+  --color-sun-deep: #d99a00;
+  --color-sun-light: #ffc83d;
+  --color-grass: #2db37a;
+  /* Full-colour bands: the four colours of the logo stripe, each dark enough for night text (WCAG AA). */
+  --color-band-sun: #ffb703;
+  --color-band-ember: #ff6b2c;
+  /* Bright rather than deep, so the long reading in the parents section keeps a high contrast. */
+  --color-band-sky: #56ccf2;
+  --color-band-grass: #3ddc97;
+  --color-dusk: #1c3a55;
+  --color-night: #0f2133;
+  --color-on-night: #f6efe2;
+  --color-on-night-muted: #b5c3d1;
+
+  --color-error: #b3261e;
+  --color-debug: #ff4fd8;
+  --color-youtube: #c4302b;
+  --color-facebook: #1868d8;
+  --color-instagram-1: #d6862a;
+  --color-instagram-2: #c9324f;
+  --color-instagram-3: #7a3fb0;
+
+  /* Three depth levels plus the header and the dialog. */
+  --shadow-soft: 0 0.5rem 1.5rem --alpha(var(--tj-color-night) / 8%);
+  --shadow-lift: 0 1rem 2.25rem --alpha(var(--tj-color-night) / 16%);
+  --shadow-deep: 0 1.25rem 2.5rem --alpha(var(--tj-color-black) / 35%);
+  --shadow-header: 0 0.25rem 1rem --alpha(var(--tj-color-night) / 8%);
+  --shadow-header-scrolled: 0 0.5rem 1.5rem --alpha(var(--tj-color-night) / 16%);
+  --shadow-dialog: 0 1.5rem 5rem --alpha(var(--tj-color-night) / 35%);
+}
+
+:root {
+  /* The logo's four-colour stripe: the brand signature of the header and the footer. */
+  --tj-stripe: linear-gradient(90deg, var(--tj-color-sun) 0 25%, var(--tj-color-ember) 25% 50%, var(--tj-color-sky) 50% 75%, var(--tj-color-grass) 75%);
+  accent-color: var(--tj-color-ember);
+  caret-color: var(--tj-color-ember);
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    background: var(--tj-color-sun);
+    color: var(--tj-color-night);
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--tj-color-ember);
+    outline-offset: 3px;
+  }
+
+  button,
+  input[type="submit"] {
+    min-height: 44px;
+  }
+
+  /* The scrollbar keeps its space while a dialog locks scrolling: no layout jump. */
+  html.js {
+    scrollbar-gutter: stable;
+  }
+
+  html.has-dialog,
+  html.has-dialog body {
+    overflow: hidden;
+  }
+
+  /* Out of sight behind an open dialog: skips rendering, keeps its measured height (restPage in app.ts). */
+  .is-resting {
+    content-visibility: hidden;
+  }
+
+  [data-zoomable] {
+    cursor: zoom-in;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+
+    :root {
+      interpolate-size: allow-keywords;
+    }
+  }
+}
+
+/* Components: only patterns used at least three times, or markup created by JavaScript. */
+@layer components {
+  .tj-container {
+    width: min(100% - 2rem, 76rem);
+    margin-inline: auto;
+  }
+
+  /*
+   * Full-bleed band; set --tj-band per section. Its rounded top edge lies over
+   * the end of the previous band, so the page reads as one flowing stack.
+   */
+  .tj-section {
+    --tj-curve: clamp(1.5rem, 4vw, 3.25rem);
+    position: relative;
+    isolation: isolate;
+    width: min(100% - 2rem, 76rem);
+    margin-inline: auto;
+    padding-block: clamp(3rem, 6vw, 5rem) calc(clamp(3.5rem, 7vw, 6rem) + var(--tj-curve));
+  }
+
+  .tj-section::before {
+    position: absolute;
+    top: calc(var(--tj-curve) * -1);
+    bottom: 0;
+    left: calc(50% - 50vw);
+    z-index: -1;
+    width: 100vw;
+    border-radius: var(--tj-curve) var(--tj-curve) 0 0;
+    background: var(--tj-band, var(--tj-color-paper));
+    content: "";
+  }
+
+  /* A band in one of the logo colours: night text, and everything muted or linked follows it. */
+  .tj-vivid {
+    /* Utilities read the theme.json presets, components the tj tokens: set both. */
+    --wp--preset--color--muted: color-mix(in srgb, var(--tj-color-night) 84%, var(--tj-band));
+    --wp--preset--color--link: var(--tj-color-night);
+    --tj-color-muted: var(--wp--preset--color--muted);
+    --tj-color-link: var(--tj-color-night);
+    color: var(--tj-color-night);
+  }
+
+  .tj-vivid :focus-visible {
+    outline-color: var(--tj-color-night);
+  }
+
+  /* One heading scale for the whole site. */
+  .tj-h1,
+  .tj-h2,
+  .tj-h3 {
+    margin: 0;
+    color: inherit;
+    font-family: var(--tj-font-heading);
+  }
+
+  .tj-h1 {
+    font-size: clamp(2.5rem, 5.6vw, 4.75rem);
+    font-weight: 800;
+    line-height: 1.03;
+    letter-spacing: -0.03em;
+  }
+
+  .tj-h2 {
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  /* A hand-drawn wave under every section heading. */
+  .tj-h2::after {
+    display: block;
+    width: 4.5rem;
+    height: 1rem;
+    margin-top: 0.8rem;
+    background: currentColor;
+    content: "";
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 16'%3E%3Cpath d='M2 8c6-8 11-8 17 0s11 8 17 0 11-8 17 0 11 8 17 0' fill='none' stroke='%23000' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E") left center / 100% 100% no-repeat;
+  }
+
+  .tj-dialog .tj-h2::after {
+    display: none;
+  }
+
+  .tj-h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /* Intro sentence under a section heading. */
+  .tj-lead {
+    max-width: 38rem;
+    margin: 1.1rem 0 0;
+    /* Follows the band: muted ink on paper, soft light on the night bands. */
+    color: color-mix(in srgb, currentColor 78%, transparent);
+    font-size: 1.1rem;
+    line-height: 1.55;
+  }
+
+  .tj-btn {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    border: 0;
+    border-radius: 999px;
+    padding: 0.75rem 1.5rem;
+    background: var(--tj-color-sun);
+    color: var(--tj-color-night);
+    font-weight: 700;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.16s var(--tj-ease-out), background-color 0.16s ease, box-shadow 0.16s ease;
+  }
+
+  .tj-btn:active {
+    transform: scale(0.97);
+  }
+
+  /* Outline button; follows the text colour, so it works on paper and on the night bands. */
+  .tj-btn-quiet {
+    background: transparent;
+    color: inherit;
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, currentColor 35%, transparent);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tj-btn:hover {
+      background: var(--tj-color-sun-light);
+      box-shadow: var(--tj-shadow-soft);
+      transform: translateY(-2px) rotate(-1.5deg);
+    }
+
+    .tj-btn-quiet:hover {
+      background: color-mix(in srgb, currentColor 9%, transparent);
+      box-shadow: inset 0 0 0 1.5px currentColor;
+    }
+
+    .tj-btn:active {
+      transform: scale(0.97);
+    }
+  }
+
+  /* Local-only debug display of a registration CTA (taborovajizda_debug_registration_cta). */
+  .tj-debug {
+    outline: 2px dashed var(--tj-color-debug);
+    outline-offset: 3px;
+  }
+
+  /* Text link; dark bands set --tj-link to a light ink. */
+  .tj-link,
+  .tj-prose a {
+    color: var(--tj-link, var(--tj-color-link));
+    font-weight: 700;
+    text-decoration: underline 1.5px color-mix(in srgb, currentColor 40%, transparent);
+    text-underline-offset: 0.22em;
+    transition: text-decoration-color 0.15s ease;
+  }
+
+  .tj-link:hover,
+  .tj-prose a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .tj-meta {
+    margin: 0 0 0.5rem;
+    color: var(--tj-color-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  /* Form controls of the registration and question forms. */
+  .tj-input {
+    width: 100%;
+    min-height: 48px;
+    margin: 0;
+    border: 1px solid --alpha(var(--tj-color-ink) / 35%);
+    border-radius: 0.6rem;
+    padding: 0.7rem 0.85rem;
+    background: var(--tj-color-white);
+    color: var(--tj-color-ink);
+    transition: border-color 0.15s ease;
+  }
+
+  .tj-input:focus {
+    border-color: var(--tj-color-ember);
+    outline: 3px solid --alpha(var(--tj-color-ember) / 30%);
+    outline-offset: 1px;
+  }
+
+  .tj-input:user-invalid {
+    border-color: var(--tj-color-error);
+  }
+
+  select.tj-input {
+    padding-right: 2.6rem;
+    color-scheme: light;
+    appearance: none;
+    background:
+      linear-gradient(45deg, transparent 50%, currentColor 50%) calc(100% - 1.3rem) 55% / 0.35rem 0.35rem no-repeat,
+      linear-gradient(135deg, currentColor 50%, transparent 50%) calc(100% - 0.95rem) 55% / 0.35rem 0.35rem no-repeat,
+      var(--tj-color-white);
+    cursor: pointer;
+  }
+
+  textarea.tj-input {
+    min-height: 9rem;
+    resize: vertical;
+  }
+
+  /* The one card of the site: linked content with a picture (news, lists, registration steps). */
+  .tj-card {
+    overflow: hidden;
+    border: 1px solid --alpha(var(--tj-color-ink) / 9%);
+    border-radius: 1rem;
+    background: var(--tj-color-surface);
+    box-shadow: var(--tj-shadow-soft);
+    transition: transform 0.2s var(--tj-ease-out), box-shadow 0.2s ease;
+  }
+
+  .tj-card:has(a:focus-visible) {
+    box-shadow: var(--tj-shadow-lift);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tj-card:has(a):hover {
+      transform: translateY(-2px);
+      box-shadow: var(--tj-shadow-lift);
+    }
+  }
+
+  /* Picture frame of a linked item: the photo zooms slightly inside it. */
+  .tj-frame {
+    display: block;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: var(--tj-color-sand);
+  }
+
+  .tj-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.45s var(--tj-ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    a:hover .tj-frame img,
+    a.tj-frame:hover img {
+      transform: scale(1.04);
+    }
+  }
+
+  /* Photo wall: every picture hangs a little crooked and straightens under the pointer. */
+  .tj-tilt > * {
+    transition: rotate 0.35s var(--tj-ease-out), translate 0.35s var(--tj-ease-out);
+  }
+
+  .tj-tilt > :nth-child(3n + 1) {
+    rotate: -1.6deg;
+  }
+
+  .tj-tilt > :nth-child(3n + 2) {
+    rotate: 1.2deg;
+  }
+
+  .tj-tilt > :nth-child(3n) {
+    rotate: -0.6deg;
+  }
+
+  .tj-tilt > :focus-within {
+    rotate: 0deg;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tj-tilt > :hover {
+      rotate: 0deg;
+      translate: 0 -0.3rem;
+    }
+  }
+
+  /* Ticker (past season names): one slow endless row, paused under the pointer or keyboard focus. */
+  .tj-ticker {
+    display: flex;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .tj-ticker > * {
+    display: flex;
+    flex: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @keyframes tj-ticker {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* Round arrow button of the photo viewer. */
+  .tj-arrow {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 3rem;
+    height: 3rem;
+    border: 0;
+    border-radius: 50%;
+    place-items: center;
+    background: var(--tj-color-sun);
+    color: var(--tj-color-night);
+    font-size: 0;
+    box-shadow: 0 0.3rem 0.9rem --alpha(var(--tj-color-black) / 30%);
+    cursor: pointer;
+    transition: transform 0.16s var(--tj-ease-out), background-color 0.15s ease;
+  }
+
+  .tj-arrow::before {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-right: 3px solid currentColor;
+    border-bottom: 3px solid currentColor;
+    border-radius: 2px;
+    content: "";
+  }
+
+  .tj-arrow[data-dir="prev"]::before {
+    margin-left: 0.3rem;
+    rotate: 135deg;
+  }
+
+  .tj-arrow[data-dir="next"]::before {
+    margin-right: 0.3rem;
+    rotate: -45deg;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tj-arrow:hover {
+      background: var(--tj-color-sun-light);
+    }
+  }
+
+  .tj-arrow:active {
+    transform: scale(0.94);
+  }
+
+  .tj-arrow[hidden] {
+    display: none;
+  }
+
+  /* Sideways swipes belong to the stepping (initialiseDialogSequences), and a slide
+     on its way out is clipped by the card instead of adding a horizontal scrollbar. */
+  .tj-dialog {
+    overflow-x: hidden;
+    touch-action: pan-y pinch-zoom;
+    /* Long and short items keep the same width when stepping: the scrollbar always has its place. */
+    scrollbar-gutter: stable;
+  }
+
+  /* In a dialog header the arrows and the close cross are quiet. */
+  .tj-dialog .tj-arrow {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    color: inherit;
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, currentColor 35%, transparent);
+  }
+
+  .tj-dialog .tj-arrow::before {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-width: 2.5px;
+  }
+
+  .tj-dialog .tj-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+    transform: none;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tj-dialog .tj-arrow:not(:disabled):hover {
+      background: color-mix(in srgb, currentColor 9%, transparent);
+      box-shadow: inset 0 0 0 1.5px currentColor;
+    }
+  }
+
+  /* Photo viewer (initialiseLightbox): full-screen modal above everything. */
+  .tj-lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: --alpha(var(--tj-color-night) / 95%);
+    color: var(--tj-color-white);
+    overscroll-behavior: contain;
+  }
+
+  .tj-lightbox[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  .tj-lightbox::backdrop {
+    background: transparent;
+  }
+
+  .tj-lightbox figure {
+    display: grid;
+    max-width: min(94vw, 90rem);
+    margin: 0;
+    place-items: center;
+    gap: 0.75rem;
+  }
+
+  .tj-lightbox img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    max-height: calc(100dvh - 9rem);
+    border-radius: 0.5rem;
+    object-fit: contain;
+    box-shadow: 0 1.5rem 4rem --alpha(var(--tj-color-black) / 50%);
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .tj-lightbox figcaption {
+    max-width: 60ch;
+    color: --alpha(var(--tj-color-white) / 85%);
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .tj-lightbox figcaption[hidden] {
+    display: none;
+  }
+
+  .tj-lightbox p {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 50%;
+    margin: 0;
+    color: --alpha(var(--tj-color-white) / 80%);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    transform: translateX(-50%);
+  }
+
+  .tj-lightbox .tj-arrow {
+    position: absolute;
+    top: calc(50% - 1.625rem);
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+
+  .tj-lightbox [data-dir="prev"] {
+    left: 1.25rem;
+  }
+
+  .tj-lightbox [data-dir="next"] {
+    right: 1.25rem;
+  }
+
+  .tj-lightbox [data-dir="close"] {
+    top: 1.25rem;
+    right: 1.25rem;
+    background: --alpha(var(--tj-color-white) / 92%);
+  }
+
+  /* Close cross of the photo viewer and of the dialogs. */
+  :is(.tj-lightbox, .tj-dialog) [data-dir="close"]::before,
+  :is(.tj-lightbox, .tj-dialog) [data-dir="close"]::after {
+    position: absolute;
+    width: 1.2rem;
+    height: 3px;
+    border: 0;
+    border-radius: 2px;
+    background: currentColor;
+    content: "";
+    rotate: 45deg;
+  }
+
+  :is(.tj-lightbox, .tj-dialog) [data-dir="close"]::after {
+    rotate: -45deg;
+  }
+
+  /* In the dialog header the cross has the stroke and reach of the chevrons beside it. */
+  .tj-dialog [data-dir="close"]::before,
+  .tj-dialog [data-dir="close"]::after {
+    width: 0.8rem;
+    height: 2px;
+  }
+
+  @media (max-width: 48rem) {
+    .tj-lightbox :is([data-dir="prev"], [data-dir="next"]) {
+      top: auto;
+      bottom: 1rem;
+    }
+
+    .tj-lightbox [data-dir="prev"] {
+      left: 1rem;
+    }
+
+    .tj-lightbox [data-dir="next"] {
+      right: 1rem;
+    }
+
+    .tj-lightbox p {
+      bottom: 1.85rem;
+    }
+  }
+
+  /*
+   * Motion. Everything is visible by default; nothing waits for a scroll.
+   * The hero enters once on load, dialogs and the photo viewer fade in, and
+   * controls answer the pointer. Under reduced motion only opacity changes.
+   */
+  @keyframes tj-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* Movement only: the text is readable from the first frame, even if the animation never runs. */
+  @keyframes tj-rise {
+    from {
+      transform: translateY(1rem);
+    }
+  }
+
+  @keyframes tj-dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem) scale(0.98);
+    }
+  }
+
+  .tj-dialog[open],
+  .tj-dialog[open]::backdrop,
+  .tj-lightbox[open] {
+    animation: tj-fade-in 0.2s ease-out;
+  }
+
+  /* Pointer and touch only: paging with the arrow keys stays instant. */
+  .tj-lightbox img.is-swapping {
+    animation: tj-fade-in 0.14s ease-out;
+  }
+
+  @keyframes tj-flow-in {
+    from {
+      opacity: 0;
+      transform: translateY(2.5rem) scale(0.98);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .tj-ticker > * {
+      animation: tj-ticker 60s linear infinite;
+    }
+
+    .tj-ticker:is(:hover, .is-paused) > * {
+      animation-play-state: paused;
+    }
+
+    /*
+     * Blocks glide in with the scroll itself (no script, no waiting): the
+     * animation is tied to the block's way into the viewport, so a block that
+     * is on screen is always fully shown, also after a jump from the menu.
+     */
+    @supports (animation-timeline: view()) {
+      .tj-flow {
+        animation: tj-flow-in linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 55%;
+      }
+    }
+
+    .tj-enter > * {
+      animation: tj-rise 0.5s var(--tj-ease-out) both;
+    }
+
+    .tj-enter > :nth-child(2) {
+      animation-delay: 60ms;
+    }
+
+    .tj-enter > :nth-child(3) {
+      animation-delay: 120ms;
+    }
+
+    .tj-enter > :nth-child(n + 4) {
+      animation-delay: 180ms;
+    }
+
+    .tj-dialog[open] {
+      animation: tj-dialog-in 0.2s var(--tj-ease-out);
+    }
+  }
+
+  /* Stepping to the next season swaps dialogs: no new entrance, only the content slides (initialiseDialogSequences). */
+  .tj-dialog.is-switching[open],
+  .tj-dialog.is-switching[open]::backdrop {
+    animation: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-property: opacity, color, background-color, border-color, text-decoration-color, box-shadow !important;
+    }
+  }
+}

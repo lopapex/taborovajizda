@@ -1,0 +1,59 @@
+/* The season face: only the season name in the hero stamp uses it. */
+@font-face {
+  font-family: themed-font;
+  /* fonts/third-man.otf is the edited source of this file; only the woff2 ships. */
+  src: url("../../fonts/third-man.woff2") format("woff2");
+  font-display: swap;
+}
+
+/* Colour of the season stamp. */
+.season-2026 {
+  --tj-season-accent: #ffb703;
+}
+
+/* Hero illustration (front-page.php): a wide banner, the whole picture stays visible on desktop. */
+.tj-hero-art {
+  background: var(--tj-color-night) url("../assets/season/hero.jpg") center / cover no-repeat;
+}
+
+/* The season name as a rubber stamp over the lower edge of the illustration. */
+.tj-stamp {
+  display: inline-block;
+  margin: 0;
+  border: 3px solid currentColor;
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.9rem 0.25rem;
+  background: var(--tj-color-night);
+  color: var(--tj-season-accent, var(--tj-color-sun));
+  font-family: var(--tj-font-season);
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  rotate: -3deg;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The one authored moment of the page: the illustration settles, then the stamp lands. */
+  @keyframes tj-hero-settle {
+    from {
+      scale: 1.04;
+    }
+  }
+
+  @keyframes tj-stamp-in {
+    from {
+      opacity: 0;
+      scale: 1.5;
+      rotate: -9deg;
+    }
+  }
+
+  .tj-hero-art {
+    animation: tj-hero-settle 1.2s var(--tj-ease-out) both;
+  }
+
+  .tj-stamp {
+    animation: tj-stamp-in 0.32s cubic-bezier(0.3, 1.3, 0.5, 1) 0.15s both;
+  }
+}

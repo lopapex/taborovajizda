@@ -1,39 +1,34 @@
-# Táborová jízda – vývoj webu
+# Táborová jízda - vývoj WordPress šablony
 
-Tento repozitář obsahuje vlastní WordPress šablonu a nástroje pro lokální vývoj.
+Repozitář obsahuje pouze vlastní WordPress šablonu a nástroje pro její vývoj. WordPress core, databáze, pluginy, média, zálohy a přístupové údaje do Gitu nepatří.
 
 ```text
-repozitář/theme ← propojení → LocalWP/wp-content/themes/taborovajizda
+Git theme/ ↔ Windows junction ↔ LocalWP wp-content/themes/taborovajizda
         ↓
-pracovní větev → GitHub → release ZIP → produkční WordPress
+pracovní větev → pull request → release ZIP → ruční nasazení
 ```
 
-LocalWP a Git používají stejné soubory. Změny se mezi nimi nekopírují. Databáze, pluginy, média, zálohy, hesla a lokální konfigurace se do Gitu neposílají.
-
-## Práce s AI asistentem
-
-Workflow není závislý na konkrétním AI nástroji. Společné instrukce pro Codex, Claude, GitHub Copilot a další agenty jsou v [AI-README.md](AI-README.md).
-
-Pro kompletní setup můžeš libovolnému agentovi zadat:
-
-```text
-Proveď setup projektu podle AI-README.md. Postupuj po jednotlivých krocích.
-Když musím něco nainstalovat nebo dokončit ručně, dej mi instrukci a počkej na moje potvrzení.
-```
-
-Repozitář obsahuje také `AGENTS.md`, `CLAUDE.md` a `.github/copilot-instructions.md`, aby běžní AI klienti společná pravidla našli automaticky.
-
-## 1. Instalace programů
+## Požadavky
 
 Na novém počítači nainstaluj:
 
 - [Git](https://git-scm.com/download/win)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [LocalWP](https://localwp.com/)
+- [Node.js LTS](https://nodejs.org/) včetně npm
 
-## 2. Stažení projektu
+Composer není potřeba.
 
-Otevři PowerShell a spusť:
+## WordPress administrace
+
+- PROD WP admin: [https://taborovajizda.cz/65e43gerg534e/](https://taborovajizda.cz/65e43gerg534e/)
+- Stage WP admin: [https://taborovajizda.cz/test/wp-admin/](https://taborovajizda.cz/test/wp-admin/)
+
+Přístupové údaje, hesla ani obnovovací kódy se nikdy necommitují. Přehled WordPress stránek, příspěvků, rubrik a jejich vazby na PHP šablony je v [mapě WordPress obsahu](WORDPRESS-CONTENT.md).
+
+Datový tok elektronické přihlášky a formulářových e-mailů popisuje [dokumentace formulářů a e-mailů](FORMS-AND-EMAILS.md).
+
+## První zprovoznění
 
 ```powershell
 cd "$HOME\Documents"
@@ -42,177 +37,172 @@ cd taborovajizda
 code .
 ```
 
-Ve VS Code otevírej celý adresář `taborovajizda`, nikoliv pouze `theme/`:
+V LocalWP vytvoř web `taborovajizda-local` s prostředím **Preferred**. Obnova produkční zálohy je volitelná a má smysl jen tehdy, když potřebuješ stejný obsah a pluginy.
 
-```text
-taborovajizda/          ← kořen Git projektu
-├── .agents/skills/     ← projektové skilly
-├── scripts/            ← pomocné skripty
-├── theme/              ← soubory WordPress šablony
-└── README.md
-```
-
-Soubory webu upravuj v `theme/`.
-
-## 3. Vytvoření lokálního WordPressu
-
-V LocalWP:
-
-1. Klikni na `+` a vyber **Create a new site**.
-2. Web pojmenuj `taborovajizda-local`.
-3. Vyber prostředí **Preferred**.
-4. Nastav libovolný lokální účet WordPressu.
-5. Dokonči vytvoření a web spusť.
-
-Public adresář bude obvykle zde:
-
-```text
-C:\Users\<uživatel>\Local Sites\taborovajizda-local\app\public
-```
-
-### Volitelně: kopie produkčního obsahu
-
-Pokud potřebuješ stejné stránky, příspěvky, pluginy a nastavení jako na produkci:
-
-1. Na produkci vytvoř zálohu přes plugin **Backup Migration**.
-2. Stejný plugin nainstaluj v lokálním WordPressu.
-3. Zálohu obnov do `taborovajizda-local`.
-
-Zálohu nikdy nevkládej do repozitáře. Pro samotnou práci na šabloně tento krok není povinný.
-
-## 4. Nastavení cesty k LocalWP
-
-V kořeni repozitáře spusť:
+V kořeni repozitáře vytvoř lokální konfiguraci:
 
 ```powershell
 Copy-Item .localwp.example.json .localwp.json
 notepad .localwp.json
 ```
 
-Do souboru vlož skutečnou cestu k public adresáři:
+Nastav skutečnou cestu:
 
 ```json
 {
-  "localPublicPath": "C:\\Users\\TVOJE_JMENO\\Local Sites\\taborovajizda-local\\app\\public"
+  "localPublicPath": "C:\\Users\\<uživatel>\\Local Sites\\taborovajizda-local\\app\\public"
 }
 ```
 
-`.localwp.json` je lokální nastavení a Git ho ignoruje.
-
-## 5. Propojení Gitu s LocalWP
-
-Libovolnému AI asistentovi napiš:
-
-```text
-Propoj tento repozitář s LocalWP podle AI-README.md.
-Nejdřív ukaž náhled a před změnou počkej na moje potvrzení.
-```
-
-Agent:
-
-1. ověří `.localwp.json` a instalaci WordPressu;
-2. ukáže zdroj, cíl a plánovanou zálohu;
-3. před změnou si vyžádá potvrzení;
-4. původní lokální šablonu přesune do `taborovajizda.pre-junction-YYYYMMDD-HHMMSS`;
-5. vytvoří Windows junction:
-
-   ```text
-   LocalWP\wp-content\themes\taborovajizda → repozitář\theme
-   ```
-
-6. ověří, že lokální web funguje.
-
-V prostředí podporujícím projektové skilly můžeš použít zkratku `$tj-connect-localwp`.
-
-Stejnou operaci lze provést ručně:
+Potom nejdřív zobraz náhled propojení a až po kontrole jej aplikuj:
 
 ```powershell
-.\scripts\connect-localwp-theme.ps1          # pouze náhled
-.\scripts\connect-localwp-theme.ps1 -Apply   # vytvoření propojení
+.\scripts\connect-localwp-theme.ps1
+.\scripts\connect-localwp-theme.ps1 -Apply
 ```
 
-Skript původní šablonu nemaže. Opakované spuštění pouze ověří existující propojení.
+Skript zachová původní lokální šablonu jako `taborovajizda.pre-junction-<čas>`. LocalWP potom používá přímo verzovaný adresář `theme/`.
 
-## 6. Běžná práce
+Nainstaluj build závislosti a vytvoř první CSS/JS bundle:
+
+```powershell
+cd theme
+npm install
+npm run build
+cd ..
+```
+
+## Struktura
+
+```text
+theme/
+├── app/                         theme, roční data, data homepage (Home.php) a formulářové handlery
+├── config/season.json           aktivní ročník
+├── resources/
+│   ├── css/app.css              Tailwind vstup, barevné a stínové tokeny, sdílené komponenty
+│   ├── css/content.css          jen WordPress/plugin obsah
+│   ├── css/season.css           pouze aktuální roční vzhled
+│   ├── ts/                      TypeScript
+│   └── assets/season/           grafika aktivního ročníku
+├── template-parts/              sdílené části: dialog, nadpis sekce, fakta, sítě, formulář, notifikace
+├── public/build/                generovaný a ignorovaný build
+├── theme.json                   WordPress design tokeny
+└── style.css                    pouze povinná hlavička šablony
+```
+
+Šablona má jen čtyři vstupní soubory: `front-page.php` (homepage), `page-e-prihlaska.php` (přihláška), `index.php` (všechny ostatní příspěvky, stránky, rubriky a 404) a společné `header.php` s `footer.php`. Starý noční layout, sidebar, menu a widgety už neexistují. Nevytvářej pro jednorázový markup další přeposílací template-part. Název šablony stránky odpovídá jejímu veřejnému slugu (`/e-prihlaska/`).
+
+## Běžný vývoj
+
+Repozitářový adresář `theme/` je s LocalWP propojený přímo pomocí junction. Soubory se proto nikam nekopírují: změna uložená ve VS Code je zároveň změnou aktivní lokální šablony.
 
 1. Spusť web v LocalWP.
-2. Ve VS Code otevři celý repozitář pomocí `code .`.
-3. Upravuj soubory v `theme/`.
-4. V prohlížeči použij `Ctrl+F5`.
-5. Změny uvidíš ve VS Code v panelu **Source Control**.
+2. Ve VS Code otevři celý repozitář, například:
 
-Protože LocalWP používá přímo `theme/`, každá uložená změna je okamžitě vidět lokálně a zároveň ji sleduje Git.
+   ```powershell
+   code "C:\Users\matej\Dropbox\PC\Documents\ChatGPT\tj web 2.0"
+   ```
 
-### Lokální kontrola
+3. V jednom terminálu spusť:
 
-Před uložením změn ověř:
+   ```powershell
+   cd theme
+   npm run dev
+   ```
 
-- úvodní stránku;
-- přihlášku, dokumenty a kontakt;
-- jednu rubriku a jeden příspěvek;
-- všechny prvky dotčené změnou;
-- že administrace funguje a nikde není PHP chyba.
+4. Terminál s `npm run dev` nech během práce spuštěný.
+5. Upravuj `theme/app`, `theme/resources` nebo `theme/template-parts`.
+6. Obnov stránku v prohlížeči; pokud vidíš starou verzi, použij `Ctrl+F5`.
+7. Před uložením změn do Gitu spusť:
 
-## 7. Uložení změn na GitHub
+   ```powershell
+   npm run check
+   ```
 
-Libovolnému AI asistentovi napiš:
+### Kdy je potřeba build
 
-```text
-Zkontroluj a ulož moje změny podle AI-README.md.
-Před commitem a pushem mi ukaž dopad a počkej na moje potvrzení.
-```
+| Co měníš | Co udělat pro zobrazení změny |
+| --- | --- |
+| PHP, `app/`, `template-parts/` | Pouze obnovit stránku. |
+| CSS, TypeScript nebo assety v `resources/` | Nechat běžet `npm run dev` a obnovit stránku. |
+| Změna se stále neukazuje | Použít `Ctrl+F5` a případně vyčistit WordPress cache. |
+| Finální kontrola před commitem | Spustit `npm run check`. |
 
-Agent:
+Po zavření terminálu se vývojový build zastaví. Při příští práci stačí v `theme/` znovu spustit `npm run dev`; `npm install` se neopakuje, pokud se nezměnily závislosti nebo nebyl odstraněn `node_modules`.
 
-1. ukáže změněné soubory a diff;
-2. odmítne nesouvisející změny mimo `theme/`;
-3. vytvoří pracovní větev `change/YYYY-MM-DD-popis`;
-4. před commitem a odesláním si vyžádá potvrzení;
-5. commitne pouze šablonu a pushne pracovní větev;
-6. vrátí odkaz pro vytvoření pull requestu.
+Build používá Tailwind CSS 4 utility-first bez Preflightu. Vlastní markup styluj přímo prefixovanými `tj:` utilitami; `@apply` nepoužívej. Sémantickou komponentní třídu přidej pouze pro stejný vzor použitý alespoň třikrát. Barvy a stíny se zapisují pouze jako tokeny (`tj:bg-sun`, `tj:border-ink/11`, `tj:shadow-card`; v CSS `var(--tj-color-…)` a `--alpha()`), hex hodnoty jen v jejich definici. Vlastní CSS proměnné mají prefix `--tj-`. Do `content.css` patří jen selektory WordPress/plugin obsahu, který nelze opatřit třídami; do `season.css` pouze roční fonty, grafika a efekty. Třídy se v PHP nesmí skládat za běhu (Tailwind je musí najít ve zdrojáku celé). React se nepoužívá.
 
-V prostředí podporujícím projektové skilly můžeš použít zkratku `$tj-save-changes`.
+`npm run dev` zůstává spuštěný a při každém uložení CSS nebo TypeScriptu automaticky obnoví `public/build/`. Potom stačí refresh prohlížeče. Změny PHP a `template-parts` build nepotřebují a projeví se hned po refreshi. Samostatné `npm run build` je potřeba až pro finální kontrolu, CI a release.
 
-Pull request zkontroluj a sluč do `main` ručně.
+## Každoroční změna
 
-## 8. Vytvoření release ZIPu
+Provozní údaje jsou pouze v `theme/config/season.json`. V templates se rok, název, termín ani kontaktní e-mail nepíšou natvrdo. Vizuální tokeny jsou v `theme/theme.json` a aktuální roční CSS v `theme/resources/css/season.css`.
 
-Po sloučení pull requestu aktualizuj `main`:
+Každý ročník se připraví ve třech oddělených krocích:
 
-```powershell
-git switch main
-git pull --ff-only
-```
+1. Aktualizuj data v `config/season.json` (název, termín, cena, `location`, `ageRange`, `mapCoordinates`), včetně `contactEmail` a ručně spravovaného `registration.remainingPlaces`; `null` znamená, že počet nezobrazujeme.
+2. Nahraď ilustraci `resources/assets/season/hero.jpg`.
+3. Uprav potvrzené barvy v `theme.json` a pouze roční efekty v `season.css` (včetně třídy `.season-<rok>` s akcentem).
 
-Potom libovolnému AI asistentovi napiš:
-
-```text
-Vytvoř ověřený produkční ZIP podle AI-README.md, ale nic nenasazuj.
-```
-
-Nebo spusť přímo:
+Pro nový ročník použij skill `$tj-new-season` nebo náhled skriptu:
 
 ```powershell
-.\scripts\create-theme-release.ps1
+.\scripts\new-season.ps1 -Year 2027 -Slug novy-motiv -Title "DOPLNIT NÁZEV"
 ```
 
-Workflow vyžaduje čistý Git a v ignorované složce `releases/` vytvoří:
+Skript bez `-Apply` nic nemění. Nevymýšlej nepotvrzené datum, cenu, databázový klíč ani vizuální brief. Názvy ročních obrázků jsou pevné a nejsou součástí JSON konfigurace. Staré ročníky jsou archivované v Git historii; nevytvářej další kopii celého ročního CSS.
 
-- `taborovajizda-theme-YYYY-MM-DD-<commit>.zip`;
-- manifest s commitem, tagem, velikostí, SHA-256 a návodem k nasazení.
 
-V prostředí podporujícím projektové skilly můžeš použít zkratku `$tj-create-release`.
+## Nová aktualita, připnutí a test
 
-ZIP vzniká pouze z `theme/` a obsahuje jediný kořenový adresář `taborovajizda/`.
+- **Aktualita:** ve WordPressu vytvoř standardní příspěvek v rubrice `Aktuality` s datem v aktivním roce (`year` v `season.json`). Homepage ji zobrazí sama, včetně dialogu s plným textem; bez náhledového obrázku použije první fotografii z textu.
+- **Připnuté oznámení:** v příspěvku zapni „Připnout na začátek blogu“ (Stick to the top). Aktualita se zobrazí první se štítkem „Důležité oznámení“; po odepnutí se vrátí na své místo podle data.
+- **Test před release:** z `theme/` spusť `npm run check` (validace `season.json`, TypeScript, build), PHP lint (`php -l`) a projdi homepage a `/e-prihlaska/` v LocalWP na šířkách 360, 768 a 1280 px. Mimo produkci formuláře pouze simulují odeslání.
 
-## 9. Ruční nasazení na produkci
+## Formuláře a lokální prostředí
 
-1. Uchovej poslední funkční ZIP šablony nebo čerstvou rollback zálohu.
-2. Ve WordPressu otevři **Vzhled → Šablony → Instalovat šablonu → Nahrát šablonu**.
-3. Vyber ZIP ze složky `releases/` a klikni na **Instalovat**.
-4. Zvol nahrazení existující šablony novou nahranou verzí.
-5. Neaktivuj jinou šablonu; `taborovajizda` má zůstat aktivní.
-6. Vyčisti cache a použij `Ctrl+F5`.
-7. Zopakuj lokální kontrolní body na produkci.
+Přihláška a kontakt používají stejné namespaced WordPress handlery a nonce jako `admin-post.php`, ale formuláře odesílají na `/odeslat-dotaz/`. Produkční bezpečnostní plugin blokuje anonymní přístup do `/wp-admin/`; kompatibilní veřejný endpoint proto požadavek předá stejnému handleru.
 
-Při chybě nahraj poslední funkční ZIP stejným postupem nebo obnov ověřenou přednasazovací zálohu.
+Mimo prostředí `production` šablona neposílá skutečné formulářové e-maily ani nezapisuje formuláře do externí databáze. Po úspěšné validaci lokální výsledek zapíše do PHP logu a vrátí simulovaný úspěch; chybné vstupy vrací stejné chybové kódy jako produkce.
+
+## Git workflow
+
+- Nikdy necommituj změny šablony přímo do `main`.
+- Použij větev `change/YYYY-MM-DD-<popis>` nebo `season/<rok>-<slug>`.
+- Pull request a merge zůstávají ruční.
+- Projektové skilly:
+  - `$tj-connect-localwp` - propojení LocalWP;
+  - `$tj-save-changes` - kontrola, commit a push pracovní větve;
+  - `$tj-new-season` - nový ročník;
+  - `$tj-create-release` - ověřený produkční ZIP;
+  - `$tj-migrate-content` - přenos obsahu z LocalWP na stage a produkci;
+  - `$design-taste-frontend` - audit a redesign bez generického AI vzhledu.
+
+Společná pravidla pro Codex, Claude, Copilot a další agenty jsou v [AI-README.md](AI-README.md).
+
+## Release a nasazení
+
+Po merge aktualizuj čistý `main` a spusť:
+
+```powershell
+.\scripts\create-theme-release.ps1 -SourceBranch main
+```
+
+Pro ověřovací ZIP z větve `stage` použij:
+
+```powershell
+.\scripts\create-theme-release.ps1 -SourceBranch stage
+```
+
+Release skript exportuje přesný commit explicitně zvolené lokální větve do dočasného adresáře, spustí `npm ci` a `npm run build` a vytvoří ZIP pouze z runtime souborů. `node_modules`, zdrojové CSS/TS a vývojová konfigurace v ZIPu nejsou.
+
+Výstup v ignorovaném `releases/` obsahuje ZIP a manifest s commitem, tagem, velikostí, počtem položek a SHA-256.
+
+Produkční nasazení:
+
+1. Připrav poslední funkční ZIP nebo čerstvou rollback zálohu.
+2. WordPress → Vzhled → Šablony → Instalovat → Nahrát šablonu.
+3. Nahraj ZIP a potvrď nahrazení existující šablony.
+4. Neaktivuj jinou šablonu.
+5. Vyčisti cache a použij `Ctrl+F5`.
+6. Ověř homepage, přihlášku, dokumenty, kontakt, rubriku a administraci.

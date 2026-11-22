@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://taborovajizda.cz/schemas/season.schema.json",
+  "title": "Táborová jízda season",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["year", "slug", "title", "contactEmail", "startDate", "endDate", "price", "registration"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "year": { "type": "integer", "minimum": 2000, "maximum": 2200 },
+    "slug": { "type": "string", "pattern": "^[0-9]{4}-[a-z0-9-]+$" },
+    "title": { "type": "string", "minLength": 1 },
+    "contactEmail": { "type": "string", "format": "email" },
+    "startDate": { "type": ["string", "null"], "format": "date" },
+    "endDate": { "type": ["string", "null"], "format": "date" },
+    "location": { "type": ["string", "null"], "minLength": 1 },
+    "mapCoordinates": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["lat", "lon"],
+          "properties": {
+            "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+            "lon": { "type": "number", "minimum": -180, "maximum": 180 }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "ageRange": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {
+            "min": { "type": "integer", "minimum": 1 },
+            "max": { "type": "integer", "minimum": 1 }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "price": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amount", "currency"],
+      "properties": {
+        "amount": { "type": ["integer", "null"], "minimum": 0 },
+        "currency": { "const": "CZK" }
+      }
+    },
+    "registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "remainingPlaces", "externalSeasonKey"],
+      "properties": {
+        "status": { "enum": ["hidden", "coming-soon", "open", "full", "closed"] },
+        "remainingPlaces": { "type": ["integer", "null"], "minimum": 0 },
+        "externalSeasonKey": {
+          "anyOf": [
+            { "type": "string", "pattern": "^[0-9]+$" },
+            { "type": "null" }
+          ]
+        }
+      }
+    }
+  }
+}

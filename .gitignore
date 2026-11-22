@@ -2,7 +2,6 @@
 *.sql
 *.sql.gz
 *.zip
-!theme/**/*.zip
 *.tar
 *.tar.gz
 *.tgz
@@ -31,8 +30,14 @@ wp-config-*.php
 .localwp.json
 .local/
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
 .DS_Store
 Thumbs.db
 .tags
+
+# Theme build dependencies and generated output
+/theme/node_modules/
+/theme/public/build/
+/theme/.phpunit.cache/
 
