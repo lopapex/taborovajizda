@@ -29,6 +29,11 @@ final class Theme
         add_action('wp_enqueue_scripts', [self::class, 'enqueueAssets']);
         add_action('wp_head', [self::class, 'preloadHeroImage'], 1);
         add_action('init', [self::class, 'trimFrontend']);
+        // The theme's own tab icon replaces the WordPress Site Icon everywhere.
+        foreach (['wp_head', 'admin_head', 'login_head'] as $hook) {
+            remove_action($hook, 'wp_site_icon', 99);
+            add_action($hook, [self::class, 'siteIcon'], 99);
+        }
         // Homepage content iframes (maps etc.) live in closed dialogs and tabs;
         // never let WordPress treat them as above-the-fold and load them eagerly.
         add_filter('wp_iframe_tag_add_loading_attr', static fn ($value) => is_front_page() ? 'lazy' : $value);
@@ -78,6 +83,18 @@ final class Theme
      * after the stylesheet is parsed. Preloading it lets the LCP image start
      * downloading in parallel with the CSS.
      */
+    /** Tab icon: the campfire from the logo, without the lettering that is unreadable at tab size; on white for the iOS home screen. */
+    public static function siteIcon(): void
+    {
+        $uri = static fn (string $file): string => esc_url(get_theme_file_uri('/web_images/' . $file) . '?v=' . filemtime(self::$root . '/web_images/' . $file));
+        printf(
+            "<link rel=\"icon\" href=\"%s\" sizes=\"32x32\" type=\"image/png\">\n<link rel=\"icon\" href=\"%s\" sizes=\"192x192\" type=\"image/png\">\n<link rel=\"apple-touch-icon\" href=\"%s\">\n",
+            $uri('favicon-32.png'),
+            $uri('favicon-192.png'),
+            $uri('apple-touch-icon.png')
+        );
+    }
+
     public static function preloadHeroImage(): void
     {
         if (! is_front_page()) {

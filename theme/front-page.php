@@ -56,9 +56,11 @@ $newsSection = static function () use ($part, $year, $pinned, $plain): void {
 						<ul class="tj:m-0 tj:list-none tj:p-0">
 							<?php foreach ($rest as $post) : ?>
 								<li class="tj:border-b tj:border-ink/12 tj:first:border-t">
-									<a class="tj:group tj:grid tj:min-h-[56px] tj:gap-x-5 tj:py-4 tj:text-inherit tj:no-underline tj:sm:grid-cols-[6.5rem_minmax(0,1fr)] tj:sm:items-baseline" href="<?php echo esc_url(get_permalink($post)); ?>" data-sequence-title="<?php echo esc_attr($plain(get_the_title($post))); ?>">
+									<?php // On hover a light pill rises behind the row, the title nudges right and the arrow slides in; on touch the faint arrow alone says "open". ?>
+									<a class="tj:group tj:relative tj:isolate tj:grid tj:min-h-[56px] tj:gap-x-5 tj:py-4 tj:pr-10 tj:text-inherit tj:no-underline tj:sm:grid-cols-[6.5rem_minmax(0,1fr)] tj:sm:items-baseline tj:before:absolute tj:before:inset-x-[-.75rem] tj:before:inset-y-1.5 tj:before:-z-1 tj:before:rounded-xl tj:before:bg-surface/0 tj:before:scale-[.97] tj:before:transition-[background-color,scale] tj:before:duration-200 tj:before:ease-(--tj-ease-out) tj:hover:before:bg-surface/70 tj:hover:before:scale-100 tj:focus-visible:before:bg-surface/70 tj:active:before:scale-[.98]" href="<?php echo esc_url(get_permalink($post)); ?>" data-sequence-title="<?php echo esc_attr($plain(get_the_title($post))); ?>">
 										<span class="tj:text-[.9rem] tj:font-semibold tj:whitespace-nowrap tj:text-muted tj:tabular-nums"><?php echo esc_html(get_the_date('j. n. Y', $post)); ?></span>
-										<span class="tj:text-[1.1rem] tj:leading-snug tj:font-bold tj:transition-colors tj:duration-150 tj:group-hover:text-link"><?php echo esc_html($plain(get_the_title($post))); ?></span>
+										<span class="tj:text-[1.1rem] tj:leading-snug tj:font-bold tj:transition-[color,translate] tj:duration-200 tj:ease-(--tj-ease-out) tj:group-hover:text-link tj:motion-safe:group-hover:translate-x-1"><?php echo esc_html($plain(get_the_title($post))); ?></span>
+										<svg class="tj:absolute tj:top-1/2 tj:right-1 tj:size-5 tj:-translate-y-1/2 tj:text-link tj:opacity-35 tj:transition-[opacity,translate] tj:duration-200 tj:ease-(--tj-ease-out) tj:group-hover:opacity-100 tj:motion-safe:group-hover:translate-x-1 tj:group-focus-visible:opacity-100" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h11m-4.5-4.5L15 10l-4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 									</a>
 								</li>
 							<?php endforeach; ?>
