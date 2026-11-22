@@ -15,7 +15,7 @@ final class RegistrationHandler
 
     public function handle(): never
     {
-        foreach (['jmeno', 'prijmeni', 'datum_nar', 'rodne_c', 'adresa', 'nastup', 'vystup', 'kontakt_email'] as $field) {
+        foreach (['jmeno', 'prijmeni', 'datum_nar', 'rodne_c', 'adresa', 'nastup', 'vystup', 'kontakt_email', 'dotaz'] as $field) {
             if ($this->post($field) === '') {
                 $this->response->redirect('error', 2);
             }

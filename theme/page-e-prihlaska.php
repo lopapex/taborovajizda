@@ -43,7 +43,7 @@ get_header();
 			<div>
 				<p class="tj:m-0 tj:mb-3 tj:font-semibold tj:text-on-night-muted"><?php echo esc_html(Home::dashes($season->title()) . ' ' . $season->year()); ?></p>
 				<h1 class="tj-h1 tj:text-[clamp(2.1rem,5vw,3.5rem)]">Přihláška na tábor</h1>
-				<p class="tj:mt-4 tj:mb-0 tj:max-w-136 tj:text-[1.1rem] tj:leading-[1.55] tj:text-on-night-muted">Čtyři krátké kroky: dítě, kontakt na Vás, doplňující informace a kontrola. Kopii přihlášky a pokyny k platbě pošleme na Váš e-mail.</p>
+				<p class="tj:mt-4 tj:mb-0 tj:max-w-136 tj:text-[1.1rem] tj:leading-[1.55] tj:text-on-night-muted">Čtyři krátké kroky: dítě, kontakt na Vás, zdraví a poznámky a kontrola. Kopii přihlášky a pokyny k platbě pošleme na Váš e-mail.</p>
 			</div>
 			<?php get_template_part('template-parts/facts', null, ['facts' => Home::facts($season, false)]); ?>
 		</div>
@@ -65,7 +65,7 @@ get_header();
 
 			<?php if ($acceptsRegistrations || $debugForm) : ?>
 			<ol class="tj:sticky tj:top-18 tj:z-10 tj:m-0 tj:mb-6 tj:-mx-2 tj:grid tj:scroll-mt-24 tj:list-none tj:grid-cols-4 tj:gap-2 tj:bg-paper/95 tj:px-2 tj:py-3 tj:backdrop-blur-sm tj:[[hidden]]:hidden" data-registration-steps hidden>
-				<?php foreach (['Dítě', 'Kontakt', 'Doplnění', 'Kontrola'] as $index => $step) : ?>
+				<?php foreach (['Dítě', 'Kontakt', 'Zdraví', 'Kontrola'] as $index => $step) : ?>
 					<li><button class="tj:group tj:flex tj:min-h-[48px] tj:w-full tj:cursor-pointer tj:items-center tj:gap-[.6rem] tj:rounded-xl tj:border tj:border-ink/15 tj:bg-surface tj:px-[.8rem] tj:py-2 tj:text-left tj:font-semibold tj:text-muted tj:transition-colors tj:duration-150 tj:enabled:hover:border-ink/40 tj:disabled:cursor-default tj:disabled:opacity-55 tj:aria-[current=step]:border-night tj:aria-[current=step]:bg-night tj:aria-[current=step]:text-on-night tj:[&.is-done]:text-ink tj:max-md:flex-col tj:max-md:gap-1 tj:max-md:px-1 tj:max-md:text-center tj:max-md:text-[.8rem]" type="button" data-step-target="<?php echo $index + 1; ?>"<?php echo $index === 0 ? ' aria-current="step"' : ' disabled'; ?>><span class="tj:grid tj:size-[1.75rem] tj:flex-none tj:place-items-center tj:rounded-full tj:bg-ink/8 tj:text-[.9rem] tj:tabular-nums tj:text-ink tj:group-aria-[current=step]:bg-sun tj:group-aria-[current=step]:text-night tj:group-[.is-done]:bg-grass tj:group-[.is-done]:text-night"><?php echo $index + 1; ?></span> <?php echo esc_html($step); ?></button></li>
 				<?php endforeach; ?>
 			</ol>
@@ -106,8 +106,22 @@ get_header();
 				</fieldset>
 
 				<fieldset class="<?php echo $fieldset; ?>" data-step="3">
-					<legend class="<?php echo $legend; ?>">Doplňující informace</legend>
-					<?php $field('dotaz', 'Zdravotní potřeby, alergie, dieta a další poznámky', '<textarea class="tj-input" id="%1$s" name="dotaz" rows="6"%2$s></textarea>', ['hint' => 'Cokoli, co bychom měli vědět a nenašli jste pro to kolonku. Máte-li táborový poukaz na slevu, opište sem kód z jeho pravého dolního rohu.']); ?>
+					<legend class="<?php echo $legend; ?>">Zdraví a poznámky</legend>
+					<div class="tj:grid tj:min-w-0 tj:gap-[.6rem]">
+						<label class="tj:font-semibold tj:text-ink" for="dotaz">Zdravotní potřeby a poznámky <?php echo $required; ?></label>
+						<div class="tj:rounded-xl tj:bg-sand tj:px-5 tj:py-4 tj:leading-normal tj:text-ink" id="dotaz-hint">
+							<p class="tj:m-0">Napište prosím vše, o čem by měl vědět náš zdravotník a vedoucí, například:</p>
+							<ul class="tj:m-0 tj:mt-2 tj:grid tj:gap-1 tj:pl-5 tj:list-disc">
+								<li><strong>Alergie</strong> – na jídlo, léky, pyl, bodnutí hmyzem… a jak se projevují.</li>
+								<li><strong>Léky</strong>, které dítě pravidelně bere – název, dávka a kdy.</li>
+								<li><strong>Dieta</strong> – bezlepková, bez laktózy, vegetariánská a podobně.</li>
+								<li><strong>Nemoci a omezení</strong> – astma, cukrovka, epilepsie, nesmí plavat nebo dlouho běhat…</li>
+								<li><strong>Cokoli dalšího</strong>, co nám pomůže se o dítě dobře postarat.</li>
+							</ul>
+							<p class="tj:m-0 tj:mt-3 tj:font-semibold">Nemá-li dítě nic z toho, napište „žádné“.</p>
+						</div>
+						<textarea class="tj-input" id="dotaz" name="dotaz" rows="6" required aria-describedby="dotaz-hint" placeholder="Např.: alergie na ořechy (otok rtů), bere lék na alergii 1× denně ráno. Nebo: žádné"></textarea>
+					</div>
 					<?php $stepNav(true); ?>
 				</fieldset>
 
