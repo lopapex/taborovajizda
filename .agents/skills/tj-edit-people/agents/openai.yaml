@@ -1,0 +1,6 @@
+interface:
+  display_name: "TJ Edit People"
+  short_description: "Change a leader's profile text and photo on LocalWP, stage and production"
+  default_prompt: "Use $tj-edit-people to update this leader's profile text and photo on production, stage and LocalWP."
+policy:
+  allow_implicit_invocation: true
