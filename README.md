@@ -176,6 +176,7 @@ Mimo prostředí `production` šablona neposílá skutečné formulářové e-ma
   - `$tj-new-season` - nový ročník;
   - `$tj-create-release` - ověřený produkční ZIP;
   - `$tj-migrate-content` - přenos obsahu z LocalWP na stage a produkci;
+  - `$tj-edit-people` - změna textu a fotky vedoucího v sekci Lidé na všech třech prostředích;
   - `$design-taste-frontend` - audit a redesign bez generického AI vzhledu.
 
 Společná pravidla pro Codex, Claude, Copilot a další agenty jsou v [AI-README.md](AI-README.md).
