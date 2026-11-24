@@ -27,7 +27,12 @@ Compare the target with the current state before overwriting; if someone edited 
 
 **Production** (`https://taborovajizda.cz`, admin `/65e43gerg534e/`, the user signs in in the built-in browser):
 
-1. The agent cannot fill a file picker. Copy the photos into the ignored folder `.upload-tmp/` of the repo (it has its own `.gitignore`), reveal one with `reveal_path` and ask the user to drag them to `/wp-admin/media-new.php`. Wait for "nahráno", then read the new IDs from `/?rest_route=/wp/v2/media&per_page=5`.
+1. The agent cannot fill a file picker, so the user drags the photo in, but the agent prepares everything so that this is one drag. Do all three in the same turn, before asking:
+   - copy the photos into the ignored folder `.upload-tmp/` of the repo (it has its own `.gitignore`) and `reveal_path` the file (File Explorer opens with it selected);
+   - open the upload page itself in the built-in browser: `navigate` to `https://taborovajizda.cz/wp-admin/media-new.php`. If it lands on the homepage the session has expired (changing the site URL or an idle session logs everybody out): `navigate` to `https://taborovajizda.cz/65e43gerg534e/`, ask the user to sign in, then `navigate` to `media-new.php` again and check the tab title is "Nahrát médium";
+   - tell the user in one line: drag the file from Explorer onto the open page and say "nahráno".
+
+   Then read the new IDs from `/?rest_route=/wp/v2/media&per_page=5` (sort by date, match the filename) and set the media title.
 2. Nonce: `fetch('/wp-admin/admin-ajax.php?action=rest-nonce')`, header `X-WP-Nonce`. Then `POST /?rest_route=/wp/v2/posts/<id>` with `{content, featured_media}`. WordPress keeps a revision, which is the rollback.
 3. Read the public page back (`fetch('/<slug>/?v=' + Date.now())`) and check the new text and `uploads/...` filename. Purge LiteSpeed Cache in the admin bar.
 
@@ -43,7 +48,7 @@ Compare the target with the current state before overwriting; if someone edited 
 
 ## 3. Verify
 
-Open the person on all three environments (own page and homepage dialog), on desktop and 360 px: face fully visible in the 4:5 frame, text complete, no leftover old photo. Report the post IDs, the new media IDs per environment and what was not done. Remove `.upload-tmp/` content when finished.
+Open the person on all three environments (own page and homepage dialog), on desktop and 360 px: face fully visible in the 4:5 frame, text complete, no leftover old photo. Report the post IDs, the new media IDs per environment and what was not done. Delete the `.upload-tmp/` folder when finished.
 
 ## 4. Git
 
